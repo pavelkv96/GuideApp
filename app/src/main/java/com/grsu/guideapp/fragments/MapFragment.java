@@ -1,7 +1,6 @@
 package com.grsu.guideapp.fragments;
 
 import android.Manifest.permission;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -10,22 +9,33 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.grsu.guideapp.R;
+import com.grsu.guideapp.utils.MarkerSingleton;
+import com.grsu.guideapp.utils.PolylineSingleton;
+import java.util.ArrayList;
+import java.util.List;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.tileprovider.util.StorageUtils;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Overlay;
+import org.osmdroid.views.overlay.infowindow.InfoWindow;
 
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements MapEventsReceiver {
 
     private static final String TAG = "MapFragment";
+    Marker singletonValue = null;
 
     @BindView(R.id.map)
     MapView map;
@@ -64,10 +74,28 @@ public class MapFragment extends Fragment {
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setUseDataConnection(false);
 
-        Marker startMarker = new Marker(map);
-        startMarker.setPosition(new GeoPoint(48.8583, 2.2944));
-        startMarker.setTitle("drgdgd");
-        map.getOverlays().add(startMarker);
+        List<GeoPoint> geoPointList = new ArrayList<>();
+        geoPointList.add(new GeoPoint(48.8583, 2.2944));
+        geoPointList.add(new GeoPoint(47.8583, 2.2944));
+        geoPointList.add(new GeoPoint(46.8583, 2.2944));
+        geoPointList.add(new GeoPoint(45.8583, 2.2944));
+
+        List<GeoPoint> geoPointList1 = new ArrayList<>();
+        geoPointList1.add(new GeoPoint(48.8583, 2.2944));
+        geoPointList1.add(new GeoPoint(48.8583, 1.2944));
+        geoPointList1.add(new GeoPoint(48.8583, 0.2944));
+        geoPointList1.add(new GeoPoint(48.8583, -1.2944));
+
+        PolylineSingleton polylineSingleton = PolylineSingleton.INSTANCE;
+
+        polylineSingleton.getValue(map, geoPointList);
+        polylineSingleton.getValue(map, geoPointList1);
+
+        MarkerSingleton markerSingleton = MarkerSingleton.INSTANCE;
+
+        singletonValue = markerSingleton.getValue(map, new GeoPoint(48.8583, 2.2944));
+        markerSingleton.getValue(map, new GeoPoint(47.8583, 2.2944));
+        map.getOverlays().add(new MapEventsOverlay(this));
 
         return view;
     }
@@ -84,4 +112,18 @@ public class MapFragment extends Fragment {
         map.onPause();
     }
 
+    @Override
+    public boolean singleTapConfirmedHelper(GeoPoint p) {
+
+        InfoWindow.closeAllInfoWindowsOn(map);
+        return false;
+    }
+
+    @Override
+    public boolean longPressHelper(GeoPoint p) {
+        return false;
+    }
 }
+
+//For one marker: call marker.closeInfoWindow()
+//For all markers: call InfoWindow.closeAllInfoWindowsOn(map)
