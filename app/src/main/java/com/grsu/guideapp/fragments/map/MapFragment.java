@@ -1,4 +1,4 @@
-package com.grsu.guideapp.fragments;
+package com.grsu.guideapp.fragments.map;
 
 import android.Manifest.permission;
 import android.content.Context;
@@ -7,16 +7,11 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import com.grsu.guideapp.R;
+import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.utils.MarkerSingleton;
 import com.grsu.guideapp.utils.PolylineSingleton;
 import java.util.ArrayList;
@@ -29,12 +24,10 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
 
-public class MapFragment extends Fragment implements MapEventsReceiver {
+public class MapFragment extends BaseFragment<MapPresenter> implements MapEventsReceiver {
 
-    private static final String TAG = "MapFragment";
     Marker singletonValue = null;
 
     @BindView(R.id.map)
@@ -54,17 +47,24 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
         super.onAttach(context);
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_map, container, false);
+    protected MapPresenter getPresenterInstance() {
+        return new MapPresenter();
+    }
 
-        Context ctx = inflater.getContext();
+    @Override
+    protected int getLayout() {
+        return R.layout.fragment_map;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Context ctx = getActivity();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         Configuration.getInstance().setOsmdroidBasePath(StorageUtils.getStorage());
-
-        ButterKnife.bind(this, view);
 
         map.setMaxZoomLevel(20.0);
         map.setMinZoomLevel(11.0);
@@ -97,7 +97,6 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
         markerSingleton.getValue(map, new GeoPoint(47.8583, 2.2944));
         map.getOverlays().add(new MapEventsOverlay(this));
 
-        return view;
     }
 
     @Override

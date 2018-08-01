@@ -1,5 +1,6 @@
 package com.grsu.guideapp.activities;
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -7,6 +8,8 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import com.grsu.guideapp.R;
+import com.grsu.guideapp.activities.details.DetailsActivity;
+import com.grsu.guideapp.utils.ContextHolder;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
@@ -43,8 +46,9 @@ public class CustomMarkerInfoWindow extends MarkerInfoWindow implements OnTouchL
             case MotionEvent.ACTION_UP:
                 view.performClick();
                 if (marker != null) {
-                    close();
+                    //close();
                     Log.e("MarkerSingleton", "onOpen2: " + marker.getPosition());
+                    ContextHolder.getContext().startActivity(new Intent(ContextHolder.getContext(), DetailsActivity.class));
                 }
                 break;
         }
