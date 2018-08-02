@@ -12,6 +12,7 @@ import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseActivityDelegate;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
+import com.grsu.guideapp.fragments.ListRoutesFragment;
 import com.grsu.guideapp.fragments.map.MapFragment;
 import com.grsu.guideapp.fragments.setting.SettingsFragment;
 
@@ -49,13 +50,13 @@ public class NavigationDrawerDelegate
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_camera:
-                mPresenter.replaceFragment(new MapFragment());
+                mPresenter.getView().openMapFragment();
                 break;
             case R.id.nav_gallery:
-                mPresenter.replaceFragment(new SettingsFragment());
+                mPresenter.getView().openSettingsFragment();
                 break;
             case R.id.nav_slideshow:
-
+                mPresenter.getView().openListRoutesFragment();
                 break;
             case R.id.nav_manage:
 
@@ -64,7 +65,7 @@ public class NavigationDrawerDelegate
 
                 break;
             case R.id.nav_send:
-                mPresenter.doSomething();
+
                 break;
         }
         closeDrawer();

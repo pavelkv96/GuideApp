@@ -17,7 +17,10 @@ import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseDelegationActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
+import com.grsu.guideapp.fragments.ListRoutesFragment;
 import com.grsu.guideapp.fragments.map.MapFragment;
+import com.grsu.guideapp.fragments.setting.SettingsFragment;
+import com.grsu.guideapp.utils.MessageViewer;
 
 public class NavigationDrawerActivity
         extends BaseDelegationActivity<
@@ -25,9 +28,6 @@ public class NavigationDrawerActivity
         NavigationDrawerPresenter,
         NavigationDrawerDelegate>
         implements NavigationDrawerView {
-
-    private static final int REQUEST_CODE_PERMISSION_READ_CONTACTS = 1;
-    private static final String TAG = NavigationDrawerActivity.class.getSimpleName();
 
     @BindView(R.id.toolbar)
     protected Toolbar mToolbar;
@@ -67,51 +67,30 @@ public class NavigationDrawerActivity
     }
 
     @Override
-    public void onSomethingDone() {
-//        Toast.makeText(this, "Replace with your own action", Toast.LENGTH_LONG).show();
-        Snackbar.make(getContentView(), "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-    }
-
-    @Override
-    public void replaceFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
-    }
-
-    @Override
-    public void openCamera() {
-        if (VERSION.SDK_INT >= VERSION_CODES.M) {
-            int permissionStatus = ContextCompat
-                    .checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE);
-            if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{
-                                permission.WRITE_EXTERNAL_STORAGE,
-                                permission.READ_EXTERNAL_STORAGE},
-                        REQUEST_CODE_PERMISSION_READ_CONTACTS);
-            } else {
-
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, new MapFragment()).commit();
-            }
+    public void openMapFragment() {
+        if (mPresenter.checkPermissions()) {
+            mPresenter.replaceFragment(new MapFragment());
         }
+    }
 
+    @Override
+    public void openSettingsFragment() {
+        mPresenter.replaceFragment(new SettingsFragment());
+    }
+
+    @Override
+    public void openListRoutesFragment() {
+        mPresenter.replaceFragment(new ListRoutesFragment());
+    }
+
+    @Override
+    public void showToastMessage(String message) {
+        MessageViewer.Toasts.makeS(this, message);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE_PERMISSION_READ_CONTACTS:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, new MapFragment()).commit();
-                } else {
-                    Log.e(TAG, "onRequestPermissionsResult: ");
-                    Toast.makeText(this, "Don't have permission", Toast.LENGTH_SHORT).show();
-                }
-        }
+        mPresenter.checkPermissionsResult(requestCode, grantResults);
     }
 }

@@ -8,10 +8,13 @@ public interface NavigationDrawerContract {
 
     interface NavigationDrawerView extends BaseView {
 
-        void openCamera();
+        void openMapFragment();
 
-        void onSomethingDone();
-        void replaceFragment(Fragment fragment);
+        void openSettingsFragment();
+
+        void openListRoutesFragment();
+
+        void showToastMessage(String message);
 
         NavigationDrawerActivity getActivity();
 
@@ -19,8 +22,11 @@ public interface NavigationDrawerContract {
 
     interface NavigationDrawerPresenter extends BasePresenter<NavigationDrawerView> {
 
-        void doSomething();
         void replaceFragment(Fragment fragment);
+
+        boolean checkPermissions();
+
+        void checkPermissionsResult(int requestCode, int[] grantResults);
 
     }
 }
