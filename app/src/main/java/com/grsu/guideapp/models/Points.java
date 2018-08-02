@@ -12,9 +12,12 @@ import com.grsu.database_library.annotations.dbNumeric;
 import com.grsu.database_library.annotations.dbPrimaryKey;
 import com.grsu.database_library.annotations.dbTable;
 import com.grsu.database_library.annotations.dbText;
+import java.io.Serializable;
 
 @dbTable(Points.class)
-public class Points {
+public class Points implements Serializable {
+
+    //CONSTANTS
 
     @dbPrimaryKey
     @dbInteger(isNotNull = NOT_NULL)
@@ -33,4 +36,87 @@ public class Points {
 
     @dbText
     public static final String TEXT_INSTRUCTION = "text_instruction";
+
+    //POJO model
+
+    private Integer id;
+    private Integer idRoute;
+    private String idPoint;
+    private String address;
+    private Integer isPoi;
+    private String textInstruction;
+    private final static long serialVersionUID = 1743533885186767174L;
+
+    /**
+     * No args constructor for use in serialization
+     */
+    public Points() {
+    }
+
+    /**
+     * @param id
+     * @param idRoute
+     * @param address
+     * @param textInstruction
+     * @param idPoint
+     * @param isPoi
+     */
+    public Points(Integer id, Integer idRoute, String idPoint, String address, Integer isPoi, String textInstruction) {
+        super();
+        this.id = id;
+        this.idRoute = idRoute;
+        this.idPoint = idPoint;
+        this.address = address;
+        this.isPoi = isPoi;
+        this.textInstruction = textInstruction;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getIdRoute() {
+        return idRoute;
+    }
+
+    public void setIdRoute(Integer idRoute) {
+        this.idRoute = idRoute;
+    }
+
+    public String getIdPoint() {
+        return idPoint;
+    }
+
+    public void setIdPoint(String idPoint) {
+        this.idPoint = idPoint;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Integer getIsPoi() {
+        return isPoi;
+    }
+
+    public void setIsPoi(Integer isPoi) {
+        this.isPoi = isPoi;
+    }
+
+    public String getTextInstruction() {
+        return textInstruction;
+    }
+
+    public void setTextInstruction(String textInstruction) {
+        this.textInstruction = textInstruction;
+    }
+
 }
