@@ -20,11 +20,6 @@ public class DetailsActivity extends BaseActivity<DetailsPresenter> implements D
         return new DetailsPresenter();
     }
 
-    //@OnClick(R.id.btnGo)
-    public void onBtnGoClick() {
-        mPresenter.doSomething();
-    }
-
     @Override
     public void onSomethingDone() {
         //startActivity(NavigationDrawerActivity.newIntent(this));

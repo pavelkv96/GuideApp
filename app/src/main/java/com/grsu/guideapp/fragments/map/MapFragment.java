@@ -30,8 +30,10 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapEvents
 
     Marker singletonValue = null;
 
-    @BindView(R.id.map)
-    MapView map;
+    //TODO USING MapContract and MapPresenter
+
+    @BindView(R.id.mv_fragment_map)
+    MapView mapView;
 
     @Override
     public void onAttach(Context context) {
@@ -66,14 +68,16 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapEvents
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         Configuration.getInstance().setOsmdroidBasePath(StorageUtils.getStorage());
 
-        map.setMaxZoomLevel(20.0);
-        map.setMinZoomLevel(11.0);
-        map.setExpectedCenter(new GeoPoint(48.8583, 2.2944));
-        map.getController().setZoom(11.0);
-        map.setBuiltInZoomControls(false);
-        map.setTileSource(TileSourceFactory.MAPNIK);
-        map.setUseDataConnection(false);
+        mapView.setMaxZoomLevel(20.0);
+        mapView.setMinZoomLevel(11.0);
+        mapView.setExpectedCenter(new GeoPoint(48.8583, 2.2944));
+        mapView.getController().setZoom(11.0);
+        mapView.setBuiltInZoomControls(false);
+        mapView.setTileSource(TileSourceFactory.MAPNIK);
+        mapView.setUseDataConnection(false);
 
+
+        //TODO geoPointList, geoPointList1
         List<GeoPoint> geoPointList = new ArrayList<>();
         geoPointList.add(new GeoPoint(48.8583, 2.2944));
         geoPointList.add(new GeoPoint(47.8583, 2.2944));
@@ -88,33 +92,33 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapEvents
 
         PolylineSingleton polylineSingleton = PolylineSingleton.INSTANCE;
 
-        polylineSingleton.getValue(map, geoPointList);
-        polylineSingleton.getValue(map, geoPointList1);
+        polylineSingleton.getValue(mapView, geoPointList);
+        polylineSingleton.getValue(mapView, geoPointList1);
 
         MarkerSingleton markerSingleton = MarkerSingleton.INSTANCE;
 
-        singletonValue = markerSingleton.getValue(map, new GeoPoint(48.8583, 2.2944));
-        markerSingleton.getValue(map, new GeoPoint(47.8583, 2.2944));
-        map.getOverlays().add(new MapEventsOverlay(this));
+        singletonValue = markerSingleton.getValue(mapView, new GeoPoint(48.8583, 2.2944));
+        markerSingleton.getValue(mapView, new GeoPoint(47.8583, 2.2944));
+        mapView.getOverlays().add(new MapEventsOverlay(this));
 
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        map.onResume();
+        mapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        map.onPause();
+        mapView.onPause();
     }
 
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint p) {
 
-        InfoWindow.closeAllInfoWindowsOn(map);
+        InfoWindow.closeAllInfoWindowsOn(mapView);
         return false;
     }
 
@@ -125,4 +129,4 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapEvents
 }
 
 //For one marker: call marker.closeInfoWindow()
-//For all markers: call InfoWindow.closeAllInfoWindowsOn(map)
+//For all markers: call InfoWindow.closeAllInfoWindowsOn(mapView)

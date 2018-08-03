@@ -12,6 +12,5 @@ public interface DetailsContract {
 
     interface DetailsPresenter extends BasePresenter<DetailsView> {
 
-        void doSomething();
     }
 }

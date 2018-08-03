@@ -1,27 +1,29 @@
 package com.grsu.guideapp.database;
 
+import static com.grsu.guideapp.utils.Constants.DB_NAME;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import com.grsu.guideapp.models.Routes;
+import com.grsu.guideapp.models.Line;
+import com.grsu.guideapp.models.Route;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import okhttp3.Route;
 
-/**
- * Created by NgocTri on 11/7/2015.
- */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static final String DBNAME = "test.db";
-    public static final String DBLOCATION = "/data/data/com.grsu.guideapp/databases/";
-    private Context mContext;
+    private static String DB_LOCATION;
+    private final Context mContext;
     private SQLiteDatabase mDatabase;
 
     public DatabaseHelper(Context context) {
-        super(context, DBNAME, null, 1);
-        this.mContext = context;
+        super(context, DB_NAME, null, 1);
+        mContext = context;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void openDatabase() {
-        String dbPath = mContext.getDatabasePath(DBNAME).getPath();
+        String dbPath = mContext.getDatabasePath(DB_NAME).getPath();
         if (mDatabase != null && mDatabase.isOpen()) {
             return;
         }
@@ -48,26 +50,70 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<Routes> getListProduct() {
-        List<Routes> productList = new ArrayList<>();
+    public List<Route> getListRoutes() {
+        List<Route> routesList = new ArrayList<>();
         openDatabase();
         Cursor cursor = mDatabase.rawQuery("SELECT * FROM Routes", null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            productList.add(new Routes(
+            routesList.add(new Route(
                     cursor.getInt(0),
                     cursor.getString(1),
                     cursor.getInt(2),
                     cursor.getInt(3),
                     cursor.getInt(4),
-                    cursor.getInt(5),
-                    cursor.getString(6),
-                    cursor.getString(7)
+                    cursor.getString(5),
+                    cursor.getString(6)
             ));
             cursor.moveToNext();
         }
         cursor.close();
         closeDatabase();
-        return productList;
+        return routesList;
     }
+
+    public List<Line> getRouteById(Integer id_route) {
+        List<Line> linesList = new ArrayList<>();
+        openDatabase();
+        Cursor cursor = mDatabase.rawQuery(
+                "select c1.* from lines c1, list_lines c2 where c1.id_line=c2.id_line and c2.id_route = ?",
+                new String[]{String.valueOf(id_route)});
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            linesList.add(new Line(
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3)
+            ));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        closeDatabase();
+        return linesList;
+    }
+
+    public static boolean copyDatabase(Context context) {
+        try {
+
+            InputStream inputStream = context.getAssets().open(DB_NAME);
+            String outFileName = context.getDatabasePath(DB_NAME).getPath();
+            OutputStream outputStream = new FileOutputStream(outFileName);
+            byte[] buff = new byte[1024];
+            int length = 0;
+            while ((length = inputStream.read(buff)) > 0) {
+                outputStream.write(buff, 0, length);
+            }
+            outputStream.flush();
+            outputStream.close();
+            Logs.e(DatabaseHelper.class.getSimpleName(), "DB copied");
+            return true;
+        } catch (Exception e) {
+            e.getMessage();
+            Logs.e(DatabaseHelper.class.getSimpleName(), "DB don't copied");
+
+            return false;
+        }
+    }
+
 }

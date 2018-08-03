@@ -1,4 +1,4 @@
-package com.grsu.guideapp.activities;
+package com.grsu.guideapp.utils;
 
 import android.content.Intent;
 import android.util.Log;
@@ -16,6 +16,8 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
 public class CustomMarkerInfoWindow extends MarkerInfoWindow implements OnTouchListener {
 
+
+    //TODO do the clean up
     Marker marker;
 
     public CustomMarkerInfoWindow(MapView mapView) {

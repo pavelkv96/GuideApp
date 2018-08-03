@@ -23,3 +23,5 @@
 -dontwarn javax.annotation.**
 -keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
 -dontwarn okhttp3.internal.platform.ConscryptPlatform
+
+#-keep class android.support.v7.** { *; }

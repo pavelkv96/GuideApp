@@ -1,18 +1,8 @@
 package com.grsu.guideapp.delegation;
 
-import android.Manifest.permission;
-import android.content.pm.PackageManager;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.widget.Toast;
 import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseDelegationActivity;
@@ -20,7 +10,7 @@ import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerVie
 import com.grsu.guideapp.fragments.ListRoutesFragment;
 import com.grsu.guideapp.fragments.map.MapFragment;
 import com.grsu.guideapp.fragments.setting.SettingsFragment;
-import com.grsu.guideapp.utils.MessageViewer;
+import com.grsu.guideapp.utils.MessageViewer.Toasts;
 
 public class NavigationDrawerActivity
         extends BaseDelegationActivity<
@@ -85,7 +75,7 @@ public class NavigationDrawerActivity
 
     @Override
     public void showToastMessage(String message) {
-        MessageViewer.Toasts.makeS(this, message);
+        Toasts.makeS(this, message);
     }
 
     @Override

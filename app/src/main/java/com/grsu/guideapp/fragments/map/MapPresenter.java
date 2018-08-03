@@ -7,7 +7,6 @@ import com.grsu.guideapp.base.BasePresenterImpl;
 public class MapPresenter extends BasePresenterImpl<DetailsView>
         implements DetailsContract.DetailsPresenter {
 
-    @Override
     public void doSomething() {
         mView.onSomethingDone();
     }

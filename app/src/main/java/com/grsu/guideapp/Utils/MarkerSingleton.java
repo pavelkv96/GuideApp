@@ -1,25 +1,15 @@
 package com.grsu.guideapp.utils;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
-import com.grsu.guideapp.activities.CustomMarkerInfoWindow;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.Marker.OnMarkerClickListener;
-import org.osmdroid.views.overlay.Marker.OnMarkerDragListener;
 import org.osmdroid.views.overlay.Overlay;
 
 public enum MarkerSingleton {
     INSTANCE;
 
-
     private static final String TAG = "MarkerSingleton";
-    GeoPoint value;
-
-    public void setValue(GeoPoint value) {
-        this.value = value;
-    }
 
     //@NonNull
     public Marker getValue(@NonNull MapView mapView, @NonNull GeoPoint geoPoint) {
@@ -30,10 +20,8 @@ public enum MarkerSingleton {
         //marker.setSnippet("SnippetSnippetSnippetSnippetSnippetSnippet");
         //marker.setSubDescription("SubDescriptionSubDescriptionSubDescriptionSubDescription");
 
-
         marker.setInfoWindow(new CustomMarkerInfoWindow(mapView));
         setOverlaysView(mapView, marker);
-
 
         //mapView.invalidate();
         return marker;

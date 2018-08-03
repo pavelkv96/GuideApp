@@ -9,13 +9,7 @@ import org.osmdroid.views.overlay.Polyline;
 public enum PolylineSingleton {
 
     INSTANCE;
-    Polyline value;
 
-    public void setValue(Polyline value) {
-        this.value = value;
-    }
-
-    //@NonNull
     public void getValue(@NonNull MapView mapView, @NonNull List<GeoPoint> geoPointList) {
         Polyline polyline = new Polyline(mapView);
         polyline.setPoints(geoPointList);

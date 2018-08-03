@@ -4,13 +4,13 @@ import android.content.Context;
 
 public class ContextHolder {
 
-    private static Context context;
+    private static Context mContext;
 
     public static Context getContext() {
-        return context;
+        return mContext;
     }
 
     public static void setContext(Context context) {
-        ContextHolder.context = context;
+        ContextHolder.mContext = context;
     }
 }

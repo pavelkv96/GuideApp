@@ -12,9 +12,6 @@ import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseActivityDelegate;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
-import com.grsu.guideapp.fragments.ListRoutesFragment;
-import com.grsu.guideapp.fragments.map.MapFragment;
-import com.grsu.guideapp.fragments.setting.SettingsFragment;
 
 public class NavigationDrawerDelegate
         extends BaseActivityDelegate<NavigationDrawerView, NavigationDrawerPresenter>
@@ -40,7 +37,6 @@ public class NavigationDrawerDelegate
                 mToolBar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
-        //mPresenter.getView().getActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         mNavigationView.setNavigationItemSelectedListener(this);

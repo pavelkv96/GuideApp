@@ -6,11 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.View;
 import butterknife.OnClick;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseFragment;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
 
 public class SettingsFragment extends BaseFragment<SettingPresenter> {
 
@@ -33,9 +33,9 @@ public class SettingsFragment extends BaseFragment<SettingPresenter> {
     }
 
 
-    @OnClick(R.id.btn_see)
+    @OnClick(R.id.btn_snackbar)
     public void buttonClick(View view) {
-        Log.e(TAG, "buttonClick: ");
+        Logs.e(TAG, "buttonClick: ");
         Snackbar.make(view, "ButtonClick", LENGTH_LONG)
                 .setAction("Action", null).show();
     }

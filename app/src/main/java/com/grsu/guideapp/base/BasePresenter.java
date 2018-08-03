@@ -6,5 +6,4 @@ public interface BasePresenter<V extends BaseView> {
 
     void detachView();
 
-
 }
