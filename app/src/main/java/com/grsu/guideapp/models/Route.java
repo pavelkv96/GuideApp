@@ -1,9 +1,5 @@
 package com.grsu.guideapp.models;
 
-import static com.grsu.database_library.annotations.dbForeignKey.ChangeData.DELETE_CASCADE;
-import static com.grsu.database_library.annotations.dbForeignKey.ChangeData.UPDATE_CASCADE;
-
-import com.grsu.database_library.annotations.dbForeignKey;
 import com.grsu.database_library.annotations.dbInteger;
 import com.grsu.database_library.annotations.dbNotNull.NotNull;
 import com.grsu.database_library.annotations.dbPrimaryKey;
@@ -11,8 +7,8 @@ import com.grsu.database_library.annotations.dbTable;
 import com.grsu.database_library.annotations.dbText;
 import java.io.Serializable;
 
-@dbTable(Routes.class)
-public class Routes implements Serializable {
+@dbTable(Route.class)
+public class Route implements Serializable {
 
     //CONSTANTS
 
@@ -23,10 +19,6 @@ public class Routes implements Serializable {
     @dbText
     public static final String NAME_ROUTE = "name_route";
 
-    @dbInteger(isNotNull = NotNull.NOT_NULL)
-    public static final String TYPE = "type";
-
-    @dbForeignKey(entity = Users.class, entityField = Users.UID, onDelete = DELETE_CASCADE, onUpdate = UPDATE_CASCADE)
     @dbInteger(isNotNull = NotNull.NOT_NULL)
     public static final String ID_AUTHOR = "id_author";
 
@@ -48,8 +40,6 @@ public class Routes implements Serializable {
 
     private String nameRoute;
 
-    private Integer type;
-
     private Integer idAuthor;
 
     private Integer duration;
@@ -65,13 +55,12 @@ public class Routes implements Serializable {
     /**
      * No args constructor for use in serialization
      */
-    public Routes() {
+    public Route() {
     }
 
     /**
      * @param idRoute the identifier route
      * @param nameRoute the name route
-     * @param type the type route, there is a list of constant values
      * @param idAuthor the identifier user(author)
      * @param duration the duration the route
      * @param distance the distance the route
@@ -79,12 +68,10 @@ public class Routes implements Serializable {
      * @param referencePhotoRoute the link photo the route
      */
 
-    public Routes(Integer idRoute, String nameRoute, Integer type, Integer idAuthor,
-            Integer duration, Integer distance, String shortDescription,
-            String referencePhotoRoute) {
+    public Route(Integer idRoute, String nameRoute, Integer idAuthor, Integer duration,
+            Integer distance, String shortDescription, String referencePhotoRoute) {
         this.idRoute = idRoute;
         this.nameRoute = nameRoute;
-        this.type = type;
         this.idAuthor = idAuthor;
         this.duration = duration;
         this.distance = distance;
@@ -106,14 +93,6 @@ public class Routes implements Serializable {
 
     public void setNameRoute(String nameRoute) {
         this.nameRoute = nameRoute;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
     }
 
     public Integer getIdAuthor() {

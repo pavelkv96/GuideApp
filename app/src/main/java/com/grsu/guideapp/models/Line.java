@@ -11,8 +11,8 @@ import com.grsu.database_library.annotations.dbTable;
 import com.grsu.database_library.annotations.dbText;
 import java.io.Serializable;
 
-@dbTable(Lines.class)
-public class Lines implements Serializable {
+@dbTable(Line.class)
+public class Line implements Serializable {
 
     //CONSTANTS
 
@@ -33,7 +33,6 @@ public class Lines implements Serializable {
 
     //POJO model
 
-    private Integer id;
     private Integer idLine;
     private String startPoint;
     private String endPoint;
@@ -43,31 +42,21 @@ public class Lines implements Serializable {
     /**
      * No args constructor for use in serialization
      */
-    public Lines() {
+    public Line() {
     }
 
     /**
-     * @param id
      * @param polyline
      * @param endPoint
      * @param idLine
      * @param startPoint
      */
-    public Lines(Integer id, Integer idLine, String startPoint, String endPoint, String polyline) {
+    public Line(Integer idLine, String startPoint, String endPoint, String polyline) {
         super();
-        this.id = id;
         this.idLine = idLine;
         this.startPoint = startPoint;
         this.endPoint = endPoint;
         this.polyline = polyline;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public Integer getIdLine() {

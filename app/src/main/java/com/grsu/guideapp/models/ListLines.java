@@ -21,11 +21,11 @@ public class ListLines implements Serializable {
     @dbInteger(isNotNull = NOT_NULL)
     public static final String ID = "id";
 
-    @dbForeignKey(entity = Lines.class, entityField = Lines.ID_LINE, onDelete = DELETE_NO_ACTION, onUpdate = UPDATE_NO_ACTION)
+    @dbForeignKey(entity = Line.class, entityField = Line.ID_LINE, onDelete = DELETE_NO_ACTION, onUpdate = UPDATE_NO_ACTION)
     @dbInteger(isNotNull = NOT_NULL)
     public static final String ID_LINE = "id_line";
 
-    @dbForeignKey(entity = Routes.class, entityField = Routes.ID_ROUTE, onDelete = DELETE_CASCADE, onUpdate = UPDATE_CASCADE)
+    @dbForeignKey(entity = Route.class, entityField = Route.ID_ROUTE, onDelete = DELETE_CASCADE, onUpdate = UPDATE_CASCADE)
     @dbInteger(isNotNull = NOT_NULL)
     public static final String ID_ROUTE = "id_route";
 
