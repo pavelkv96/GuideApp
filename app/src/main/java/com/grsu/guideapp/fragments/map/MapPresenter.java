@@ -7,11 +7,11 @@ import java.util.List;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.infowindow.InfoWindow;
 
 public class MapPresenter extends BasePresenterImpl<MapViews> implements MapContract.MapPresenter,
         OnFinishedListener {
 
+    //TODO don't working closeInfoWindow
     private Marker mMarker;
 
     private MapViews mapViews;
