@@ -50,10 +50,13 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
 
     //BaseView
     @Override
-    public void showProgress() {
+    public void showProgress(String title, String message) {
         if (mProgressDialog == null || !mProgressDialog.isShowing()) {
             mProgressDialog = new ProgressDialog(getActivity());
-            mProgressDialog.setMessage(getString(R.string.action_settings));
+            if (title != null) {
+                mProgressDialog.setTitle(title);
+            }
+            mProgressDialog.setMessage(message);
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
         }

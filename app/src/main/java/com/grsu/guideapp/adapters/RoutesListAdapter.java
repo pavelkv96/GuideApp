@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.activities.RouteActivity;
+import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.adapters.RoutesListAdapter.RouteViewHolder;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.utils.Constants;

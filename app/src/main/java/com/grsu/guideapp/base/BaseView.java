@@ -6,7 +6,7 @@ import android.view.View;
 
 public interface BaseView {
 
-    void showProgress();
+    void showProgress(String title, String message);
 
     void hideProgress();
 

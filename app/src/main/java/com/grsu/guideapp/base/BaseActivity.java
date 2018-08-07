@@ -13,8 +13,7 @@ import com.grsu.guideapp.R;
 
 public abstract class BaseActivity<P extends BasePresenter>
         extends AppCompatActivity
-        implements BaseView
-{
+        implements BaseView {
 
     private Unbinder mUnBinder;
 
@@ -47,10 +46,13 @@ public abstract class BaseActivity<P extends BasePresenter>
 
     //BaseView
     @Override
-    public void showProgress() {
+    public void showProgress(String title, String message) {
         if (mProgressDialog == null || !mProgressDialog.isShowing()) {
             mProgressDialog = new ProgressDialog(BaseActivity.this);
-            mProgressDialog.setMessage(getString(R.string.action_settings));
+            if (title != null) {
+                mProgressDialog.setTitle(title);
+            }
+            mProgressDialog.setMessage(message);
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
         }
