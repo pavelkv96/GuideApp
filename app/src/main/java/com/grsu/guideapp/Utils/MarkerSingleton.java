@@ -1,6 +1,7 @@
 package com.grsu.guideapp.utils;
 
 import android.support.annotation.NonNull;
+import com.grsu.guideapp.views.infowindows.CustomMarkerInfoWindow;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
