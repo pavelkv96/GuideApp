@@ -9,10 +9,8 @@ import org.osmdroid.views.overlay.Overlay;
 public enum MarkerSingleton {
     INSTANCE;
 
-    private static final String TAG = "MarkerSingleton";
-
     //@NonNull
-    public Marker getValue(@NonNull MapView mapView, @NonNull GeoPoint geoPoint) {
+    public void getValue(@NonNull MapView mapView, @NonNull GeoPoint geoPoint) {
         Marker marker = new Marker(mapView);
         marker.setPosition(geoPoint);
         marker.setDraggable(true);
@@ -23,8 +21,7 @@ public enum MarkerSingleton {
         marker.setInfoWindow(new CustomMarkerInfoWindow(mapView));
         setOverlaysView(mapView, marker);
 
-        //mapView.invalidate();
-        return marker;
+        mapView.invalidate();
     }
 
     public static void setOverlaysView(@NonNull MapView mapView, @NonNull Overlay overlay) {

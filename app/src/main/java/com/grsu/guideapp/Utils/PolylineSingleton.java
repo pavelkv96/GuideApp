@@ -14,6 +14,7 @@ public enum PolylineSingleton {
         Polyline polyline = new Polyline(mapView);
         polyline.setPoints(geoPointList);
         MarkerSingleton.setOverlaysView(mapView, polyline);
+        mapView.invalidate();
         //return polyline;
     }
 }

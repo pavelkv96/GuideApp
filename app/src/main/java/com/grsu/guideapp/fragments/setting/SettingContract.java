@@ -10,7 +10,7 @@ public interface SettingContract {
         void onSomethingDone();
     }
 
-    interface DetailsPresenter extends BasePresenter<SettingView> {
+    interface SettingPresenter extends BasePresenter<SettingView> {
 
         void doSomething();
     }
