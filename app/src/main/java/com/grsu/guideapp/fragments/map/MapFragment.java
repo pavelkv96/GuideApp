@@ -20,6 +20,7 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.tileprovider.util.StorageUtils;
+import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
@@ -69,13 +70,14 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapEvents
         Configuration.getInstance().setOsmdroidBasePath(StorageUtils.getStorage());
 
         mapView.setMaxZoomLevel(20.0);
-        mapView.setMinZoomLevel(11.0);
+        mapView.setMinZoomLevel(13.0);
         mapView.setExpectedCenter(new GeoPoint(48.8583, 2.2944));
-        mapView.getController().setZoom(11.0);
-        mapView.setBuiltInZoomControls(false);
+        mapView.getController().setZoom(13.0);
+        mapView.setBuiltInZoomControls(true);
         mapView.setTileSource(TileSourceFactory.MAPNIK);
-        mapView.setUseDataConnection(false);
-
+        mapView.setUseDataConnection(true);
+        mapView.setScrollableAreaLimitDouble(
+                new BoundingBox(53.7597, 23.9845, 53.5986, 23.7099));
 
         //TODO geoPointList, geoPointList1
         List<GeoPoint> geoPointList = new ArrayList<>();

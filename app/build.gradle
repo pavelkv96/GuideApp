@@ -17,11 +17,11 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
-        debug {
+        /*debug {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+        }*/
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -50,6 +50,11 @@ dependencies {
     implementation "org.osmdroid:osmdroid-android:${versions.osmdroid}"
 
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    implementation 'org.osmdroid:osmdroid-mapsforge:6.0.1'
+    implementation 'org.mapsforge:mapsforge-map-android:0.8.0'
+    implementation 'org.mapsforge:mapsforge-map:0.8.0'
+    implementation 'org.mapsforge:mapsforge-themes:0.8.0'
 
     testImplementation 'junit:junit:4.12'
 

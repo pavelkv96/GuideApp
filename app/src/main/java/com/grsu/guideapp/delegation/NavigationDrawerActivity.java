@@ -9,7 +9,7 @@ import com.grsu.guideapp.base.BaseDelegationActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
 import com.grsu.guideapp.fragments.ListRoutesFragment;
 import com.grsu.guideapp.fragments.map.MapFragment;
-import com.grsu.guideapp.fragments.setting.SettingsFragment;
+import com.grsu.guideapp.fragments.setting.MapsforgeTileProviderSample;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 
 public class NavigationDrawerActivity
@@ -65,7 +65,7 @@ public class NavigationDrawerActivity
 
     @Override
     public void openSettingsFragment() {
-        mPresenter.replaceFragment(new SettingsFragment());
+        mPresenter.replaceFragment(new MapsforgeTileProviderSample());
     }
 
     @Override
