@@ -13,6 +13,8 @@ public interface RouteContract {
         void mapViewSettings();
 
         void setPolyLine(List<GeoPoint> geoPointList);
+
+        void setPoints(GeoPoint geoPoint);
     }
 
 

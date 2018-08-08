@@ -12,6 +12,7 @@ import com.grsu.guideapp.activities.route.RouteContract.RouteView;
 import com.grsu.guideapp.base.BaseActivity;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.utils.Constants;
+import com.grsu.guideapp.utils.MarkerSingleton;
 import com.grsu.guideapp.utils.PolylineSingleton;
 import java.util.List;
 import org.osmdroid.config.Configuration;
@@ -24,6 +25,7 @@ import org.osmdroid.views.MapView;
 public class RouteActivity extends BaseActivity<RoutePresenter> implements RouteView {
 
     PolylineSingleton polylineSingleton = PolylineSingleton.Polyline;
+    MarkerSingleton markerSingleton = MarkerSingleton.Marker;
 
     @BindView(R.id.mv_activity_route)
     MapView mapView;
@@ -66,5 +68,10 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements Route
     @Override
     public void setPolyLine(List<GeoPoint> geoPointList) {
         polylineSingleton.getValue(mapView, geoPointList);
+    }
+
+    @Override
+    public void setPoints(GeoPoint geoPoint) {
+        markerSingleton.getValue(mapView, geoPoint);
     }
 }

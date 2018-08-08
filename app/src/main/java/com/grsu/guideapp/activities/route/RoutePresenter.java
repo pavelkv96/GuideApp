@@ -1,6 +1,7 @@
 package com.grsu.guideapp.activities.route;
 
 import static com.grsu.guideapp.utils.Crypto.decodeL;
+import static com.grsu.guideapp.utils.Crypto.decodeP;
 
 import com.grsu.guideapp.activities.route.RouteContract.RouteInteractor.OnFinishedListener;
 import com.grsu.guideapp.activities.route.RouteContract.RouteView;
@@ -27,9 +28,13 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
 
     @Override
     public void onFinished(List<Line> encodePolylines) {
+        Line line = null;
         for (Line encodePolyline : encodePolylines) {
             routeView.setPolyLine(decodeL(encodePolyline.getPolyline()));
+            routeView.setPoints(decodeP(encodePolyline.getStartPoint()));
+            line = encodePolyline;
         }
+        routeView.setPoints(decodeP(line.getEndPoint()));
         mView.hideProgress();
     }
 }
