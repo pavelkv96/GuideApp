@@ -3,17 +3,17 @@ package com.grsu.guideapp.fragments.map;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.fragments.map.MapContract.MapInteractor.OnFinishedListener;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
-import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.List;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.infowindow.InfoWindow;
 
 public class MapPresenter extends BasePresenterImpl<MapViews> implements MapContract.MapPresenter,
         OnFinishedListener {
 
-    //TODO don't working closeInfoWindow
-    private Marker mMarker;
+    //private Marker mMarker;
 
     private MapViews mapViews;
     private MapContract.MapInteractor mapInteractor;
@@ -35,9 +35,10 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint geoPoint, MapView mapView) {
-        if (mMarker != null) {
+        /*if (mMarker != null) {
             mMarker.closeInfoWindow();
-        }
+        }*/
+        InfoWindow.closeAllInfoWindowsOn(mapView);
         return false;
     }
 
@@ -48,9 +49,11 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     @Override
     public boolean onMarkerClick(Marker marker, MapView mapView) {
+        InfoWindow.closeAllInfoWindowsOn(mapView);
         mapView.getController().animateTo(marker.getPosition());
-
-        if (mMarker != null) {
+        marker.showInfoWindow();
+        //mMarker = marker;
+        /*if (mMarker != null) {
             if (mMarker != marker) {
                 mMarker.closeInfoWindow();
                 mMarker = marker;
@@ -61,8 +64,17 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         } else {
             mMarker = marker;
             mMarker.showInfoWindow();
-        }
+        }*/
 
+        return true;
+    }
+
+    @Override
+    public boolean onClickPolyline(Polyline polyline, MapView mapView, GeoPoint eventPos) {
+        InfoWindow.closeAllInfoWindowsOn(mapView);
+        mapView.getController().animateTo(eventPos);
+        polyline.setInfoWindowLocation(eventPos);
+        polyline.showInfoWindow();
         return true;
     }
 

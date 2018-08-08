@@ -2,51 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="wrap_content"
   android:layout_height="wrap_content"
-  android:background="@drawable/bubble_xml"
+  android:id="@+id/ll_bubble"
+  android:background="@drawable/bubble_white"
   android:orientation="horizontal">
-
-  <ImageView
-    android:id="@+id/bubble_image"
-    android:layout_width="65dp"
-    android:layout_height="65dp"
-    android:contentDescription="@null"
-    android:visibility="gone"/>
-
-  <TextView
-    android:id="@+id/bubble_title"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="sgs"
-    android:visibility="visible"/>
-
-  <TextView
-    android:id="@+id/bubble_description"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:visibility="gone"/>
-
-  <TextView
-    android:id="@+id/bubble_subdescription"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:visibility="gone"/>
-
-  <Button
-    android:id="@+id/bubble_moreinfo"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="end"
-    android:background="@drawable/bubble_xml"
-    android:visibility="gone"/>
 
   <TextView
     android:id="@+id/bubble_descriptirgdon"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:clickable="false"
     android:maxEms="17"
     android:text="Descriptiodrgdrgrdn"
     android:textColor="#000000"
     android:textSize="12dp"
-    android:visibility="visible"/>
+    android:visibility="gone"/>
 
 </LinearLayout>

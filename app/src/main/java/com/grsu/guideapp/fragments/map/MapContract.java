@@ -6,6 +6,7 @@ import java.util.List;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polyline;
 
 public interface MapContract {
 
@@ -25,6 +26,8 @@ public interface MapContract {
         boolean longPressHelper(GeoPoint p);
 
         boolean onMarkerClick(Marker marker, MapView mapView);
+
+        boolean onClickPolyline(Polyline polyline, MapView mapView, GeoPoint eventPos);
     }
 
     interface MapInteractor {

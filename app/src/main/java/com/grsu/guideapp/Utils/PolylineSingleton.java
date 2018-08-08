@@ -11,12 +11,11 @@ public enum PolylineSingleton {
 
     Polyline;
 
-    public void getValue(@NonNull MapView mapView, @NonNull List<GeoPoint> geoPointList) {
+    public Polyline getValue(@NonNull MapView mapView, @NonNull List<GeoPoint> geoPointList) {
         Polyline polyline = new Polyline(mapView);
         polyline.setPoints(geoPointList);
-        //polyline.setInfoWindow(new CustomBasicInfoWindow(mapView));
+        polyline.setInfoWindow(new CustomBasicInfoWindow(mapView));
         MarkerSingleton.setOverlaysView(mapView, polyline);
-        mapView.invalidate();
-        //return polyline;
+        return polyline;
     }
 }

@@ -13,7 +13,6 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
 import com.grsu.guideapp.utils.MarkerSingleton;
-import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.utils.PolylineSingleton;
 import java.util.List;
 import org.osmdroid.config.Configuration;
@@ -26,9 +25,11 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Marker.OnMarkerClickListener;
+import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.Polyline.OnClickListener;
 
 public class MapFragment extends BaseFragment<MapPresenter> implements MapEventsReceiver, MapViews,
-        OnMarkerClickListener {
+        OnMarkerClickListener, OnClickListener {
 
     PolylineSingleton polylineSingleton = PolylineSingleton.Polyline;
     MarkerSingleton markerSingleton = MarkerSingleton.Marker;
@@ -105,8 +106,7 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapEvents
 
     @Override
     public void setPolyline(List<GeoPoint> geoPointList) {
-        Toasts.makeS(getContext(), String.valueOf(geoPointList.size()));
-        polylineSingleton.getValue(mapView, geoPointList);
+        polylineSingleton.getValue(mapView, geoPointList).setOnClickListener(this);
     }
 
     @Override
@@ -117,5 +117,10 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapEvents
     @Override
     public boolean onMarkerClick(Marker marker, MapView mapView) {
         return mPresenter.onMarkerClick(marker, mapView);
+    }
+
+    @Override
+    public boolean onClick(Polyline polyline, MapView mapView, GeoPoint eventPos) {
+        return mPresenter.onClickPolyline(polyline, mapView, eventPos);
     }
 }
