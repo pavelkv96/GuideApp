@@ -8,7 +8,7 @@ import org.osmdroid.views.overlay.Polyline;
 
 public enum PolylineSingleton {
 
-    INSTANCE;
+    Polyline;
 
     public void getValue(@NonNull MapView mapView, @NonNull List<GeoPoint> geoPointList) {
         Polyline polyline = new Polyline(mapView);
