@@ -3,6 +3,7 @@ package com.grsu.guideapp.fragments.map;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.fragments.map.MapContract.MapInteractor.OnFinishedListener;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.List;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -47,14 +48,22 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     @Override
     public boolean onMarkerClick(Marker marker, MapView mapView) {
+        mapView.getController().animateTo(marker.getPosition());
+
         if (mMarker != null) {
-            mMarker.closeInfoWindow();
-            mMarker = null;
+            if (mMarker != marker) {
+                mMarker.closeInfoWindow();
+                mMarker = marker;
+                mMarker.showInfoWindow();
+            } else {
+                mMarker.showInfoWindow();
+            }
         } else {
             mMarker = marker;
+            mMarker.showInfoWindow();
         }
 
-        return false;
+        return true;
     }
 
     @Override

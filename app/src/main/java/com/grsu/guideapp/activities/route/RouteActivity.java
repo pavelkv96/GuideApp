@@ -23,7 +23,7 @@ import org.osmdroid.views.MapView;
 
 public class RouteActivity extends BaseActivity<RoutePresenter> implements RouteView {
 
-    PolylineSingleton polylineSingleton = PolylineSingleton.INSTANCE;
+    PolylineSingleton polylineSingleton = PolylineSingleton.Polyline;
 
     @BindView(R.id.mv_activity_route)
     MapView mapView;

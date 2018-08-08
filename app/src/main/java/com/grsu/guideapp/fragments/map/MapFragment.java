@@ -2,14 +2,11 @@ package com.grsu.guideapp.fragments.map;
 
 import static com.grsu.guideapp.utils.CheckSelfPermission.writeExternalStorageIsGranted;
 
-import android.Manifest.permission;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import butterknife.BindView;
 import com.grsu.guideapp.R;
@@ -18,7 +15,6 @@ import com.grsu.guideapp.fragments.map.MapContract.MapViews;
 import com.grsu.guideapp.utils.MarkerSingleton;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.utils.PolylineSingleton;
-import java.util.ArrayList;
 import java.util.List;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
@@ -34,8 +30,8 @@ import org.osmdroid.views.overlay.Marker.OnMarkerClickListener;
 public class MapFragment extends BaseFragment<MapPresenter> implements MapEventsReceiver, MapViews,
         OnMarkerClickListener {
 
-    PolylineSingleton polylineSingleton = PolylineSingleton.INSTANCE;
-    MarkerSingleton markerSingleton = MarkerSingleton.INSTANCE;
+    PolylineSingleton polylineSingleton = PolylineSingleton.Polyline;
+    MarkerSingleton markerSingleton = MarkerSingleton.Marker;
 
     @BindView(R.id.mv_fragment_map)
     MapView mapView;
@@ -115,7 +111,7 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapEvents
 
     @Override
     public void setMarker(GeoPoint geoPoint) {
-        markerSingleton.getValue(mapView, geoPoint);
+        markerSingleton.getValue(mapView, geoPoint).setOnMarkerClickListener(this);
     }
 
     @Override
