@@ -9,26 +9,26 @@ import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import java.util.ArrayList;
 
 public class CustomMultiChoiceItemsDialogFragment extends DialogFragment implements
-        OnMultiChoiceClickListener {
+        OnMultiChoiceClickListener, OnClickListener {
 
-    private CharSequence[] items = {"1000", "500", "250", "100"};
-    private boolean[] checkedItems = {false, false, false, false};
-    private String string = items[items.length - 1].toString();
-    private OnInputListener onInputListener;
+    private CharSequence[] items = {"Type A", "Type B", "Type C", "Type D"};
+    private ArrayList<Integer> selectedItemsIndexList;
+    boolean[] checkedItems = {false, false, false, false};
+    private OnMultiChoiceListDialogFragment dialogListener;
 
-    public interface OnInputListener {
+    public interface OnMultiChoiceListDialogFragment {
 
-        void sendInput(String s);
-
+        void onOk(ArrayList<Integer> arrayList);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            onInputListener = (OnInputListener) getActivity();
+            dialogListener = (OnMultiChoiceListDialogFragment) getActivity();
         } catch (ClassCastException ignored) {
 
         }
@@ -37,33 +37,28 @@ public class CustomMultiChoiceItemsDialogFragment extends DialogFragment impleme
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        selectedItemsIndexList = new ArrayList<>();
+
         Builder builder = new Builder(getActivity());
 
         builder.setTitle("Radius (in meters)").setMultiChoiceItems(items, checkedItems, this)
-                .setPositiveButton("OK", new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        onInputListener.sendInput(string);
-                    }
-                });
+                .setPositiveButton("OK", this);
         return builder.create();
     }
 
     @Override
-    public void onClick(DialogInterface dialogInterface, int i, boolean b) {
-        switch (i) {
-            case 0: {
-                string = items[i].toString();
+    public void onClick(DialogInterface dialogInterface, int i) {
+        dialogListener.onOk(selectedItemsIndexList);
+    }
+
+    @Override
+    public void onClick(DialogInterface dialogInterface, int which, boolean isChecked) {
+        if (isChecked) {
+            selectedItemsIndexList.add(which + 1);
+        } else {
+            if (selectedItemsIndexList.contains(which + 1)) {
+                selectedItemsIndexList.remove(Integer.valueOf(which + 1));
             }
-            case 1: {
-                string = items[i].toString();
-            }
-            case 2: {
-                string = items[i].toString();
-            }
-            break;
-            case 3:
-                string = items[i].toString();
         }
     }
 
