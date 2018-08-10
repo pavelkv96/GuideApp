@@ -1,12 +1,15 @@
 package com.grsu.guideapp.database;
 
 import static com.grsu.guideapp.utils.Constants.DB_NAME;
+import static com.grsu.guideapp.utils.Constants.ONE_METER_LAT;
+import static com.grsu.guideapp.utils.Constants.ONE_METER_LNG;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.grsu.guideapp.models.Line;
+import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.io.FileOutputStream;
@@ -72,6 +75,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return routesList;
     }
 
+    public List<Poi> getListPoi(double cLatitude, double cLongitude, int radius) {
+
+        double lat = radius * ONE_METER_LAT;//1m ~ 0.000009
+        double lng = radius * ONE_METER_LNG;//1m ~ 0.000015
+
+        String rightDownLan = String.valueOf(cLatitude - lat);
+        String leftUpLan = String.valueOf(cLatitude + lat);
+        String rightDownLng = String.valueOf(cLongitude - lng);
+        String leftUpLng = String.valueOf(cLongitude + lng);
+
+        List<Poi> poiList = new ArrayList<>();
+        openDatabase();
+        Cursor cursor = mDatabase.rawQuery(
+                        d(/*rightDownLan, leftUpLan, rightDownLng, leftUpLng*/), null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            poiList.add(new Poi(
+                    cursor.getInt(0),
+                    cursor.getFloat(1),
+                    cursor.getFloat(2),
+                    cursor.getInt(3),
+                    cursor.getString(4),
+                    cursor.getString(5)
+            ));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        closeDatabase();
+        return poiList;
+    }
+
     public List<Line> getRouteById(Integer id_route) {
         List<Line> linesList = new ArrayList<>();
         openDatabase();
@@ -114,6 +148,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             return false;
         }
+    }
+
+    private String d(String rightDownLan, String leftUpLan, String rightDownLng, String leftUpLng) {
+        return "select*from `poi` where (Latitude BETWEEN " + rightDownLan + " AND " + leftUpLan
+                + ") AND (Longitude BETWEEN " + rightDownLng + " AND " + leftUpLng + ")";
+    }
+    private String d() {
+        return "select*from `poi`";
     }
 
 }

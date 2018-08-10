@@ -1,10 +1,9 @@
 package com.grsu.guideapp.views.infowindows;
 
+import android.support.annotation.LayoutRes;
 import android.view.MotionEvent;
 import android.view.View;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.utils.ContextHolder;
-import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
@@ -14,8 +13,15 @@ public final class CustomMarkerInfoWindow extends CustomBasicInfoWindow {
 
     private static Marker mMarkerRef;
 
-    public CustomMarkerInfoWindow(MapView mapView) {
-        super(R.layout.bubble, mapView);
+    public CustomMarkerInfoWindow(MapView mapView, boolean isVisible) {
+        this(R.layout.bubble, mapView);
+        if (!isVisible) {
+            mView.setVisibility(View.GONE);
+        }
+    }
+
+    public CustomMarkerInfoWindow(@LayoutRes int layoutRes, MapView mapView) {
+        super(layoutRes, mapView);
     }
 
     public static Marker getMarkerReference() {
@@ -51,7 +57,7 @@ public final class CustomMarkerInfoWindow extends CustomBasicInfoWindow {
 
             case MotionEvent.ACTION_UP: {
                 //close();
-                Toasts.makeS(ContextHolder.getContext(), "Open new activity");
+                //Toasts.makeS(ContextHolder.getContext(), "Open new activity");
                 mView.setBackgroundResource(R.drawable.bubble_white);
             }
             break;
