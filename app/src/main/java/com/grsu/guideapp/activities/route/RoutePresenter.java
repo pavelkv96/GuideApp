@@ -3,15 +3,12 @@ package com.grsu.guideapp.activities.route;
 import static com.grsu.guideapp.utils.Crypto.decodeL;
 import static com.grsu.guideapp.utils.Crypto.decodeP;
 
-import android.util.Log;
 import com.grsu.guideapp.activities.route.RouteContract.RouteInteractor.OnFinishedListener;
 import com.grsu.guideapp.activities.route.RouteContract.RouteView;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
-import com.grsu.guideapp.utils.MarkerSingleton;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
-import java.util.Arrays;
 import java.util.List;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -33,7 +30,7 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
     }
 
     @Override
-    public void getID(Integer id) {
+    public void getId(Integer id) {
         mView.showProgress(null, "Loading");
         routeInteractor.getRouteById(this, id);
     }
@@ -54,6 +51,7 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
         InfoWindow.closeAllInfoWindowsOn(mapView);
         mapView.getController().animateTo(marker.getPosition());
         marker.showInfoWindow();
+        routeInteractor.getPoiById(this, marker.getPosition());
 
         return true;
     }
@@ -69,7 +67,13 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
 
     @Override
     public void getMarkers() {
-        routeInteractor.getListPoi(this, 0.0, 0.0, 0);
+        getMarkersWithSettings(null);
+    }
+
+    @Override
+    public void getMarkersWithSettings(List<Integer> typesObjects) {
+        routeView.removeMarker();
+        routeInteractor.getListPoi(this, 0.0, 0.0, 0, typesObjects);
     }
 
     @Override

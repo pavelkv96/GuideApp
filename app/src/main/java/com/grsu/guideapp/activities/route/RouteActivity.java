@@ -6,7 +6,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.view.View;
 import butterknife.BindView;
+import butterknife.OnClick;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteContract.RouteView;
 import com.grsu.guideapp.base.BaseActivity;
@@ -17,6 +19,8 @@ import com.grsu.guideapp.utils.MarkerSingleton;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.utils.PolylineSingleton;
+import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment;
+import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment.OnMultiChoiceListDialogFragment;
 import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment;
 import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment.OnInputListener;
 import java.util.ArrayList;
@@ -35,7 +39,8 @@ import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.Polyline.OnClickListener;
 
 public class RouteActivity extends BaseActivity<RoutePresenter> implements OnMarkerClickListener,
-        RouteView, OnClickListener, MapEventsReceiver, OnInputListener {
+        RouteView, OnClickListener, MapEventsReceiver, OnInputListener,
+        OnMultiChoiceListDialogFragment {
 
     private static final String TAG = RouteActivity.class.getSimpleName();
 
@@ -59,11 +64,11 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements OnMar
 
         mapViewSettings();
 
-        Integer route = (Integer) getIntent().getExtras().getSerializable(Constants.ROUTE);
+        Integer route = (Integer) getIntent().getSerializableExtra(Constants.ROUTE);
         if (route != null) {
-            mPresenter.getID(route);
+            mPresenter.getId(route);
         }
-        openDialogFragment();
+        //openDialogFragment();
     }
 
     @Override
@@ -103,12 +108,12 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements OnMar
 
     @Override
     public void setPoints(GeoPoint geoPoint) {
-        markerSingleton.getValue(mapView, geoPoint).setOnMarkerClickListener(this);
+        markerSingleton.getMarker(mapView, geoPoint).setOnMarkerClickListener(this);
     }
 
     @Override
     public void setGetPoints(Poi poi) {
-        markers.add(markerSingleton.getValue(mapView, poi));
+        markers.add(markerSingleton.getMarkerWithBubble(mapView, poi));
     }
 
     @Override
@@ -118,12 +123,14 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements OnMar
 
     @Override
     public void openDialogFragment() {
-        new CustomSingleChoiceItemsDialogFragment().show(this.getSupportFragmentManager(), "CustomSingleChoiceItemsDialogFragment");
+        new CustomSingleChoiceItemsDialogFragment()
+                .show(this.getSupportFragmentManager(), "CustomSingleChoiceItemsDialogFragment");
     }
 
     @Override
     public boolean onMarkerClick(Marker marker, MapView mapView) {
         Logs.e(TAG, marker.getPosition().toString());
+        removeMarker();
         return mPresenter.onMarkerClick(marker, mapView);
     }
 
@@ -146,5 +153,16 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements OnMar
     public void sendInput(String s) {
         mPresenter.getMarkers();
         Toasts.makeS(this, s);
+    }
+
+    @Override
+    public void onOk(ArrayList<Integer> arrayList) {
+        mPresenter.getMarkersWithSettings(arrayList);
+    }
+
+    @OnClick(R.id.btn_activity_route_settings)
+    void openSettings(View view) {
+        new CustomMultiChoiceItemsDialogFragment()
+                .show(this.getSupportFragmentManager(), "CustomMultiChoiceItemsDialogFragment");
     }
 }

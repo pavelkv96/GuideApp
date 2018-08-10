@@ -30,7 +30,7 @@ public interface RouteContract {
 
     interface RoutePresenter extends BasePresenter<RouteView> {
 
-        void getID(Integer id);
+        void getId(Integer id);
 
         boolean singleTapConfirmedHelper(GeoPoint geoPoint, MapView mapView);
 
@@ -41,6 +41,8 @@ public interface RouteContract {
         boolean onClickPolyline(Polyline polyline, MapView mapView, GeoPoint eventPos);
 
         void getMarkers();
+
+        void getMarkersWithSettings(List<Integer> typesObjects);
     }
 
 
@@ -53,8 +55,11 @@ public interface RouteContract {
             void onFinished1(List<Poi> poiList);
         }
 
+        void getPoiById(OnFinishedListener listener, GeoPoint geoPoint);
+
         void getRouteById(OnFinishedListener listener, Integer id);
 
-        void getListPoi(OnFinishedListener listener, double a, double b, int c);
+        void getListPoi(OnFinishedListener listener, double a, double b, int c,
+                List<Integer> typesObjects);
     }
 }

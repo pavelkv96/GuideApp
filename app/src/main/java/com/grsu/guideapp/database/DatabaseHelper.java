@@ -3,11 +3,13 @@ package com.grsu.guideapp.database;
 import static com.grsu.guideapp.utils.Constants.DB_NAME;
 import static com.grsu.guideapp.utils.Constants.ONE_METER_LAT;
 import static com.grsu.guideapp.utils.Constants.ONE_METER_LNG;
+import static com.grsu.guideapp.utils.Crypto.encodeP;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Route;
@@ -17,10 +19,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import org.osmdroid.util.GeoPoint;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static String DB_LOCATION;
+    private static final String TAG = DatabaseHelper.class.getSimpleName();
     private final Context mContext;
     private SQLiteDatabase mDatabase;
 
@@ -39,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void openDatabase() {
+    private void openDatabase() {
         String dbPath = mContext.getDatabasePath(DB_NAME).getPath();
         if (mDatabase != null && mDatabase.isOpen()) {
             return;
@@ -47,7 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         mDatabase = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
     }
 
-    public void closeDatabase() {
+    private void closeDatabase() {
         if (mDatabase != null) {
             mDatabase.close();
         }
@@ -76,6 +79,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public List<Poi> getListPoi(double cLatitude, double cLongitude, int radius) {
+        return getListPoi(cLatitude, cLongitude, radius, null);
+    }
+
+    public List<Poi> getListPoi(double cLatitude, double cLongitude, int radius,
+            List<Integer> typesObjects) {
 
         double lat = radius * ONE_METER_LAT;//1m ~ 0.000009
         double lng = radius * ONE_METER_LNG;//1m ~ 0.000015
@@ -88,16 +96,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Poi> poiList = new ArrayList<>();
         openDatabase();
         Cursor cursor = mDatabase.rawQuery(
-                        d(/*rightDownLan, leftUpLan, rightDownLng, leftUpLng*/), null);
+                d(/*rightDownLan, leftUpLan, rightDownLng, leftUpLng*/typesObjects), null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             poiList.add(new Poi(
                     cursor.getInt(0),
                     cursor.getFloat(1),
                     cursor.getFloat(2),
-                    cursor.getInt(3),
-                    cursor.getString(4),
-                    cursor.getString(5)
+                    cursor.getInt(3)
             ));
             cursor.moveToNext();
         }
@@ -127,6 +133,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return linesList;
     }
 
+    public List<Poi> getPoiById(GeoPoint geoPoint) {
+
+        Logs.e(TAG, encodeP(geoPoint));
+        List<Poi> poiList = new ArrayList<>();
+        openDatabase();
+        Cursor cursor = mDatabase.rawQuery(
+                "select c2.* from list_poi c1, poi c2 where c1.id_poi=c2.id_poi and c1.id_point=?",
+                new String[]{encodeP(geoPoint)}
+        );
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            poiList.add(new Poi(
+                    cursor.getInt(0),
+                    cursor.getFloat(1),
+                    cursor.getFloat(2),
+                    cursor.getInt(3)
+            ));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        closeDatabase();
+        return poiList;
+    }
+
+
     public static boolean copyDatabase(Context context) {
         try {
 
@@ -134,7 +165,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String outFileName = context.getDatabasePath(DB_NAME).getPath();
             OutputStream outputStream = new FileOutputStream(outFileName);
             byte[] buff = new byte[1024];
-            int length = 0;
+            int length;
             while ((length = inputStream.read(buff)) > 0) {
                 outputStream.write(buff, 0, length);
             }
@@ -154,8 +185,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return "select*from `poi` where (Latitude BETWEEN " + rightDownLan + " AND " + leftUpLan
                 + ") AND (Longitude BETWEEN " + rightDownLng + " AND " + leftUpLng + ")";
     }
-    private String d() {
+
+    @NonNull
+    private String d(List<Integer> typesObjects) {
+        if (typesObjects != null) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Integer integer : typesObjects) {
+                stringBuilder.append(integer).append(",");
+            }
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            return "select*from `poi`" + "where Type IN(" + stringBuilder + ")";
+        }
+
         return "select*from `poi`";
     }
-
 }
