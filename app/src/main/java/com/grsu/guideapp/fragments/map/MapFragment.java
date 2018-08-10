@@ -111,7 +111,7 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapEvents
 
     @Override
     public void setMarker(GeoPoint geoPoint) {
-        markerSingleton.getValue(mapView, geoPoint).setOnMarkerClickListener(this);
+        markerSingleton.getMarker(mapView, geoPoint).setOnMarkerClickListener(this);
     }
 
     @Override

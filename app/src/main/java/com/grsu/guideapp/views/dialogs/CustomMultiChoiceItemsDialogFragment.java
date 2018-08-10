@@ -48,7 +48,9 @@ public class CustomMultiChoiceItemsDialogFragment extends DialogFragment impleme
 
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
-        dialogListener.onOk(selectedItemsIndexList);
+        if (selectedItemsIndexList.size() > 0) {
+            dialogListener.onOk(selectedItemsIndexList);
+        }
     }
 
     @Override

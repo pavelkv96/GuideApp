@@ -20,30 +20,26 @@ import org.osmdroid.views.overlay.Overlay;
 public enum MarkerSingleton {
     Marker;
 
-    public Marker getValue(@NonNull MapView mapView, @NonNull GeoPoint geoPoint) {
-        Marker marker = new Marker(mapView);
-        marker.setPosition(geoPoint);
-        //marker.setTitle("TitleTitleTitleTitleTitleTitleTitleTitleTitle");
-        //marker.setSnippet("SnippetSnippetSnippetSnippetSnippetSnippet");
-        //marker.setSubDescription("SubDescriptionSubDescriptionSubDescriptionSubDescription");
-
-        marker.setInfoWindow(new CustomMarkerInfoWindow(mapView, false));
-        //marker.setInfoWindow(new CustomMarkerInfoWindow(mapView));
-        setOverlaysView(mapView, marker);
-
-        return marker;
+    public Marker getMarker(@NonNull MapView mapView, @NonNull GeoPoint geoPoint) {
+        return markerConstructor(mapView, geoPoint, null, false);
     }
 
-    public Marker getValue(@NonNull MapView mapView, @NonNull Poi poi) {
-        Marker marker = new Marker(mapView);
-        marker.setPosition(new GeoPoint(poi.getLatitude(), poi.getLongitude()));
-        //marker.setTitle("TitleTitleTitleTitleTitleTitleTitleTitleTitle");
-        //marker.setSnippet("SnippetSnippetSnippetSnippetSnippetSnippet");
-        //marker.setSubDescription("SubDescriptionSubDescriptionSubDescriptionSubDescription");
+    public Marker getMarkerWithBubble(@NonNull MapView mapView, @NonNull Poi poi) {
+        return markerConstructor(mapView, null, poi, true);
+    }
 
-        marker = setIconByType(marker, poi.getType());
-        marker.setInfoWindow(new CustomMarkerInfoWindow(mapView, false));
-        //marker.setInfoWindow(new CustomMarkerInfoWindow(mapView));
+    private Marker markerConstructor(MapView mapView, GeoPoint geoPoint, Poi poi,
+            boolean isVisibleBubble) {
+        Marker marker = new Marker(mapView);
+        if (geoPoint != null) {
+            marker.setPosition(geoPoint);
+        }
+        if (poi != null) {
+            marker.setPosition(new GeoPoint(poi.getLatitude(), poi.getLongitude()));
+            marker = setIconByType(marker, poi.getType());
+        }
+
+        marker.setInfoWindow(new CustomMarkerInfoWindow(mapView, isVisibleBubble));
         setOverlaysView(mapView, marker);
 
         return marker;
