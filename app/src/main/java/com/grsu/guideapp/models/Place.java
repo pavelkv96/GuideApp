@@ -21,10 +21,10 @@ public class Place implements Serializable{
     public static final String ADDRESS = "address";
 
     @dbNumeric(isNotNull = NOT_NULL)
-    public static final String latitude = "latitude";
+    public static final String LATITUDE = "latitude";
 
     @dbNumeric(isNotNull = NOT_NULL)
-    public static final String longitude = "longitude";
+    public static final String LONGITUDE = "longitude";
 
     //TODO delete
     @dbText

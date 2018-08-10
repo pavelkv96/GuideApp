@@ -3,6 +3,7 @@ package com.grsu.guideapp.activities.route;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.models.Line;
 
 public class RouteInteractor implements RouteContract.RouteInteractor {
 
@@ -14,11 +15,22 @@ public class RouteInteractor implements RouteContract.RouteInteractor {
 
     @Override
     public void getRouteById(final OnFinishedListener listener, final Integer routeId) {
-        new Handler().postDelayed(new Runnable() {
+        new Handler().post/*Delayed*/(new Runnable() {
             @Override
             public void run() {
                 listener.onFinished(helper.getRouteById(routeId));
             }
-        }, 3000);
+        }/*, 3000*/);
+    }
+
+    @Override
+    public void getListPoi(final OnFinishedListener listener, final double a, final double b,
+            final int c) {
+        new Handler().post/*Delayed*/(new Runnable() {
+            @Override
+            public void run() {
+                listener.onFinished1(helper.getListPoi(a, b, c));
+            }
+        }/*, 3000*/);
     }
 }
