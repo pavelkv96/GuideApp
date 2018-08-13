@@ -55,7 +55,7 @@ public class RoutesListAdapter extends RecyclerView.Adapter<RouteViewHolder> {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putSerializable(Constants.ROUTE, id_route);
+                bundle.putSerializable(Constants.KEY_ID_ROUTE, id_route);
                 ContextHolder.getContext().startActivity(
                         new Intent(ContextHolder.getContext(), RouteActivity.class)
                                 .putExtras(bundle));

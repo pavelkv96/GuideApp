@@ -49,13 +49,13 @@ public class NavigationDrawerDelegate
                 mPresenter.getView().openMapFragment();
                 break;
             case R.id.nav_gallery:
-                mPresenter.getView().openSettingsFragment();
+
                 break;
             case R.id.nav_slideshow:
                 mPresenter.getView().openListRoutesFragment();
                 break;
-            case R.id.nav_manage:
-
+            case R.id.nav_settings:
+                mPresenter.getView().openSettingsFragment();
                 break;
             case R.id.nav_share:
 

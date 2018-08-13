@@ -13,7 +13,7 @@ public class Poi implements Serializable {
     public static final String TYPE = "Type";
 
 
-    private Integer id;
+    private String id;
     private Float latitude;
     private Float longitude;
     private Integer type;
@@ -21,18 +21,18 @@ public class Poi implements Serializable {
     public Poi() {
     }
 
-    public Poi(Integer id, Float latitude, Float longitude, Integer type) {
+    public Poi(String id, Float latitude, Float longitude, Integer type) {
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
         this.type = type;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
