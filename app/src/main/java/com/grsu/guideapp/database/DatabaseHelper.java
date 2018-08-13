@@ -13,7 +13,9 @@ import android.support.annotation.NonNull;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Route;
+import com.grsu.guideapp.utils.Constants;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -56,109 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<Route> getListRoutes() {
-        List<Route> routesList = new ArrayList<>();
-        openDatabase();
-        Cursor cursor = mDatabase.rawQuery("SELECT * FROM Routes", null);
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            routesList.add(new Route(
-                    cursor.getInt(0),
-                    cursor.getString(1),
-                    cursor.getInt(2),
-                    cursor.getInt(3),
-                    cursor.getInt(4),
-                    cursor.getString(5),
-                    cursor.getString(6)
-            ));
-            cursor.moveToNext();
-        }
-        cursor.close();
-        closeDatabase();
-        return routesList;
-    }
-
-    public List<Poi> getListPoi(double cLatitude, double cLongitude, int radius) {
-        return getListPoi(cLatitude, cLongitude, radius, null);
-    }
-
-    public List<Poi> getListPoi(double cLatitude, double cLongitude, int radius,
-            List<Integer> typesObjects) {
-
-        double lat = radius * ONE_METER_LAT;//1m ~ 0.000009
-        double lng = radius * ONE_METER_LNG;//1m ~ 0.000015
-
-        String rightDownLan = String.valueOf(cLatitude - lat);
-        String leftUpLan = String.valueOf(cLatitude + lat);
-        String rightDownLng = String.valueOf(cLongitude - lng);
-        String leftUpLng = String.valueOf(cLongitude + lng);
-
-        List<Poi> poiList = new ArrayList<>();
-        openDatabase();
-        Cursor cursor = mDatabase.rawQuery(
-                d(/*rightDownLan, leftUpLan, rightDownLng, leftUpLng*/typesObjects), null);
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            poiList.add(new Poi(
-                    cursor.getInt(0),
-                    cursor.getFloat(1),
-                    cursor.getFloat(2),
-                    cursor.getInt(3)
-            ));
-            cursor.moveToNext();
-        }
-        cursor.close();
-        closeDatabase();
-        return poiList;
-    }
-
-    public List<Line> getRouteById(Integer id_route) {
-        List<Line> linesList = new ArrayList<>();
-        openDatabase();
-        Cursor cursor = mDatabase.rawQuery(
-                "select c1.* from lines c1, list_lines c2 where c1.id_line=c2.id_line and c2.id_route = ?",
-                new String[]{String.valueOf(id_route)});
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            linesList.add(new Line(
-                    cursor.getInt(0),
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    cursor.getString(3)
-            ));
-            cursor.moveToNext();
-        }
-        cursor.close();
-        closeDatabase();
-        return linesList;
-    }
-
-    public List<Poi> getPoiById(GeoPoint geoPoint) {
-
-        Logs.e(TAG, encodeP(geoPoint));
-        List<Poi> poiList = new ArrayList<>();
-        openDatabase();
-        Cursor cursor = mDatabase.rawQuery(
-                "select c2.* from list_poi c1, poi c2 where c1.id_poi=c2.id_poi and c1.id_point=?",
-                new String[]{encodeP(geoPoint)}
-        );
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            poiList.add(new Poi(
-                    cursor.getInt(0),
-                    cursor.getFloat(1),
-                    cursor.getFloat(2),
-                    cursor.getInt(3)
-            ));
-            cursor.moveToNext();
-        }
-        cursor.close();
-        closeDatabase();
-        return poiList;
-    }
-
-
-    public static boolean copyDatabase(Context context) {
+    public static boolean copyDatabase(@NonNull Context context) {
         try {
 
             InputStream inputStream = context.getAssets().open(DB_NAME);
@@ -181,22 +81,115 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    private String d(String rightDownLan, String leftUpLan, String rightDownLng, String leftUpLng) {
-        return "select*from `poi` where (Latitude BETWEEN " + rightDownLan + " AND " + leftUpLan
-                + ") AND (Longitude BETWEEN " + rightDownLng + " AND " + leftUpLng + ")";
+    public static boolean deleteDatabase(@NonNull Context context) {
+        File database = context.getDatabasePath(Constants.DB_NAME);
+
+        if (database.exists()) {
+            database.delete();
+            return true;
+        }
+
+        return false;
+    }
+
+    public List<Route> getListRoutes() {
+        List<Route> routesList = new ArrayList<>();
+        openDatabase();
+        Cursor cursor = mDatabase.rawQuery("SELECT * FROM Routes", null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            routesList.add(new Route(
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getInt(2),
+                    cursor.getInt(3),
+                    cursor.getInt(4),
+                    cursor.getString(5),
+                    cursor.getString(6)
+            ));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        closeDatabase();
+        return routesList;
+    }
+
+
+    public List<Poi> getListPoi(double cLatitude, double cLongitude, int radius,
+            List<Integer> typesObjects) {
+
+        List<Poi> poiList = new ArrayList<>();
+        openDatabase();
+        Cursor cursor = mDatabase.rawQuery(
+                getPlaceWithRadius(cLatitude, cLongitude, radius, typesObjects), null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            poiList.add(new Poi(
+                    cursor.getString(0),
+                    cursor.getFloat(1),
+                    cursor.getFloat(2),
+                    cursor.getInt(3)
+            ));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        closeDatabase();
+        return poiList;
+    }
+
+
+    public List<Line> getRouteById(Integer id_route) {
+        List<Line> linesList = new ArrayList<>();
+        openDatabase();
+        Cursor cursor = mDatabase.rawQuery(
+                "select c1.* from lines c1, list_lines c2 where c1.id_line=c2.id_line and c2.id_route = ?",
+                new String[]{String.valueOf(id_route)});
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            linesList.add(new Line(
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3)
+            ));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        closeDatabase();
+        return linesList;
     }
 
     @NonNull
-    private String d(List<Integer> typesObjects) {
-        if (typesObjects != null) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (Integer integer : typesObjects) {
-                stringBuilder.append(integer).append(",");
-            }
-            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-            return "select*from `poi`" + "where Type IN(" + stringBuilder + ")";
+    private String getPlaceWithRadius(double cLatitude, double cLongitude, int radius,
+            List<Integer> typesObjects) {
+        double lat = radius * ONE_METER_LAT;//1m ~ 0.000009
+        double lng = radius * ONE_METER_LNG;//1m ~ 0.000015
+
+        String rightDownLan = String.valueOf(cLatitude - lat);
+        String leftUpLan = String.valueOf(cLatitude + lat);
+        String rightDownLng = String.valueOf(cLongitude - lng);
+        String leftUpLng = String.valueOf(cLongitude + lng);
+
+        return "select c2.* from `list_poi` c1, `poi` c2 where c1.id_poi=c2.id_poi AND  (c2.Latitude BETWEEN "
+                + rightDownLan
+                + " AND " + leftUpLan + ") AND (c2.Longitude BETWEEN " + rightDownLng + " AND "
+                + leftUpLng + ")" + getByTypes(typesObjects) + d(cLatitude, cLongitude);
+    }
+
+    @NonNull
+    private String getByTypes(List<Integer> typesObjects) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Integer integer : typesObjects) {
+            stringBuilder.append(integer).append(",");
         }
 
-        return "select*from `poi`";
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+
+        return " AND Type IN(" + stringBuilder + ")";
+    }
+
+    @NonNull
+    private String d(double cLatitude, double cLongitude) {
+        return " AND (c1.id_point = '" + encodeP(new GeoPoint(cLatitude, cLongitude)) + "')";
     }
 }

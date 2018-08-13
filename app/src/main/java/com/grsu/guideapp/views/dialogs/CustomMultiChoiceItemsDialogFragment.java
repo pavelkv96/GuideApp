@@ -1,5 +1,7 @@
 package com.grsu.guideapp.views.dialogs;
 
+import static com.grsu.guideapp.utils.Constants.KEY_SELECTED_ITEM;
+
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.Context;
@@ -37,20 +39,27 @@ public class CustomMultiChoiceItemsDialogFragment extends DialogFragment impleme
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        selectedItemsIndexList = new ArrayList<>();
+        if (getArguments() != null) {
+            selectedItemsIndexList = getArguments().getIntegerArrayList(KEY_SELECTED_ITEM);
+
+            if (selectedItemsIndexList != null) {
+                for (int i = 0; i < selectedItemsIndexList.size(); i++) {
+                    checkedItems[selectedItemsIndexList.get(i) - 1] = true;
+                }
+            }
+        }
 
         Builder builder = new Builder(getActivity());
 
-        builder.setTitle("Radius (in meters)").setMultiChoiceItems(items, checkedItems, this)
+        builder.setTitle("Radius (in meters)")
+                .setMultiChoiceItems(items, checkedItems, this)
                 .setPositiveButton("OK", this);
         return builder.create();
     }
 
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
-        if (selectedItemsIndexList.size() > 0) {
-            dialogListener.onOk(selectedItemsIndexList);
-        }
+        dialogListener.onOk(selectedItemsIndexList);
     }
 
     @Override
@@ -64,4 +73,14 @@ public class CustomMultiChoiceItemsDialogFragment extends DialogFragment impleme
         }
     }
 
+    public static CustomMultiChoiceItemsDialogFragment newInstance(
+            ArrayList<Integer> selectedItemsIndexList) {
+
+        Bundle args = new Bundle();
+        args.putIntegerArrayList(KEY_SELECTED_ITEM, selectedItemsIndexList);
+
+        CustomMultiChoiceItemsDialogFragment fragment = new CustomMultiChoiceItemsDialogFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 }
