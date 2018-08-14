@@ -18,4 +18,14 @@ public enum PolylineSingleton {
         MarkerSingleton.setOverlaysView(mapView, polyline);
         return polyline;
     }
+
+    public void removePolylines(@NonNull MapView mapView, @NonNull List<Polyline> polylines) {
+        for (Polyline polyline : polylines) {
+            removePolyline(mapView, polyline);
+        }
+    }
+
+    public void removePolyline(@NonNull MapView mapView, @NonNull Polyline polyline) {
+        mapView.getOverlays().remove(polyline);
+    }
 }

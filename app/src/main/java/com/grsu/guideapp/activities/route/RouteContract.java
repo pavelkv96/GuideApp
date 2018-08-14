@@ -16,13 +16,17 @@ public interface RouteContract {
 
         void mapViewSettings();
 
-        void setPolyLine(List<GeoPoint> geoPointList);
+        void setPolyline(List<GeoPoint> geoPointList);
 
         void setPoints(GeoPoint geoPoint);
 
         void setGetPoints(Poi poi);
 
+        void setGetPolyline(List<GeoPoint> geoPointList);
+
         void removeMarker();
+
+        void removePolylines();
 
         void openDialogFragment();
     }
@@ -40,9 +44,15 @@ public interface RouteContract {
 
         boolean onClickPolyline(Polyline polyline, MapView mapView, GeoPoint eventPos);
 
-        void getMarkers();
+        void getMarkers(GeoPoint geoPoint);
 
-        void getMarkersWithSettings(List<Integer> typesObjects);
+        void setRadius(String radius);
+
+        void setType(List<Integer> typesObjects);
+
+        List<Integer> getType();
+
+        void getMarkersWithSettings(GeoPoint geoPoint);
     }
 
 
@@ -55,11 +65,9 @@ public interface RouteContract {
             void onFinished1(List<Poi> poiList);
         }
 
-        void getPoiById(OnFinishedListener listener, GeoPoint geoPoint);
-
         void getRouteById(OnFinishedListener listener, Integer id);
 
-        void getListPoi(OnFinishedListener listener, double a, double b, int c,
+        void getListPoi(OnFinishedListener listener, double latitude, double longitude, int radius,
                 List<Integer> typesObjects);
     }
 }

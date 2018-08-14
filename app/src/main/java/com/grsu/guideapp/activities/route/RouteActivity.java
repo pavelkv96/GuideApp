@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.grsu.guideapp.R;
@@ -17,12 +18,11 @@ import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.utils.Constants;
 import com.grsu.guideapp.utils.MarkerSingleton;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
-import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.utils.PolylineSingleton;
 import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment;
 import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment.OnMultiChoiceListDialogFragment;
 import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment;
-import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment.OnInputListener;
+import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment.OnChoiceItemListener;
 import java.util.ArrayList;
 import java.util.List;
 import org.osmdroid.config.Configuration;
@@ -39,17 +39,21 @@ import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.Polyline.OnClickListener;
 
 public class RouteActivity extends BaseActivity<RoutePresenter> implements OnMarkerClickListener,
-        RouteView, OnClickListener, MapEventsReceiver, OnInputListener,
+        RouteView, OnClickListener, MapEventsReceiver, OnChoiceItemListener,
         OnMultiChoiceListDialogFragment {
 
     private static final String TAG = RouteActivity.class.getSimpleName();
 
-    PolylineSingleton polylineSingleton = PolylineSingleton.Polyline;
-    MarkerSingleton markerSingleton = MarkerSingleton.Marker;
+    private PolylineSingleton polylineSingleton = PolylineSingleton.Polyline;
+    private MarkerSingleton markerSingleton = MarkerSingleton.Marker;
     private List<Marker> markers = new ArrayList<>();
+    private List<Polyline> polylines = new ArrayList<>();
 
     @BindView(R.id.mv_activity_route)
     MapView mapView;
+
+    @BindView(R.id.tv_activity_route_distance)
+    TextView distanceTextView;
 
     @NonNull
     @Override
@@ -64,11 +68,11 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements OnMar
 
         mapViewSettings();
 
-        Integer route = (Integer) getIntent().getSerializableExtra(Constants.ROUTE);
+        Integer route = (Integer) getIntent().getSerializableExtra(Constants.KEY_ID_ROUTE);
         if (route != null) {
             mPresenter.getId(route);
         }
-        //openDialogFragment();
+        mPresenter.setRadius("100");
     }
 
     @Override
@@ -102,7 +106,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements OnMar
     }
 
     @Override
-    public void setPolyLine(List<GeoPoint> geoPointList) {
+    public void setPolyline(List<GeoPoint> geoPointList) {
         polylineSingleton.getValue(mapView, geoPointList).setOnClickListener(this);
     }
 
@@ -117,20 +121,30 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements OnMar
     }
 
     @Override
+    public void setGetPolyline(List<GeoPoint> geoPointList) {
+        polylines.add(polylineSingleton.getValue(mapView, geoPointList));
+    }
+
+    @Override
     public void removeMarker() {
         markerSingleton.removeMarkers(mapView, markers);
     }
 
     @Override
+    public void removePolylines() {
+        polylineSingleton.removePolylines(mapView, polylines);
+    }
+
+    @Override
     public void openDialogFragment() {
-        new CustomSingleChoiceItemsDialogFragment()
+        CustomSingleChoiceItemsDialogFragment.newInstance(distanceTextView.getText())
                 .show(this.getSupportFragmentManager(), "CustomSingleChoiceItemsDialogFragment");
     }
 
     @Override
     public boolean onMarkerClick(Marker marker, MapView mapView) {
         Logs.e(TAG, marker.getPosition().toString());
-        removeMarker();
+        //removeMarker();
         return mPresenter.onMarkerClick(marker, mapView);
     }
 
@@ -150,19 +164,28 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements OnMar
     }
 
     @Override
-    public void sendInput(String s) {
-        mPresenter.getMarkers();
-        Toasts.makeS(this, s);
+    public void choiceItem(String itemValue) {
+        distanceTextView.setText(itemValue);
+        mPresenter.setRadius(itemValue);
+        mPresenter.getMarkers(null);
+        mapView.invalidate();
     }
 
     @Override
     public void onOk(ArrayList<Integer> arrayList) {
-        mPresenter.getMarkersWithSettings(arrayList);
+        mPresenter.setType(arrayList);
+        mPresenter.getMarkers(null);
+        mapView.invalidate();
     }
 
     @OnClick(R.id.btn_activity_route_settings)
     void openSettings(View view) {
-        new CustomMultiChoiceItemsDialogFragment()
+        CustomMultiChoiceItemsDialogFragment.newInstance((ArrayList<Integer>) mPresenter.getType())
                 .show(this.getSupportFragmentManager(), "CustomMultiChoiceItemsDialogFragment");
+    }
+
+    @OnClick(R.id.tv_activity_route_distance)
+    void openDistanceSettings(View view) {
+        openDialogFragment();
     }
 }
