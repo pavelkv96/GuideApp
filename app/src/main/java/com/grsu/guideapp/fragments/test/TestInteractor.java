@@ -1,19 +1,14 @@
-package com.grsu.guideapp.fragments.map;
+package com.grsu.guideapp.fragments.test;
 
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import com.grsu.guideapp.activities.route.RouteContract.RouteInteractor;
-import com.grsu.guideapp.activities.route.RouteContract.RouteInteractor.OnFinishedListener;
 import com.grsu.guideapp.database.DatabaseHelper;
-import java.util.ArrayList;
-import java.util.List;
-import org.osmdroid.util.GeoPoint;
 
-public class MapInteractor implements MapContract.MapInteractor {
+public class TestInteractor implements TestContract.TestInteractor {
 
     private DatabaseHelper helper;
 
-    public MapInteractor(@NonNull DatabaseHelper pDbHelper) {
+    public TestInteractor(@NonNull DatabaseHelper pDbHelper) {
         helper = pDbHelper;
     }
 

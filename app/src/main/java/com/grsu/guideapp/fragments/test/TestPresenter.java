@@ -1,27 +1,25 @@
-package com.grsu.guideapp.fragments.map;
+package com.grsu.guideapp.fragments.test;
 
 import static com.grsu.guideapp.utils.Crypto.decodeL;
 import static com.grsu.guideapp.utils.Crypto.decodeP;
 
 import com.grsu.guideapp.base.BasePresenterImpl;
-import com.grsu.guideapp.fragments.map.MapContract.MapInteractor.OnFinishedListener;
-import com.grsu.guideapp.fragments.map.MapContract.MapViews;
+import com.grsu.guideapp.fragments.test.TestContract.TestInteractor.OnFinishedListener;
+import com.grsu.guideapp.fragments.test.TestContract.TestViews;
 import com.grsu.guideapp.models.Line;
-import com.grsu.guideapp.models.Poi;
+import java.util.ArrayList;
 import java.util.List;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.Polyline;
-import org.osmdroid.views.overlay.infowindow.InfoWindow;
 
-public class MapPresenter extends BasePresenterImpl<MapViews> implements MapContract.MapPresenter,
+public class TestPresenter extends BasePresenterImpl<TestViews> implements TestContract.TestPresenter,
         OnFinishedListener {
 
-    private MapViews mapViews;
-    private MapInteractor mapInteractor;
+    private TestViews mapViews;
+    private TestInteractor mapInteractor;
 
-    public MapPresenter(MapViews mapViews, MapInteractor mapInteractor) {
+    public TestPresenter(TestViews mapViews, TestInteractor mapInteractor) {
         this.mapViews = mapViews;
         this.mapInteractor = mapInteractor;
     }
@@ -33,20 +31,18 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     @Override
     public boolean onMarkerClick(Marker marker, MapView mapView) {
-        mapViews.animateMarker(marker, new GeoPoint(53.701254, 23.810049));
         return false;
     }
 
     @Override
     public void onFinished(List<Line> encodePolylines) {
+        List<GeoPoint> geoPointList = new ArrayList<>();
+
         try {
-            Line line = null;
             for (Line encodePolyline : encodePolylines) {
-                mapViews.setPolyline(decodeL(encodePolyline.getPolyline()));
-                mapViews.setMarker(decodeP(encodePolyline.getStartPoint()));
-                line = encodePolyline;
+                geoPointList.addAll(decodeL(encodePolyline.getPolyline()));
             }
-            mapViews.setMarker(decodeP(line.getEndPoint()));
+            mapViews.setPolyline(geoPointList);
         } catch (NullPointerException ignored) {
         }
         mView.hideProgress();
