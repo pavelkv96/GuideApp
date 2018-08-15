@@ -49,7 +49,7 @@ public class NavigationDrawerDelegate
                 mPresenter.getView().openMapFragment();
                 break;
             case R.id.nav_gallery:
-
+                mPresenter.getView().openTestAnimationFragment();
                 break;
             case R.id.nav_slideshow:
                 mPresenter.getView().openListRoutesFragment();

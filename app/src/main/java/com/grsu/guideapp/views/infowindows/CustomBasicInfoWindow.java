@@ -12,12 +12,14 @@ public class CustomBasicInfoWindow extends InfoWindow implements OnTouchListener
     private static final String TAG = CustomBasicInfoWindow.class.getSimpleName();
 
     public CustomBasicInfoWindow(MapView mapView) {
-        this(R.layout.bubble, mapView);
+        this(R.layout.bubble, mapView, false);
     }
 
-    public CustomBasicInfoWindow(int layoutResId, MapView mapView) {
+    public CustomBasicInfoWindow(int layoutResId, MapView mapView, boolean isVisible) {
         super(layoutResId, mapView);
-
+        if (!isVisible) {
+            mView.setVisibility(View.GONE);
+        }
         mView.setOnTouchListener(this);
     }
 

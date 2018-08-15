@@ -14,14 +14,11 @@ public final class CustomMarkerInfoWindow extends CustomBasicInfoWindow {
     private static Marker mMarkerRef;
 
     public CustomMarkerInfoWindow(MapView mapView, boolean isVisible) {
-        this(R.layout.bubble, mapView);
-        if (!isVisible) {
-            mView.setVisibility(View.GONE);
-        }
+        this(R.layout.bubble, mapView, isVisible);
     }
 
-    public CustomMarkerInfoWindow(@LayoutRes int layoutRes, MapView mapView) {
-        super(layoutRes, mapView);
+    public CustomMarkerInfoWindow(@LayoutRes int layoutRes, MapView mapView, boolean isVisible) {
+        super(layoutRes, mapView, isVisible);
     }
 
     public static Marker getMarkerReference() {

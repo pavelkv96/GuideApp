@@ -11,7 +11,7 @@ public enum PolylineSingleton {
 
     Polyline;
 
-    public Polyline getValue(@NonNull MapView mapView, @NonNull List<GeoPoint> geoPointList) {
+    public Polyline getPolyline(@NonNull MapView mapView, @NonNull List<GeoPoint> geoPointList) {
         Polyline polyline = new Polyline(mapView);
         polyline.setPoints(geoPointList);
         polyline.setInfoWindow(new CustomBasicInfoWindow(mapView));

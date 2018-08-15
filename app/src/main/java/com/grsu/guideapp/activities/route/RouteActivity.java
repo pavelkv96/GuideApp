@@ -107,7 +107,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements OnMar
 
     @Override
     public void setPolyline(List<GeoPoint> geoPointList) {
-        polylineSingleton.getValue(mapView, geoPointList).setOnClickListener(this);
+        polylineSingleton.getPolyline(mapView, geoPointList).setOnClickListener(this);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements OnMar
 
     @Override
     public void setGetPolyline(List<GeoPoint> geoPointList) {
-        polylines.add(polylineSingleton.getValue(mapView, geoPointList));
+        polylines.add(polylineSingleton.getPolyline(mapView, geoPointList));
     }
 
     @Override
