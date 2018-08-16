@@ -47,6 +47,8 @@ dependencies {
     implementation "com.jakewharton:butterknife:${versions.butterknife}"
     annotationProcessor "com.jakewharton:butterknife-compiler:${versions.butterknife}"
 
+    implementation 'com.google.android.gms:play-services-maps:15.0.1'
+
     implementation "org.osmdroid:osmdroid-android:${versions.osmdroid}"
 
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'

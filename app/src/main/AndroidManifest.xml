@@ -28,6 +28,10 @@
     </activity>
     <activity android:name=".activities.details.DetailsActivity"/>
     <activity android:name=".activities.route.RouteActivity"/>
+
+    <meta-data
+      android:name="com.google.android.geo.API_KEY"
+      android:value="AIzaSyCECTWJqRuAkQ28Gx1ClvJlAGEfKVII8mo"/>
   </application>
 
 </manifest>

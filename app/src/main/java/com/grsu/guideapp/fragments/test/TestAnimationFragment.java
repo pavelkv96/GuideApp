@@ -1,270 +1,169 @@
 package com.grsu.guideapp.fragments.test;
 
+import static android.graphics.Bitmap.Config.ARGB_8888;
+
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import android.view.ViewGroup;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Tile;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.android.gms.maps.model.TileProvider;
+import com.google.android.gms.maps.model.UrlTileProvider;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.database.DatabaseHelper;
-import com.grsu.guideapp.fragments.test.TestContract.TestViews;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
-import com.grsu.guideapp.views.infowindows.CustomMarkerInfoWindow;
-import java.util.ArrayList;
-import java.util.List;
-import org.osmdroid.config.Configuration;
-import org.osmdroid.events.MapEventsReceiver;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import com.grsu.guideapp.utils.MessageViewer.Toasts;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import org.osmdroid.tileprovider.util.StorageUtils;
-import org.osmdroid.util.BoundingBox;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.MapEventsOverlay;
-import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.Polyline;
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-public class TestAnimationFragment extends BaseFragment<TestPresenter> implements TestViews,
-        MapEventsReceiver {
+public class TestAnimationFragment extends Fragment implements OnMapReadyCallback {
 
-    private static final String TAG = TestAnimationFragment.class.getSimpleName();
+    private GoogleMap mMap;
 
-    private List<Marker> markers = new ArrayList<>();
-    private final Handler mHandler = new Handler();
-    private Animator animator = new Animator();
-
-    @BindView(R.id.mv_fragment_test_animation)
-    MapView mapView;
-
-    @NonNull
+    @Nullable
     @Override
-    protected TestPresenter getPresenterInstance() {
-        return new TestPresenter(this, new TestInteractor(new DatabaseHelper(getContext())));
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_test_animation, container, false);
+        ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map))
+                .getMapAsync(this);
+        return view;
     }
 
     @Override
-    protected int getLayout() {
-        return R.layout.fragment_test_animation;
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        Logs.e("TEST", "TEST");
+        mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
+        mMap.setMyLocationEnabled(true);
+
+        TileProvider coordTileProvider = new CoordTileProvider(getActivity());
+        mMap.addTileOverlay(new TileOverlayOptions().tileProvider(coordTileProvider));
+
+        mMap.addMarker(new MarkerOptions().position(new LatLng(53.699487, 23.819337)));
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    /* public class CustomUrlTileProvider implements TileProvider {
 
-        mapViewSettings();
-        mPresenter.getId(1);
-    }
+         private String baseUrl;
 
-    @OnClick(R.id.btn_clearmarker)
-    public void ResetMarker(View view) {
-        animator.stop();
-        for (Marker marker : markers) {
-            marker.remove(mapView);
+         *//*public CustomUrlTileProvider(int width, int height, String url) {
+            //super(width, height);
+            this.baseUrl = url;
+        }*//*
+
+
+        @Override
+        public Tile getTile(int x, int y, int zoom) {
+            return new Tile(x,y, zoom);
         }
+    }*/
+    private static class CoordTileProvider implements TileProvider {
 
-        markers.clear();
-        invalidate();
-    }
+        private static final String TAG = CoordTileProvider.class.getSimpleName();
 
-    @OnClick(R.id.btn_play)
-    public void start(View view) {
-        animator.startAnimation(true);
-        animator.run();
-    }
+        private static final int TILE_SIZE_DP = 256;
 
-    @OnClick(R.id.btn_stop)
-    public void stop(View view) {
-        animator.stop();
-    }
+        private final float mScaleFactor;
 
-    protected void addMarkerToMap(GeoPoint latLng) {
-        Marker marker = new Marker(mapView);
-        marker.setPosition(latLng);
-        marker.setInfoWindow(new CustomMarkerInfoWindow(mapView, false));
-        mapView.getOverlays().add(marker);
-        markers.add(marker);
-        invalidate();
-    }
+        private final Bitmap mBorderTile;
+        private Context mContext;
 
-    @Override
-    public boolean singleTapConfirmedHelper(GeoPoint point) {
-        addMarkerToMap(point);
-        animator.startAnimation(false);
-        return false;
-    }
-
-    @Override
-    public boolean longPressHelper(GeoPoint p) {
-        return false;
-    }
-
-    @Override
-    public void mapViewSettings() {
-        Context ctx = getActivity();
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        Configuration.getInstance().setOsmdroidBasePath(StorageUtils.getStorage());
-
-        mapView.setMaxZoomLevel(20.0);
-        mapView.setMinZoomLevel(13.0);
-        mapView.getController().setZoom(13.0);
-        mapView.setBuiltInZoomControls(true);
-        mapView.setTileSource(TileSourceFactory.MAPNIK);
-        mapView.setUseDataConnection(true);
-        mapView.setScrollableAreaLimitDouble(new BoundingBox(53.7597, 23.9845, 53.5986, 23.7099));
-        mapView.getOverlays().add(new MapEventsOverlay(this));
-        new MyLocationNewOverlay(mapView);
-    }
-
-    @Override
-    public void setPolyline(List<GeoPoint> geoPointList) {
-
-    }
-
-    @Override
-    public void invalidate() {
-        mapView.invalidate();
-    }
-
-    @Override
-    public void removePolyline(Polyline polyline) {
-        mapView.getOverlays().remove(polyline);
-    }
-
-    public class Animator implements Runnable {
-
-        private static final int ANIMATE_SPEEED = 1500;
-        private final Interpolator interpolator = new LinearInterpolator();
-        int currentIndex = 0;
-        long start = SystemClock.uptimeMillis();
-        GeoPoint endLatLng = null;
-        GeoPoint beginLatLng = null;
-        boolean showPolyline = false;
-        private Marker trackingMarker;
-
-        void reset() {
-            for (Marker marker : markers) {
-                marker.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.a_marker));
-            }
-
-            start = SystemClock.uptimeMillis();
-            currentIndex = 0;
-            endLatLng = getEndLatLng();
-            beginLatLng = getBeginLatLng();
-
-        }
-
-        void stop() {
-            trackingMarker.remove(mapView);
-            mHandler.removeCallbacks(animator);
-            removePolyline(polyLine);
-            invalidate();
-        }
-
-        private void highLightMarker(int index) {
-            Marker marker = markers.get(index);
-            marker.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.c_marker));
-            marker.setInfoWindow(new CustomMarkerInfoWindow(mapView, false));
-            markers.set(index, marker);
-            invalidate();
-        }
-
-        void initialize(boolean showPolyLine) {
-            reset();
-
-            this.showPolyline = showPolyLine;
-            highLightMarker(0);
-            if (showPolyLine) {
-                polyLine = initializePolyLine();
-                setupCameraPositionForMovement(markers.get(0).getPosition());
-            }
-        }
-
-        private void setupCameraPositionForMovement(GeoPoint markerPos) {
-            Marker marker = new Marker(mapView);
-            marker.setPosition(markerPos);
-            marker.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.b_marker));
-            marker.setDraggable(true);
-            marker.setInfoWindow(new CustomMarkerInfoWindow(mapView, false));
-            trackingMarker = marker;
-            mapView.getOverlays().add(trackingMarker);
-        }
-
-        Polyline polyLine;
-
-        private Polyline initializePolyLine() {
-            polyLine = new Polyline(mapView);
-            polyLine.addPoint(markers.get(0).getPosition());
-            mapView.getOverlays().add(polyLine);
-
-            return polyLine;
-        }
-
-        private void updatePolyLine(GeoPoint latLng) {
-            List<GeoPoint> points = polyLine.getPoints();
-            points.add(latLng);
-            polyLine.setPoints(points);
-        }
-
-        void startAnimation(boolean showPolyLine) {
-            if (markers.size() > 2) {
-                animator.initialize(showPolyLine);
-            }
+        public CoordTileProvider(Context context) {
+            /* Scale factor based on density, with a 0.6 multiplier to increase tile generation
+             * speed */
+            mContext = context;
+            mScaleFactor = context.getResources().getDisplayMetrics().density * 0.6f;
+            Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            borderPaint.setStyle(Paint.Style.STROKE);
+            mBorderTile = Bitmap.createBitmap((int) (TILE_SIZE_DP * mScaleFactor),
+                    (int) (TILE_SIZE_DP * mScaleFactor), ARGB_8888);
+            Canvas canvas = new Canvas(mBorderTile);
+            canvas.drawRect(0, 0, TILE_SIZE_DP * mScaleFactor, TILE_SIZE_DP * mScaleFactor,
+                    borderPaint);
         }
 
         @Override
-        public void run() {
-            long elapsed = SystemClock.uptimeMillis() - start;
-            double t = interpolator.getInterpolation((float) elapsed / ANIMATE_SPEEED);
-            double lat = t * endLatLng.getLatitude() + (1 - t) * beginLatLng.getLatitude();
-            double lng = t * endLatLng.getLongitude() + (1 - t) * beginLatLng.getLongitude();
-            GeoPoint newPosition = new GeoPoint(lat, lng);
+        public Tile getTile(int x, int y, int zoom) {
+            Bitmap coordTile = drawTileCoords(x, y, zoom);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            coordTile.compress(Bitmap.CompressFormat.PNG, 0, stream);
+            byte[] bitmapData = stream.toByteArray();
+            return new Tile((int) (TILE_SIZE_DP * mScaleFactor),
+                    (int) (TILE_SIZE_DP * mScaleFactor), bitmapData);
+        }
 
-            trackingMarker.setPosition(newPosition);
-            if (showPolyline) {
-                updatePolyLine(newPosition);
+        private Bitmap drawTileCoords(int x, int y, int zoom) {
+            // Synchronize copying the bitmap to avoid a race condition in some devices.
+            Bitmap copy;
+            synchronized (mBorderTile) {
+                copy = mBorderTile.copy(ARGB_8888, true);
             }
 
-            if (t < 1) {
+            File file = new File(StorageUtils.getStorage() + "/osmdroid/tiles/cache.db");
 
-                mHandler.postDelayed(this, 16);
-            } else {
-                Logs.e(TAG, "Move to next marker.... current = " + currentIndex + " and size = "
-                        + markers.size());
-                if (currentIndex < markers.size() - 2) {
-                    currentIndex++;
-                    endLatLng = getEndLatLng();
-                    beginLatLng = getBeginLatLng();
-                    start = SystemClock.uptimeMillis();
-                    highLightMarker(currentIndex);
-                    start = SystemClock.uptimeMillis();
-                    mHandler.postDelayed(animator, 16);
-                } else {
-                    currentIndex++;
-                    highLightMarker(currentIndex);
-                    stop();
-                }
+            if (file.exists()) {
+                copy = new DatabaseHelper(mContext).getTile(getIndex(x, y, zoom), file.getPath());
+                Logs.e(TAG, String.valueOf(getIndex(x, y, zoom)));
             }
-            invalidate();
+
+            /*Canvas canvas = new Canvas(copy);
+            String tileCoords = "(" + x + ", " + y + ")";
+            String zoomLevel = "zoom = " + zoom;
+            // Paint is not thread safe.
+            Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mTextPaint.setTextAlign(Paint.Align.CENTER);
+            mTextPaint.setTextSize(18 * mScaleFactor);
+            canvas.drawText(tileCoords, TILE_SIZE_DP * mScaleFactor / 2,
+                    TILE_SIZE_DP * mScaleFactor / 2, mTextPaint);
+            canvas.drawText(zoomLevel, TILE_SIZE_DP * mScaleFactor / 2,
+                    TILE_SIZE_DP * mScaleFactor * 2 / 3, mTextPaint);*/
+            return copy;
         }
 
-        private GeoPoint getEndLatLng() {
-            return markers.get(currentIndex + 1).getPosition();
+        public static long getIndex(final long pX, final long pY, final long pZ) {
+            return ((pZ << pZ) + pX << pZ) + pY;
         }
 
-        private GeoPoint getBeginLatLng() {
-            return markers.get(currentIndex).getPosition();
-        }
     }
-
 }
+
+/*
+public static int getZoom(final long pTileIndex) {
+            return (int) (pTileIndex >> (10 * 2));
+        }
+
+        public static int getX(final long pTileIndex) {
+            return (int) ((pTileIndex >> 10) % (1<<10));
+        }
+
+        public static int getY(final long pTileIndex) {
+            return (int) (pTileIndex % (1<<10));
+        }
+
+
+        public static String toString(final int pZoom, final int pX, final int pY) {
+            return "/" + pZoom + "/" + pX + "/" + pY;
+        }
+
+        public static String toString(final long pIndex) {
+            return toString(getZoom(pIndex), getX(pIndex), getY(pIndex));
+        }
+*/
