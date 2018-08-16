@@ -17,9 +17,17 @@ public interface TestContract {
 
         void setPolyline(List<GeoPoint> geoPointList);
 
+        Marker setTrackerMarker(Marker markerPos);
+
         void invalidate();
 
         void removePolyline(Polyline polyline);
+
+        void removeMarker(Marker marker);
+
+        Polyline initializePolyLine(GeoPoint position);
+
+        Marker highLightMarker(Marker marker);
 
 //
 //        void setMarker(GeoPoint geoPoint);
@@ -30,6 +38,13 @@ public interface TestContract {
     interface TestPresenter extends BasePresenter<TestViews> {
 
         void getId(Integer id);
+
+        void startAnimation();
+
+        void setMarkers(Marker marker);
+
+        void resumed();
+        void paused();
 
         boolean onMarkerClick(Marker marker, MapView mapView);
     }
