@@ -1,6 +1,7 @@
 package com.grsu.guideapp.fragments.test;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -13,14 +14,18 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.test.TestContract.TestViews;
+import com.grsu.guideapp.utils.MarkerSingleton;
+import com.grsu.guideapp.utils.PolylineSingleton;
 import com.grsu.guideapp.views.infowindows.CustomMarkerInfoWindow;
 import java.util.List;
+import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.tileprovider.util.StorageUtils;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
@@ -28,10 +33,12 @@ import org.osmdroid.views.overlay.Marker.OnMarkerClickListener;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-public class TestAnimationFragment extends BaseFragment<TestPresenter> implements TestViews,
-        MapEventsReceiver, OnMarkerClickListener {
+public class TestAnimationFragment extends BaseFragment<TestPresenter> implements TestViews {
 
     private static final String TAG = TestAnimationFragment.class.getSimpleName();
+    private MarkerSingleton markerSingleton = MarkerSingleton.Marker;
+    private PolylineSingleton polylineSingleton = PolylineSingleton.Polyline;
+    private IMapController iMapController;
 
     @BindView(R.id.mv_fragment_test_animation)
     MapView mapView;
@@ -61,26 +68,10 @@ public class TestAnimationFragment extends BaseFragment<TestPresenter> implement
         invalidate();
     }
 
-    protected Marker addMarkerToMap(GeoPoint latLng) {
-        Marker marker = new Marker(mapView);
-        marker.setPosition(latLng);
-        marker.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.a_marker));
-        marker.setInfoWindow(new CustomMarkerInfoWindow(mapView, false));
-        mapView.getOverlays().add(marker);
-        invalidate();
-        return marker;
-    }
-
-    @Override
-    public boolean singleTapConfirmedHelper(GeoPoint point) {
-        mPresenter.setMarkers(addMarkerToMap(point));
+    @OnClick(R.id.btn_start)
+    public void start(View view) {
+        iMapController.setZoom(19f);
         mPresenter.startAnimation();
-        return false;
-    }
-
-    @Override
-    public boolean longPressHelper(GeoPoint p) {
-        return false;
     }
 
     @Override
@@ -96,19 +87,28 @@ public class TestAnimationFragment extends BaseFragment<TestPresenter> implement
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setUseDataConnection(true);
         mapView.setScrollableAreaLimitDouble(new BoundingBox(53.7597, 23.9845, 53.5986, 23.7099));
-        mapView.getOverlays().add(new MapEventsOverlay(this));
-        new MyLocationNewOverlay(mapView);
+        iMapController = new MapController(mapView);
     }
+
+
+
 
     @Override
     public void setPolyline(List<GeoPoint> geoPointList) {
-
+        polylineSingleton.getPolyline(mapView, geoPointList);
     }
 
     @Override
-    public Marker setTrackerMarker(Marker markerPos) {
+    public Marker setPoints(GeoPoint geoPoint) {
+        Marker marker = markerSingleton.getMarker(mapView, geoPoint);
+        marker.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.a_marker));
+        return marker;
+    }
+
+    @Override
+    public Marker setTrackerMarker(GeoPoint geoPoint) {
         Marker marker = new Marker(mapView);
-        marker.setPosition(markerPos.getPosition());
+        marker.setPosition(geoPoint);
         marker.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.b_marker));
         marker.setInfoWindow(new CustomMarkerInfoWindow(mapView, false));
         mapView.getOverlays().add(marker);
@@ -134,6 +134,7 @@ public class TestAnimationFragment extends BaseFragment<TestPresenter> implement
     public Polyline initializePolyLine(GeoPoint position) {
         Polyline polyLine = new Polyline(mapView);
         polyLine.addPoint(position);
+        polyLine.setColor(Color.RED);
         mapView.getOverlays().add(polyLine);
 
         return polyLine;
@@ -146,8 +147,7 @@ public class TestAnimationFragment extends BaseFragment<TestPresenter> implement
     }
 
     @Override
-    public boolean onMarkerClick(Marker marker, MapView mapView) {
-        marker.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.a_marker));
-        return false;
+    public void animateTo(GeoPoint geoPoint) {
+        iMapController.setCenter(geoPoint);
     }
 }

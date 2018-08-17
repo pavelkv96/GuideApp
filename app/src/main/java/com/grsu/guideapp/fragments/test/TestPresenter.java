@@ -3,18 +3,15 @@ package com.grsu.guideapp.fragments.test;
 import static com.grsu.guideapp.utils.Crypto.decodeL;
 import static com.grsu.guideapp.utils.Crypto.decodeP;
 
+import android.location.Location;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.v4.content.ContextCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
-import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.fragments.test.TestContract.TestInteractor.OnFinishedListener;
 import com.grsu.guideapp.fragments.test.TestContract.TestViews;
 import com.grsu.guideapp.models.Line;
-import com.grsu.guideapp.utils.MessageViewer.Logs;
-import com.grsu.guideapp.views.infowindows.CustomMarkerInfoWindow;
 import java.util.ArrayList;
 import java.util.List;
 import org.osmdroid.util.GeoPoint;
@@ -22,15 +19,15 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
 
-public class TestPresenter extends BasePresenterImpl<TestViews> implements
-        TestContract.TestPresenter,
-        OnFinishedListener, Runnable {
+public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFinishedListener,
+        TestContract.TestPresenter, Runnable {
 
     private static final String TAG = TestPresenter.class.getSimpleName();
 
+    private List<GeoPoint> points = new ArrayList<>();
     private List<Marker> markers = new ArrayList<>();
     private final Handler mHandler = new Handler();
-    private static final int ANIMATE_SPEEED = 1500;
+    private static final int ANIMATE_SPEEED = 500;
     private final Interpolator interpolator = new LinearInterpolator();
     private int currentIndex = 0;
     private long start = SystemClock.uptimeMillis();
@@ -55,21 +52,23 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements
 
     @Override
     public boolean onMarkerClick(Marker marker, MapView mapView) {
-        markers.add(marker);
-        startAnimation();
+       /* points.add(marker);
+        startAnimation();*/
 
         return false;
     }
 
     @Override
     public void onFinished(List<Line> encodePolylines) {
-        List<GeoPoint> geoPointList = new ArrayList<>();
-
         try {
+            Line line = null;
             for (Line encodePolyline : encodePolylines) {
-                geoPointList.addAll(decodeL(encodePolyline.getPolyline()));
+                points.addAll(decodeL(encodePolyline.getPolyline()));
+                testViews.setPolyline(decodeL(encodePolyline.getPolyline()));
+                markers.add(testViews.setPoints(decodeP(encodePolyline.getStartPoint())));
+                line = encodePolyline;
             }
-            testViews.setPolyline(geoPointList);
+            testViews.setPoints(decodeP(line.getEndPoint()));
         } catch (NullPointerException ignored) {
         }
         mView.hideProgress();
@@ -85,14 +84,15 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements
         GeoPoint newPosition = new GeoPoint(lat, lng);
 
         trackingMarker.setPosition(newPosition);
+        testViews.animateTo(newPosition);
         updatePolyLine(newPosition);
 
         if (t < 1) {
             mHandler.postDelayed(this, 16);
         } else {
-            Logs.e(TAG, "Move to next marker.... current = " + currentIndex + " and size = "
-                    + markers.size());
-            if (currentIndex < markers.size() - 2) {
+            /*Logs.e(TAG, "Move to next marker.... current = " + currentIndex + " and size = "
+                    + points.size());*/
+            if (currentIndex < points.size() - 2) {
                 currentIndex++;
                 endLatLng = getEndLatLng();
                 beginLatLng = getBeginLatLng();
@@ -113,21 +113,19 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements
 
     @Override
     public void startAnimation() {
-        if (markers.size() == 1) {
+        if (points.size() > 0) {
             initialize();
-        } else {
-            if (markers.size() > 0) {
-                endLatLng = getEndLatLng();
-                start = SystemClock.uptimeMillis();
-                run();
-            }
+            endLatLng = getEndLatLng();
+            start = SystemClock.uptimeMillis();
+            run();
         }
+
     }
 
-    @Override
+    /*@Override
     public void setMarkers(Marker marker) {
-        markers.add(marker);
-    }
+        points.add(marker);
+    }*/
 
     private void reset() {
         currentIndex = 0;
@@ -141,27 +139,23 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements
 
         highLightMarker(0);
 
-        polyLine = testViews.initializePolyLine(markers.get(0).getPosition());
-        setupCameraPositionForMovement(markers.get(0));
+        polyLine = testViews.initializePolyLine(points.get(0));
+        trackingMarker = testViews.setTrackerMarker(points.get(0));
 
     }
 
     private void highLightMarker(int index) {
-        Marker marker = markers.get(index);
+        //Logs.e(TAG, "new GeoPoint(" + points.get(index).toString()+")");
+        //SystemClock.sleep(3000);
+        /*Marker marker = markers.get(index);
         marker = testViews.highLightMarker(marker);
-        markers.set(index, marker);
-        testViews.invalidate();
+        markers.set(index, marker);*/
+        //testViews.invalidate();
     }
 
-    private void setupCameraPositionForMovement(Marker markerPos) {
-
-        trackingMarker = testViews.setTrackerMarker(markerPos);
-    }
-
-
-    private void updatePolyLine(GeoPoint latLng) {
+    private void updatePolyLine(GeoPoint geoPoint) {
         List<GeoPoint> points = polyLine.getPoints();
-        points.add(latLng);
+        points.add(geoPoint);
         polyLine.setPoints(points);
     }
 
@@ -170,33 +164,39 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements
         mHandler.removeCallbacks(this);
         testViews.removePolyline(polyLine);
         testViews.invalidate();
-        for (Marker marker : markers) {
+        /*for (Marker marker : points) {
             testViews.removeMarker(marker);
-        }
+        }*/
 
-        markers.clear();
+        points.clear();
     }
 
     private void pause() {
         beginLatLng = endLatLng;
     }
 
-    public void paused() {
-        mHandler.removeCallbacks(this);
-    }
-
-    public void resumed() {
-        mHandler.postDelayed(this, 16);
-    }
-
     private GeoPoint getEndLatLng() {
-        return markers.get(currentIndex + 1).getPosition();
+        return points.get(currentIndex + 1);
     }
 
     private GeoPoint getBeginLatLng() {
-        return markers.get(currentIndex).getPosition();
+        return points.get(currentIndex);
+    }
+
+
+    private Location convertLatLngToLocation(GeoPoint latLng) {
+        Location loc = new Location("someLoc");
+        loc.setLatitude(latLng.getLatitude());
+        loc.setLongitude(latLng.getLongitude());
+        return loc;
+    }
+
+    private float bearingBetweenLatLngs(GeoPoint begin,GeoPoint end) {
+        Location beginL= convertLatLngToLocation(begin);
+        Location endL= convertLatLngToLocation(end);
+        return beginL.bearingTo(endL);
     }
 }
 
 //For one marker: call marker.closeInfoWindow()
-//For all markers: call InfoWindow.closeAllInfoWindowsOn(mapView)
+//For all points: call InfoWindow.closeAllInfoWindowsOn(mapView)
