@@ -1,6 +1,11 @@
 package com.grsu.guideapp.fragments.test;
 
+import static com.grsu.guideapp.utils.Constants.KEY_GEO_POINT;
+
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,25 +25,23 @@ import com.grsu.guideapp.views.infowindows.CustomMarkerInfoWindow;
 import java.util.List;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.tileprovider.util.StorageUtils;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.Marker.OnMarkerClickListener;
 import org.osmdroid.views.overlay.Polyline;
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 public class TestAnimationFragment extends BaseFragment<TestPresenter> implements TestViews {
 
     private static final String TAG = TestAnimationFragment.class.getSimpleName();
+    public final static String BR_ACTION = TestAnimationFragment.class.getPackage().toString();
     private MarkerSingleton markerSingleton = MarkerSingleton.Marker;
     private PolylineSingleton polylineSingleton = PolylineSingleton.Polyline;
     private IMapController iMapController;
+    private BroadcastReceiver br;
 
     @BindView(R.id.mv_fragment_test_animation)
     MapView mapView;
@@ -60,6 +63,14 @@ public class TestAnimationFragment extends BaseFragment<TestPresenter> implement
 
         mapViewSettings();
         mPresenter.getId(1);
+
+        br = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                mPresenter.getLocation((GeoPoint) intent.getParcelableExtra(KEY_GEO_POINT));
+            }
+        };
+
+        getActivity().registerReceiver(br, new IntentFilter(BR_ACTION));
     }
 
     @OnClick(R.id.btn_clearmarker)
@@ -70,8 +81,8 @@ public class TestAnimationFragment extends BaseFragment<TestPresenter> implement
 
     @OnClick(R.id.btn_start)
     public void start(View view) {
-        iMapController.setZoom(19f);
-        mPresenter.startAnimation();
+        iMapController.setZoom(20f);
+        getActivity().startService(new Intent(getActivity(), MyService.class));
     }
 
     @Override
@@ -89,8 +100,6 @@ public class TestAnimationFragment extends BaseFragment<TestPresenter> implement
         mapView.setScrollableAreaLimitDouble(new BoundingBox(53.7597, 23.9845, 53.5986, 23.7099));
         iMapController = new MapController(mapView);
     }
-
-
 
 
     @Override
@@ -117,7 +126,12 @@ public class TestAnimationFragment extends BaseFragment<TestPresenter> implement
 
     @Override
     public void invalidate() {
-        mapView.invalidate();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mapView.invalidate();
+            }
+        });
     }
 
     @Override
@@ -147,7 +161,20 @@ public class TestAnimationFragment extends BaseFragment<TestPresenter> implement
     }
 
     @Override
-    public void animateTo(GeoPoint geoPoint) {
-        iMapController.setCenter(geoPoint);
+    public void animateTo(final GeoPoint geoPoint) {
+        getActivity().runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                iMapController.setCenter(geoPoint);
+            }
+        });
+    }
+
+    @Override
+    public void onDestroyView() {
+        getActivity().unregisterReceiver(br);
+        getActivity().stopService(new Intent(getActivity(), MyService.class));
+        super.onDestroyView();
     }
 }

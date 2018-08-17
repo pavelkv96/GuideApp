@@ -3,12 +3,12 @@ package com.grsu.guideapp.fragments.test;
 import static com.grsu.guideapp.utils.Crypto.decodeL;
 import static com.grsu.guideapp.utils.Crypto.decodeP;
 
-import android.location.Location;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import com.grsu.guideapp.base.BasePresenterImpl;
+import com.grsu.guideapp.fragments.test.TestContract.TestInteractor.OnChange;
 import com.grsu.guideapp.fragments.test.TestContract.TestInteractor.OnFinishedListener;
 import com.grsu.guideapp.fragments.test.TestContract.TestViews;
 import com.grsu.guideapp.models.Line;
@@ -20,14 +20,14 @@ import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
 
 public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFinishedListener,
-        TestContract.TestPresenter, Runnable {
+        TestContract.TestPresenter, Runnable, OnChange {
 
     private static final String TAG = TestPresenter.class.getSimpleName();
 
     private List<GeoPoint> points = new ArrayList<>();
     private List<Marker> markers = new ArrayList<>();
     private final Handler mHandler = new Handler();
-    private static final int ANIMATE_SPEEED = 500;
+    private static final int ANIMATE_SPEEED = 450;
     private final Interpolator interpolator = new LinearInterpolator();
     private int currentIndex = 0;
     private long start = SystemClock.uptimeMillis();
@@ -59,11 +59,23 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFin
     }
 
     @Override
+    public void getLocation(GeoPoint point) {
+        points.add(point);
+        //Logs.e(TAG, "" + point);
+        if (points.size() > 1) {
+            endLatLng = getEndLatLng();
+            start = SystemClock.uptimeMillis();
+            run();
+        } else {
+            initialize();
+        }
+    }
+
+    @Override
     public void onFinished(List<Line> encodePolylines) {
         try {
             Line line = null;
             for (Line encodePolyline : encodePolylines) {
-                points.addAll(decodeL(encodePolyline.getPolyline()));
                 testViews.setPolyline(decodeL(encodePolyline.getPolyline()));
                 markers.add(testViews.setPoints(decodeP(encodePolyline.getStartPoint())));
                 line = encodePolyline;
@@ -97,13 +109,13 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFin
                 endLatLng = getEndLatLng();
                 beginLatLng = getBeginLatLng();
                 start = SystemClock.uptimeMillis();
-                highLightMarker(currentIndex);
+                //highLightMarker(currentIndex);
                 start = SystemClock.uptimeMillis();
                 mHandler.postDelayed(this, 16);
                 //pause();
             } else {
                 currentIndex++;
-                highLightMarker(currentIndex);
+                //highLightMarker(currentIndex);
                 //stop();
                 pause();
             }
@@ -113,19 +125,12 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFin
 
     @Override
     public void startAnimation() {
-        if (points.size() > 0) {
-            initialize();
-            endLatLng = getEndLatLng();
+        if (points.isEmpty()) {
+            /*endLatLng = getEndLatLng();
             start = SystemClock.uptimeMillis();
-            run();
+            run();*/
         }
-
     }
-
-    /*@Override
-    public void setMarkers(Marker marker) {
-        points.add(marker);
-    }*/
 
     private void reset() {
         currentIndex = 0;
@@ -137,21 +142,21 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFin
     private void initialize() {
         reset();
 
-        highLightMarker(0);
+        /*highLightMarker(0);*/
 
         polyLine = testViews.initializePolyLine(points.get(0));
         trackingMarker = testViews.setTrackerMarker(points.get(0));
 
     }
 
-    private void highLightMarker(int index) {
-        //Logs.e(TAG, "new GeoPoint(" + points.get(index).toString()+")");
-        //SystemClock.sleep(3000);
-        /*Marker marker = markers.get(index);
-        marker = testViews.highLightMarker(marker);
-        markers.set(index, marker);*/
-        //testViews.invalidate();
-    }
+//    private void highLightMarker(int index) {
+//        /*Logs.e(TAG, "new GeoPoint(" + points.get(index).toString()+")");
+//        SystemClock.sleep(3000);
+//        Marker marker = markers.get(index);
+//        marker = testViews.highLightMarker(marker);
+//        markers.set(index, marker);
+//        testViews.invalidate();*/
+//    }
 
     private void updatePolyLine(GeoPoint geoPoint) {
         List<GeoPoint> points = polyLine.getPoints();
@@ -183,18 +188,9 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFin
         return points.get(currentIndex);
     }
 
-
-    private Location convertLatLngToLocation(GeoPoint latLng) {
-        Location loc = new Location("someLoc");
-        loc.setLatitude(latLng.getLatitude());
-        loc.setLongitude(latLng.getLongitude());
-        return loc;
-    }
-
-    private float bearingBetweenLatLngs(GeoPoint begin,GeoPoint end) {
-        Location beginL= convertLatLngToLocation(begin);
-        Location endL= convertLatLngToLocation(end);
-        return beginL.bearingTo(endL);
+    @Override
+    public void OnChangeLocationListener(GeoPoint currentPosition) {
+        getLocation(currentPosition);
     }
 }
 

@@ -28,6 +28,11 @@
     </activity>
     <activity android:name=".activities.details.DetailsActivity"/>
     <activity android:name=".activities.route.RouteActivity"/>
+
+    <service
+      android:name=".fragments.test.MyService"
+      android:process=":my_service">
+    </service>
   </application>
 
 </manifest>

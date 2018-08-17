@@ -16,4 +16,6 @@ public class Constants {
     public static final String KEY_CHECKED_ITEM = "checked_item";
     public static final String KEY_SELECTED_ITEM = "selected_item";
     public static final String KEY_ID_ROUTE = "id_route";
+    public final static String KEY_GEO_POINT = "geo_point";
+    public final static String KEY_STATUS = "status";
 }
