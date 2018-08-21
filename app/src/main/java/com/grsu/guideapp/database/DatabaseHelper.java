@@ -142,7 +142,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Line> linesList = new ArrayList<>();
         openDatabase();
         Cursor cursor = mDatabase.rawQuery(
-                "select c1.* from lines c1, list_lines c2 where c1.id_line=c2.id_line and c2.id_route = ?",
+                "select c2.sequence, c1.start_point, c1.end_point, c1.polyline from lines c1, list_lines c2 where c1.id_line=c2.id_line and c2.id_route = ? order by sequence",
+                //"select c1.* from lines c1, list_lines c2 where c1.id_line=c2.id_line and c2.id_route = ?",
                 new String[]{String.valueOf(id_route)});
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
@@ -170,9 +171,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String rightDownLng = String.valueOf(cLongitude - lng);
         String leftUpLng = String.valueOf(cLongitude + lng);
 
-        return "select c2.* from `list_poi` c1, `poi` c2 where c1.id_poi=c2.id_poi AND  (c2.Latitude BETWEEN "
+        return "select c2.* from `list_poi` c1, `poi` c2 where c1.id_poi=c2.id_poi AND  (c2.latitude BETWEEN "
                 + rightDownLan
-                + " AND " + leftUpLan + ") AND (c2.Longitude BETWEEN " + rightDownLng + " AND "
+                + " AND " + leftUpLan + ") AND (c2.longitude BETWEEN " + rightDownLng + " AND "
                 + leftUpLng + ")" + getByTypes(typesObjects) + d(cLatitude, cLongitude);
     }
 
@@ -185,7 +186,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 
-        return " AND Type IN(" + stringBuilder + ")";
+        return " AND type IN(" + stringBuilder + ")";
     }
 
     @NonNull

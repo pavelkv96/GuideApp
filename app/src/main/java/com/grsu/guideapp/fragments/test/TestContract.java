@@ -38,8 +38,6 @@ public interface TestContract {
 
         void getId(Integer id);
 
-        void startAnimation();
-
         boolean onMarkerClick(Marker marker, MapView mapView);
 
         void getLocation(GeoPoint point);
@@ -50,11 +48,6 @@ public interface TestContract {
         interface OnFinishedListener {
 
             void onFinished(List<Line> encodePolylines);
-        }
-
-        interface OnChange {
-
-            void OnChangeLocationListener(GeoPoint currentPosition);
         }
 
         void getRouteById(OnFinishedListener listener, Integer id);

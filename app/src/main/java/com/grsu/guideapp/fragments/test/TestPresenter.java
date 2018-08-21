@@ -8,7 +8,6 @@ import android.os.SystemClock;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import com.grsu.guideapp.base.BasePresenterImpl;
-import com.grsu.guideapp.fragments.test.TestContract.TestInteractor.OnChange;
 import com.grsu.guideapp.fragments.test.TestContract.TestInteractor.OnFinishedListener;
 import com.grsu.guideapp.fragments.test.TestContract.TestViews;
 import com.grsu.guideapp.models.Line;
@@ -20,12 +19,11 @@ import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
 
 public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFinishedListener,
-        TestContract.TestPresenter, Runnable, OnChange {
+        TestContract.TestPresenter, Runnable {
 
     private static final String TAG = TestPresenter.class.getSimpleName();
 
     private List<GeoPoint> points = new ArrayList<>();
-    private List<Marker> markers = new ArrayList<>();
     private final Handler mHandler = new Handler();
     private static final int ANIMATE_SPEEED = 450;
     private final Interpolator interpolator = new LinearInterpolator();
@@ -52,9 +50,6 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFin
 
     @Override
     public boolean onMarkerClick(Marker marker, MapView mapView) {
-       /* points.add(marker);
-        startAnimation();*/
-
         return false;
     }
 
@@ -77,7 +72,7 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFin
             Line line = null;
             for (Line encodePolyline : encodePolylines) {
                 testViews.setPolyline(decodeL(encodePolyline.getPolyline()));
-                markers.add(testViews.setPoints(decodeP(encodePolyline.getStartPoint())));
+                testViews.setPoints(decodeP(encodePolyline.getStartPoint()));
                 line = encodePolyline;
             }
             testViews.setPoints(decodeP(line.getEndPoint()));
@@ -123,18 +118,8 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFin
         testViews.invalidate();
     }
 
-    @Override
-    public void startAnimation() {
-        if (points.isEmpty()) {
-            /*endLatLng = getEndLatLng();
-            start = SystemClock.uptimeMillis();
-            run();*/
-        }
-    }
-
     private void reset() {
         currentIndex = 0;
-        /*endLatLng = getEndLatLng();*/
         beginLatLng = getBeginLatLng();
 
     }
@@ -142,21 +127,10 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFin
     private void initialize() {
         reset();
 
-        /*highLightMarker(0);*/
-
         polyLine = testViews.initializePolyLine(points.get(0));
         trackingMarker = testViews.setTrackerMarker(points.get(0));
 
     }
-
-//    private void highLightMarker(int index) {
-//        /*Logs.e(TAG, "new GeoPoint(" + points.get(index).toString()+")");
-//        SystemClock.sleep(3000);
-//        Marker marker = markers.get(index);
-//        marker = testViews.highLightMarker(marker);
-//        markers.set(index, marker);
-//        testViews.invalidate();*/
-//    }
 
     private void updatePolyLine(GeoPoint geoPoint) {
         List<GeoPoint> points = polyLine.getPoints();
@@ -169,9 +143,6 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFin
         mHandler.removeCallbacks(this);
         testViews.removePolyline(polyLine);
         testViews.invalidate();
-        /*for (Marker marker : points) {
-            testViews.removeMarker(marker);
-        }*/
 
         points.clear();
     }
@@ -186,11 +157,6 @@ public class TestPresenter extends BasePresenterImpl<TestViews> implements OnFin
 
     private GeoPoint getBeginLatLng() {
         return points.get(currentIndex);
-    }
-
-    @Override
-    public void OnChangeLocationListener(GeoPoint currentPosition) {
-        getLocation(currentPosition);
     }
 }
 

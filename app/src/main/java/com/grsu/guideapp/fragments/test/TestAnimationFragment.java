@@ -20,6 +20,7 @@ import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.test.TestContract.TestViews;
 import com.grsu.guideapp.utils.MarkerSingleton;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.PolylineSingleton;
 import com.grsu.guideapp.views.infowindows.CustomMarkerInfoWindow;
 import java.util.List;
@@ -66,7 +67,11 @@ public class TestAnimationFragment extends BaseFragment<TestPresenter> implement
 
         br = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
-                mPresenter.getLocation((GeoPoint) intent.getParcelableExtra(KEY_GEO_POINT));
+                GeoPoint geoPoint = intent.getParcelableExtra(KEY_GEO_POINT);
+                Logs.e(TAG, "I'm");
+                //mPresenter.getLocation(geoPoint);
+
+                //TODO logic
             }
         };
 

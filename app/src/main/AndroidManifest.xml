@@ -33,6 +33,10 @@
       android:name=".fragments.test.MyService"
       android:process=":my_service">
     </service>
+    <service
+      android:name=".fragments.map.MyService"
+      android:process=":my_service2">
+    </service>
   </application>
 
 </manifest>

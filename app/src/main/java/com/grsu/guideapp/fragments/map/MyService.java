@@ -1,7 +1,7 @@
-package com.grsu.guideapp.fragments.test;
+package com.grsu.guideapp.fragments.map;
 
 import static android.location.LocationManager.GPS_PROVIDER;
-import static com.grsu.guideapp.utils.Constants.KEY_GEO_POINT;
+import static com.grsu.guideapp.utils.Constants.KEY_GEO_POINT_1;
 
 import android.app.Service;
 import android.content.Context;
@@ -54,7 +54,7 @@ public class MyService extends Service implements LocationListener {
             Log.e(TAG, "gps provider does not exist " + ex.getMessage());
         }
 
-        while (i + 1 != 21) {
+        while (i + 1 != 2) {
             GeoPoint geoPoint = geoPoints.get(i);
             i++;
             Location currentLocation = new Location("");
@@ -66,8 +66,8 @@ public class MyService extends Service implements LocationListener {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Intent intent = new Intent(TestAnimationFragment.BR_ACTION);
-            intent.putExtra(KEY_GEO_POINT, (Parcelable) geoPoint);
+            Intent intent = new Intent(MapFragment.BR_ACTION);
+            intent.putExtra(KEY_GEO_POINT_1, mLastLocation);
             sendBroadcast(intent);
         }
     }
@@ -90,7 +90,7 @@ public class MyService extends Service implements LocationListener {
         Log.e(TAG, "initializeLocationManager");
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext()
-                    .getSystemService(Context.LOCATION_SERVICE);
+                    .getSystemService(LOCATION_SERVICE);
             geoPoints = new ArrayList<>();
             geoPoints.addAll(getList());
         }

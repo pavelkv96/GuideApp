@@ -2,12 +2,8 @@ package com.grsu.guideapp.fragments.map;
 
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import com.grsu.guideapp.activities.route.RouteContract.RouteInteractor;
-import com.grsu.guideapp.activities.route.RouteContract.RouteInteractor.OnFinishedListener;
 import com.grsu.guideapp.database.DatabaseHelper;
-import java.util.ArrayList;
 import java.util.List;
-import org.osmdroid.util.GeoPoint;
 
 public class MapInteractor implements MapContract.MapInteractor {
 
@@ -23,6 +19,17 @@ public class MapInteractor implements MapContract.MapInteractor {
             @Override
             public void run() {
                 listener.onFinished(helper.getRouteById(routeId));
+            }
+        }/*, 3000*/);
+    }
+
+    @Override
+    public void getListPoi(final OnFinishedListener listener, final double latitude, final double longitude,
+            final int radius, final List<Integer> typesObjects) {
+        new Handler().post/*Delayed*/(new Runnable() {
+            @Override
+            public void run() {
+                listener.onFinished1(helper.getListPoi(latitude, longitude, radius, typesObjects));
             }
         }/*, 3000*/);
     }

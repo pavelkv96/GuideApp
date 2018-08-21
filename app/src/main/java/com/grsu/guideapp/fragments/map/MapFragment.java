@@ -1,58 +1,55 @@
 package com.grsu.guideapp.fragments.map;
 
-import static com.grsu.guideapp.utils.CheckSelfPermission.writeExternalStorageIsGranted;
+import static com.grsu.guideapp.utils.Constants.KEY_GEO_POINT_1;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.graphics.Point;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
 import butterknife.BindView;
+import butterknife.OnClick;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
+import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.utils.MarkerSingleton;
 import com.grsu.guideapp.utils.PolylineSingleton;
+import java.util.ArrayList;
 import java.util.List;
-import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.tileprovider.util.StorageUtils;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.Projection;
+import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Marker.OnMarkerClickListener;
 
 
-public class MapFragment extends BaseFragment<MapPresenter> implements MapViews,
-        OnMarkerClickListener {
+public class MapFragment extends BaseFragment<MapPresenter> implements MapViews, MapEventsReceiver {
 
     private static final String TAG = MapFragment.class.getSimpleName();
-
-    private PolylineSingleton polylineSingleton = PolylineSingleton.Polyline;
+    public final static String BR_ACTION = MapFragment.class.getPackage().toString();
     private MarkerSingleton markerSingleton = MarkerSingleton.Marker;
+    private PolylineSingleton polylineSingleton = PolylineSingleton.Polyline;
+    private List<Marker> markers = new ArrayList<>();
+    private IMapController iMapController;
+    private BroadcastReceiver br;
 
     @BindView(R.id.mv_fragment_map)
     MapView mapView;
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        if (writeExternalStorageIsGranted(context)) {
-            if (getActivity() != null) {
-                getActivity().finish();
-            }
-        }
-        super.onAttach(context);
-    }
 
     @NonNull
     @Override
@@ -70,20 +67,34 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapViews,
         super.onViewCreated(view, savedInstanceState);
 
         mapViewSettings();
-        //TODO hardcode value
         mPresenter.getId(1);
+
+        br = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                Location location = intent.getParcelableExtra(KEY_GEO_POINT_1);
+                mapView.getController()
+                        .setCenter(new GeoPoint(location.getLatitude(), location.getLongitude()));
+                //mPresenter.getLocation(location);
+            }
+        };
+
+        getActivity().registerReceiver(br, new IntentFilter(BR_ACTION));
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mapView.onResume();
+    @OnClick(R.id.btn_fragment_map_clearmarker)
+    public void ResetMarker(View view) {
+        getActivity().stopService(new Intent(getActivity(), MyService.class));
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
+    @OnClick(R.id.btn_fragment_map_start)
+    public void start(View view) {
+        iMapController.setZoom(20f);
+        getActivity().startService(new Intent(getActivity(), MyService.class));
+    }
+
+    @OnClick(R.id.btn_fragment_map_next)
+    public void next(View view) {
+
     }
 
     @Override
@@ -98,46 +109,47 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapViews,
         mapView.setBuiltInZoomControls(true);
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setUseDataConnection(true);
+        mapView.getOverlays().add(new MapEventsOverlay(this));
         mapView.setScrollableAreaLimitDouble(new BoundingBox(53.7597, 23.9845, 53.5986, 23.7099));
+        iMapController = new MapController(mapView);
     }
 
     @Override
-    public void setPolyline(List<GeoPoint> geoPointList) {
-        polylineSingleton.getPolyline(mapView, geoPointList);
+    public void setPolyline(List<GeoPoint> geoPointList, int id) {
+        polylineSingleton.getPolyline(mapView, geoPointList, id);
     }
 
     @Override
-    public void setMarker(GeoPoint geoPoint) {
-        markerSingleton.getMarker(mapView, geoPoint).setOnMarkerClickListener(this);
+    public Marker setPoints(GeoPoint geoPoint) {
+        Marker marker = markerSingleton.getMarker(mapView, geoPoint);
+        marker.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.a_marker));
+        return marker;
     }
 
     @Override
-    public void animateMarker(final Marker marker, final GeoPoint toPosition) {
-        final Handler handler = new Handler();
-        final long start = SystemClock.uptimeMillis();
-        Projection proj = mapView.getProjection();
-        Point startPoint = proj.toPixels(marker.getPosition(), null);
-        final IGeoPoint startGeoPoint = proj.fromPixels(startPoint.x, startPoint.y);
-        final long duration = 50000;
-        final Interpolator interpolator = new LinearInterpolator();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                long elapsed = SystemClock.uptimeMillis() - start;
-                float t = interpolator.getInterpolation((float) elapsed / duration);
-                double lng = t * toPosition.getLongitude() + (1 - t) * startGeoPoint.getLongitude();
-                double lat = t * toPosition.getLatitude() + (1 - t) * startGeoPoint.getLatitude();
-                marker.setPosition(new GeoPoint(lat, lng));
-                if (t < 1.0) {
-                    handler.postDelayed(this, 15);
-                }
-                mapView.postInvalidate();
-            }
-        });
+    public void setGetPoints(Poi poi) {
+        markers.add(markerSingleton.getMarkerWithBubble(mapView, poi));
     }
 
     @Override
-    public boolean onMarkerClick(Marker marker, MapView mapView) {
-        return mPresenter.onMarkerClick(marker, mapView);
+    public void removeMarkers() {
+        markerSingleton.removeMarkers(mapView, markers);
+    }
+
+    @Override
+    public void onDestroyView() {
+        getActivity().unregisterReceiver(br);
+        getActivity().stopService(new Intent(getActivity(), MyService.class));
+        super.onDestroyView();
+    }
+
+    @Override
+    public boolean singleTapConfirmedHelper(GeoPoint p) {
+        return mPresenter.singleTapConfirmedHelper(p);
+    }
+
+    @Override
+    public boolean longPressHelper(GeoPoint p) {
+        return false;
     }
 }
