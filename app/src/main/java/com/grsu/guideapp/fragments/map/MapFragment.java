@@ -21,24 +21,24 @@ import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.utils.MarkerSingleton;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
+import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.utils.PolylineSingleton;
 import java.util.ArrayList;
 import java.util.List;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.tileprovider.util.StorageUtils;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.Marker.OnMarkerClickListener;
 
 
-public class MapFragment extends BaseFragment<MapPresenter> implements MapViews, MapEventsReceiver {
+public class MapFragment extends BaseFragment<MapPresenter> implements
+        MapViews/*, MapEventsReceiver*/ {
 
     private static final String TAG = MapFragment.class.getSimpleName();
     public final static String BR_ACTION = MapFragment.class.getPackage().toString();
@@ -47,6 +47,7 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapViews,
     private List<Marker> markers = new ArrayList<>();
     private IMapController iMapController;
     private BroadcastReceiver br;
+    private Marker marker;
 
     @BindView(R.id.mv_fragment_map)
     MapView mapView;
@@ -67,28 +68,36 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapViews,
         super.onViewCreated(view, savedInstanceState);
 
         mapViewSettings();
-        mPresenter.getId(1);
+        mPresenter.getId(3);
 
         br = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
                 Location location = intent.getParcelableExtra(KEY_GEO_POINT_1);
+                Toasts.makeS(getContext(), String.valueOf(
+                        (float) location.getLatitude() + "; " + (float) location.getLongitude()));
                 mapView.getController()
                         .setCenter(new GeoPoint(location.getLatitude(), location.getLongitude()));
-                //mPresenter.getLocation(location);
+
+                if (marker == null) {
+                    marker = markerSingleton.getMarker(mapView, MapPresenter.toGeoPoint(location));
+                } else {
+                    marker.setPosition(MapPresenter.toGeoPoint(location));
+                }
+                mPresenter.getLocation(location);
             }
         };
-
-        getActivity().registerReceiver(br, new IntentFilter(BR_ACTION));
     }
 
     @OnClick(R.id.btn_fragment_map_clearmarker)
     public void ResetMarker(View view) {
-        getActivity().stopService(new Intent(getActivity(), MyService.class));
+        stopped();
     }
 
     @OnClick(R.id.btn_fragment_map_start)
     public void start(View view) {
         iMapController.setZoom(20f);
+        iMapController.setCenter(new GeoPoint(53.684632, 23.839899));
+        getActivity().registerReceiver(br, new IntentFilter(BR_ACTION));
         getActivity().startService(new Intent(getActivity(), MyService.class));
     }
 
@@ -109,7 +118,7 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapViews,
         mapView.setBuiltInZoomControls(true);
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setUseDataConnection(true);
-        mapView.getOverlays().add(new MapEventsOverlay(this));
+        //mapView.getOverlays().add(new MapEventsOverlay(this));
         mapView.setScrollableAreaLimitDouble(new BoundingBox(53.7597, 23.9845, 53.5986, 23.7099));
         iMapController = new MapController(mapView);
     }
@@ -137,13 +146,21 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapViews,
     }
 
     @Override
-    public void onDestroyView() {
-        getActivity().unregisterReceiver(br);
-        getActivity().stopService(new Intent(getActivity(), MyService.class));
-        super.onDestroyView();
+    public void stopped() {
+        try {
+            getActivity().unregisterReceiver(br);
+            getActivity().stopService(new Intent(getActivity(), MyService.class));
+        } catch (NullPointerException ignore) {
+        }
     }
 
     @Override
+    public void onDestroyView() {
+        stopped();
+        super.onDestroyView();
+    }
+
+    /*@Override
     public boolean singleTapConfirmedHelper(GeoPoint p) {
         return mPresenter.singleTapConfirmedHelper(p);
     }
@@ -151,5 +168,5 @@ public class MapFragment extends BaseFragment<MapPresenter> implements MapViews,
     @Override
     public boolean longPressHelper(GeoPoint p) {
         return false;
-    }
+    }*/
 }

@@ -22,10 +22,10 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         OnFinishedListener {
 
     private static final String TAG = MapPresenter.class.getSimpleName();
+    private static final Integer RADIUS = 100;
     private List<LineG> markers = new ArrayList<>();
     private Marker currentMarker;
     private LineG currentLine;
-    private boolean i = true;
 
     private MapViews mapViews;
     private MapInteractor mapInteractor;
@@ -43,22 +43,29 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     @Override
     public void getLocation(Location currentLocation) {
+
+        if (currentMarker != null) {
+            GeoPoint position = currentMarker.getPosition();
+
+            if (getDistanceBetween(currentLocation, position) > RADIUS) {
+                currentMarker = null;
+                Logs.e(TAG, "REMOVE");
+                mapViews.removeMarkers();
+            }
+        }
+
         if (currentLine != null) {
             GeoPoint point = currentLine.getStartPoint().getPosition();
 
-            Location newLocation = new Location("newlocation");
-            newLocation.setLatitude(point.getLatitude());
-            newLocation.setLongitude(point.getLongitude());
-
-            getCurrentTurn(currentLocation, newLocation);
+            getCurrentTurn(currentLocation, toLocation(point));
+        } else {
+            mapViews.stopped();
         }
     }
 
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint p) {
-        if (i) {
-            getLocation(toLocation(p));
-        }
+        //getLocation(toLocation(p));
         //Logs.e(TAG, currentLine.toString());
         return false;
     }
@@ -68,17 +75,16 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         try {
             for (Line encodeLine : encodePolylines) {
                 Integer idLine = encodeLine.getIdLine();
-                Marker startMarker = mapViews.setPoints(decodeP(encodeLine.getStartPoint()));
-                Marker endMarker = mapViews.setPoints(decodeP(encodeLine.getEndPoint()));
 
                 mapViews.setPolyline(decodeL(encodeLine.getPolyline()), idLine);
+
+                Marker startMarker = mapViews.setPoints(decodeP(encodeLine.getStartPoint()));
+                Marker endMarker = mapViews.setPoints(decodeP(encodeLine.getEndPoint()));
 
                 LineG line = new LineG(idLine, startMarker, endMarker, "dfdsf");
                 if (currentMarker == null) {
                     currentMarker = startMarker;
                     currentLine = line;
-
-                    Logs.e(TAG, currentLine.toString());
                 }
 
                 markers.add(line);
@@ -90,6 +96,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     @Override
     public void onFinished1(List<Poi> poiList) {
+        mapViews.removeMarkers();
         for (Poi poi : poiList) {
             mapViews.setGetPoints(poi);
         }
@@ -104,33 +111,33 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         float startDistance = currentLocation.distanceTo(newLocation); //in meters
         float endDistance = currentLocation.distanceTo(endLocation); //in meters
 
-        Logs.e(TAG, "DISTANCE " +
-                currentLine.getIdLine() + "  " +
-                isMoreDistance(startDistance, endDistance) + "  " +
+        Logs.e(TAG, "DISTANCE " + isMoreDistance(startDistance, endDistance) + "  " +
                 startDistance + "   " + endDistance);
 
         if (isMoreDistance(startDistance, endDistance)) {
 
-            //TODO it is multi choice response
-            List<Integer> integers = new ArrayList<>();
-            integers.add(1);
-            integers.add(2);
-            integers.add(3);
-            integers.add(4);
+            if (endDistance <= RADIUS) {
+                currentMarker = currentLine.getEndPoint();
 
-            if (endDistance <= 100) {
+                Logs.e(TAG, "QUERY 1");
                 mapInteractor.getListPoi(
                         this,
                         endPosition.getLatitude(),
                         endPosition.getLongitude(),
                         1000,
-                        integers);
+                        getList());
             }
 
             currentLine = nextPolyline(currentLine.getIdLine());
-            if (currentLine == null) {
-                // Receiver unregistered
-                i = false;
+        } else {
+            if (currentMarker == null && startDistance <= RADIUS) {
+                currentMarker = currentLine.getStartPoint();
+
+                GeoPoint position = currentMarker.getPosition();
+
+                Logs.e(TAG, "QUERY");
+                mapInteractor.getListPoi(
+                        this, position.getLatitude(), position.getLongitude(), 1000, getList());
             }
         }
     }
@@ -149,6 +156,16 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         }
 
         return null;
+    }
+
+    private List<Integer> getList() {
+        //TODO it is multi choice response
+        List<Integer> integers = new ArrayList<>();
+        integers.add(1);
+        integers.add(2);
+        integers.add(3);
+        integers.add(4);
+        return integers;
     }
 
     /**
@@ -194,7 +211,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         return location;
     }
 
-    private GeoPoint toGeoPoint(Location location) {
+    public static GeoPoint toGeoPoint(Location location) {
         return new GeoPoint(location.getLatitude(), location.getLongitude());
     }
 
@@ -208,7 +225,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     private float getDistanceBetween(Location startLocation, GeoPoint newPosition) {
 
-        Location endLocation = new Location("newLocation");
+        Location endLocation = new Location("newsLocation");
         endLocation.setLatitude(newPosition.getLatitude());
         endLocation.setLongitude(newPosition.getLongitude());
 

@@ -24,6 +24,8 @@ public interface MapContract {
         void setGetPoints(Poi poi);
 
         void removeMarkers();
+
+        void stopped();
     }
 
     interface MapPresenter extends BasePresenter<MapViews> {

@@ -4,7 +4,6 @@ import static android.location.LocationManager.GPS_PROVIDER;
 import static com.grsu.guideapp.utils.Constants.KEY_GEO_POINT_1;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
@@ -36,7 +35,6 @@ public class MyService extends Service implements LocationListener {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e(TAG, "onStartCommand");
         super.onStartCommand(intent, flags, startId);
-        onDestroy();
         return START_STICKY;
     }
 
@@ -52,23 +50,6 @@ public class MyService extends Service implements LocationListener {
             Log.e(TAG, "fail to request location update, ignore", ex);
         } catch (IllegalArgumentException ex) {
             Log.e(TAG, "gps provider does not exist " + ex.getMessage());
-        }
-
-        while (i + 1 != 2) {
-            GeoPoint geoPoint = geoPoints.get(i);
-            i++;
-            Location currentLocation = new Location("");
-            currentLocation.setLatitude(geoPoint.getLatitude());
-            currentLocation.setLongitude(geoPoint.getLongitude());
-            mLastLocation.set(currentLocation);
-            try {
-                getSleep();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Intent intent = new Intent(MapFragment.BR_ACTION);
-            intent.putExtra(KEY_GEO_POINT_1, mLastLocation);
-            sendBroadcast(intent);
         }
     }
 
@@ -102,16 +83,16 @@ public class MyService extends Service implements LocationListener {
             onDestroy();
         } else {
             GeoPoint geoPoint = geoPoints.get(i);
-            i++;
-            Location currentLocation = new Location("");
-            currentLocation.setLatitude(geoPoint.getLatitude());
-            currentLocation.setLongitude(geoPoint.getLongitude());
-            mLastLocation.set(currentLocation);
+            i++;*/
+        /*Location currentLocation = new Location("");
+        currentLocation.setLatitude(geoPoint.getLatitude());
+        currentLocation.setLongitude(geoPoint.getLongitude());
+        mLastLocation.set(currentLocation);*/
 
-            Intent intent = new Intent(TestAnimationFragment.BR_ACTION);
-            intent.putExtra(KEY_GEO_POINT, (Parcelable) geoPoint);
-            sendBroadcast(intent);
-        }*/
+        Intent intent = new Intent(MapFragment.BR_ACTION);
+        intent.putExtra(KEY_GEO_POINT_1, (Parcelable) location);
+        sendBroadcast(intent);
+        /*}*/
     }
 
     @Override
