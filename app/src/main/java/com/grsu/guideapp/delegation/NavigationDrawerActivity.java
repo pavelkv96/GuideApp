@@ -8,6 +8,7 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseDelegationActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
 import com.grsu.guideapp.fragments.ListRoutesFragment;
+import com.grsu.guideapp.fragments.Tracker;
 import com.grsu.guideapp.fragments.test.TestAnimationFragment;
 import com.grsu.guideapp.fragments.map.MapFragment;
 import com.grsu.guideapp.fragments.setting.SettingsFragment;
@@ -55,6 +56,11 @@ public class NavigationDrawerActivity
     @Override
     public NavigationDrawerActivity getActivity() {
         return this;
+    }
+
+    @Override
+    public void openTrackerFragment() {
+        mPresenter.replaceFragment(Tracker.newInstance());
     }
 
     @Override

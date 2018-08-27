@@ -20,6 +20,7 @@ public interface NavigationDrawerContract {
 
         NavigationDrawerActivity getActivity();
 
+        void openTrackerFragment();
     }
 
     interface NavigationDrawerPresenter extends BasePresenter<NavigationDrawerView> {
