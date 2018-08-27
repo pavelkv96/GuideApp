@@ -1,8 +1,6 @@
 package com.grsu.guideapp.fragments.map;
 
 import android.location.Location;
-import com.grsu.guideapp.activities.route.RouteContract.RouteInteractor;
-import com.grsu.guideapp.activities.route.RouteContract.RouteInteractor.OnFinishedListener;
 import com.grsu.guideapp.base.BasePresenter;
 import com.grsu.guideapp.base.BaseView;
 import com.grsu.guideapp.models.Line;
@@ -10,6 +8,7 @@ import com.grsu.guideapp.models.Poi;
 import java.util.List;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polyline;
 
 public interface MapContract {
 
@@ -18,6 +17,8 @@ public interface MapContract {
         void mapViewSettings();
 
         void setPolyline(List<GeoPoint> geoPointList, int id);
+
+        Polyline setPolyline(GeoPoint geoPointList);
 
         Marker setPoints(GeoPoint geoPoint);
 
@@ -33,8 +34,6 @@ public interface MapContract {
         void getId(Integer id);
 
         void getLocation(Location location);
-
-        boolean singleTapConfirmedHelper(GeoPoint p);
     }
 
     interface MapInteractor {
