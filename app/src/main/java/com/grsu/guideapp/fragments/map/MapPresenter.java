@@ -19,12 +19,14 @@ import org.osmdroid.views.overlay.Polyline;
 public class MapPresenter extends BasePresenterImpl<MapViews> implements MapContract.MapPresenter,
         OnFinishedListener {
 
+    private static final Integer RADIUS = 100;
     private static final String TAG = MapPresenter.class.getSimpleName();
     private GeoPoint currentGeoPoint;
     private List<GeoPoint> geoPoints;
     private Integer currentIndex;
     private List<GeoPoint> allGeoPoints;
     private Polyline polyline;
+    private List<GeoPoint> turnsList;
 
     private MapViews mapViews;
     private MapInteractor mapInteractor;
@@ -56,47 +58,44 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         Integer index = geoPoints.indexOf(point);
         detach(index);
 
-        for (GeoPoint geoPoint : geoPoints) {
-            if (geoPoint == currentGeoPoint) {
-                Logs.e(TAG, geoPoint + " center");
-
-            } else {
-                Logs.e(TAG, geoPoint.toString());
-            }
-        }
-        Logs.e(TAG, "--------------------------------------------");
+        getCurrentTurn(toLocation(currentGeoPoint));
     }
 
     @Override
     public void onFinished(List<Line> encodePolylines) {
         allGeoPoints = new ArrayList<>();
         geoPoints = new ArrayList<>();
+        turnsList = new ArrayList<>();
+
         try {
             for (Line encodeLine : setData1()) {
                 Integer idLine = encodeLine.getIdLine();
 
                 mapViews.setPolyline(decodeL(encodeLine.getPolyline()), idLine);
 
-                mapViews.setPoints(decodeP(encodeLine.getStartPoint()));
-                mapViews.setPoints(decodeP(encodeLine.getEndPoint()));
+                GeoPoint startPoint = decodeP(encodeLine.getStartPoint());
+                GeoPoint endPoint = decodeP(encodeLine.getEndPoint());
+                mapViews.setPoints(startPoint);
+                mapViews.setPoints(endPoint);
 
                 List<GeoPoint> lineList = decodeL(encodeLine.getPolyline());
 
                 if (currentGeoPoint != null) {
                     lineList.remove(0);
+                    turnsList.add(endPoint);
                 } else {
                     currentIndex = 0;
-                    currentGeoPoint = decodeP(encodeLine.getStartPoint());
+                    currentGeoPoint = startPoint;
+                    turnsList.add(endPoint);
+                    turnsList.add(startPoint);
                 }
 
                 allGeoPoints.addAll(lineList);
             }
 
-            geoPoints.add(allGeoPoints.get(0));
-            geoPoints.add(allGeoPoints.get(1));
-            geoPoints.add(allGeoPoints.get(2));
-            geoPoints.add(allGeoPoints.get(3));
-            geoPoints.add(allGeoPoints.get(4));
+            for (int i = 0; i < 5; i++) {
+                geoPoints.add(allGeoPoints.get(i));
+            }
         } catch (NullPointerException ignored) {
         }
         mView.hideProgress();
@@ -111,6 +110,31 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
     }
 
     //--------------------------------------------------------------------------------------------
+
+    private void getCurrentTurn(Location currentLocation) {
+        GeoPoint shortestDistance = getShortestDistance(turnsList, currentLocation);
+
+        if (isMoreDistance(RADIUS, currentLocation, shortestDistance)) {
+            mapInteractor.getListPoi(
+                    this,
+                    shortestDistance.getLatitude(),
+                    shortestDistance.getLongitude(),
+                    1000,
+                    getList());
+        } else {
+            mapViews.removeMarkers();
+        }
+    }
+
+    private List<Integer> getList() {
+        //TODO it is multi choice response
+        List<Integer> integers = new ArrayList<>();
+        integers.add(1);
+        integers.add(2);
+        integers.add(3);
+        integers.add(4);
+        return integers;
+    }
 
     public Location toLocation(GeoPoint position) {
         Location location = new Location("");
@@ -198,17 +222,12 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         return shortestDistance;
     }
 
-    private GeoPoint getShortestDistance(List<GeoPoint> hashMap, Location currentLocation) {
-        Float distance = null;
-        GeoPoint geoPoint = null;
+    private GeoPoint getShortestDistance(List<GeoPoint> geoPointList, Location currentLocation) {
+        Location endLocation = toLocation(geoPointList.get(0));
+        Float distance = getDistanceBetween(currentLocation, endLocation);
+        GeoPoint geoPoint = geoPointList.get(0);
 
-        for (GeoPoint point : hashMap) {
-            if (distance == null) {
-                Location endLocation = toLocation(point);
-                distance = getDistanceBetween(currentLocation, endLocation);
-                geoPoint = point;
-            }
-
+        for (GeoPoint point : geoPointList) {
             if (isMoreDistance(distance, currentLocation, point)) {
                 distance = getDistanceBetween(currentLocation, toLocation(point));
                 geoPoint = point;

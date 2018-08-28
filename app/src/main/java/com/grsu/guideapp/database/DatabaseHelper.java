@@ -120,8 +120,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         List<Poi> poiList = new ArrayList<>();
         openDatabase();
-        Cursor cursor = mDatabase.rawQuery(
-                getPlaceWithRadius(cLatitude, cLongitude, radius, typesObjects), null);
+        String placeWithRadiusQuery = getPlaceWithRadius(cLatitude, cLongitude, radius, typesObjects);
+        Cursor cursor = mDatabase.rawQuery(placeWithRadiusQuery, null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             poiList.add(new Poi(
