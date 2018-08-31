@@ -60,21 +60,6 @@ public class TestAnimationFragment extends Fragment implements OnMapReadyCallbac
         mMap.addMarker(new MarkerOptions().position(new LatLng(53.699487, 23.819337)));
     }
 
-    /* public class CustomUrlTileProvider implements TileProvider {
-
-         private String baseUrl;
-
-         *//*public CustomUrlTileProvider(int width, int height, String url) {
-            //super(width, height);
-            this.baseUrl = url;
-        }*//*
-
-
-        @Override
-        public Tile getTile(int x, int y, int zoom) {
-            return new Tile(x,y, zoom);
-        }
-    }*/
     private static class CoordTileProvider implements TileProvider {
 
         private static final String TAG = CoordTileProvider.class.getSimpleName();
@@ -111,7 +96,6 @@ public class TestAnimationFragment extends Fragment implements OnMapReadyCallbac
         }
 
         private Bitmap drawTileCoords(int x, int y, int zoom) {
-            // Synchronize copying the bitmap to avoid a race condition in some devices.
             Bitmap copy;
             synchronized (mBorderTile) {
                 copy = mBorderTile.copy(ARGB_8888, true);
@@ -144,26 +128,3 @@ public class TestAnimationFragment extends Fragment implements OnMapReadyCallbac
 
     }
 }
-
-/*
-public static int getZoom(final long pTileIndex) {
-            return (int) (pTileIndex >> (10 * 2));
-        }
-
-        public static int getX(final long pTileIndex) {
-            return (int) ((pTileIndex >> 10) % (1<<10));
-        }
-
-        public static int getY(final long pTileIndex) {
-            return (int) (pTileIndex % (1<<10));
-        }
-
-
-        public static String toString(final int pZoom, final int pX, final int pY) {
-            return "/" + pZoom + "/" + pX + "/" + pY;
-        }
-
-        public static String toString(final long pIndex) {
-            return toString(getZoom(pIndex), getX(pIndex), getY(pIndex));
-        }
-*/
