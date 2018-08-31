@@ -1,185 +1,122 @@
 package com.grsu.guideapp.fragments.test;
 
-import static com.grsu.guideapp.utils.Constants.KEY_GEO_POINT;
+import static android.graphics.Bitmap.Config.ARGB_8888;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Color;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import com.google.android.gms.maps.GoogleMap;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.database.DatabaseHelper;
-import com.grsu.guideapp.fragments.test.TestContract.TestViews;
-import com.grsu.guideapp.utils.MarkerSingleton;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
-import com.grsu.guideapp.utils.PolylineSingleton;
-import com.grsu.guideapp.views.infowindows.CustomMarkerInfoWindow;
-import java.util.List;
-import org.osmdroid.api.IMapController;
-import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import com.grsu.guideapp.utils.MessageViewer.Toasts;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import org.osmdroid.tileprovider.util.StorageUtils;
-import org.osmdroid.util.BoundingBox;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapController;
-import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.Polyline;
 
-public class TestAnimationFragment extends BaseFragment<TestPresenter> implements TestViews {
+public class TestAnimationFragment extends Fragment implements OnMapReadyCallback {
 
-    private static final String TAG = TestAnimationFragment.class.getSimpleName();
-    public final static String BR_ACTION = TestAnimationFragment.class.getPackage().toString();
-    private MarkerSingleton markerSingleton = MarkerSingleton.Marker;
-    private PolylineSingleton polylineSingleton = PolylineSingleton.Polyline;
-    private IMapController iMapController;
-    private BroadcastReceiver br;
+    private GoogleMap mMap;
 
-    @BindView(R.id.mv_fragment_test_animation)
-    MapView mapView;
-
-    @NonNull
+    @Nullable
     @Override
-    protected TestPresenter getPresenterInstance() {
-        return new TestPresenter(this, new TestInteractor(new DatabaseHelper(getContext())));
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_test_animation, container, false);
+        ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map))
+                .getMapAsync(this);
+        return view;
     }
 
     @Override
-    protected int getLayout() {
-        return R.layout.fragment_test_animation;
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        Logs.e("TEST", "TEST");
+        mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
+        mMap.setMyLocationEnabled(true);
+
+        TileProvider coordTileProvider = new CoordTileProvider(getActivity());
+        mMap.addTileOverlay(new TileOverlayOptions().tileProvider(coordTileProvider));
+
+        mMap.addMarker(new MarkerOptions().position(new LatLng(53.699487, 23.819337)));
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    private static class CoordTileProvider implements TileProvider {
 
-        mapViewSettings();
-        mPresenter.getId(1);
+        private static final String TAG = CoordTileProvider.class.getSimpleName();
 
-        br = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                GeoPoint geoPoint = intent.getParcelableExtra(KEY_GEO_POINT);
-                Logs.e(TAG, "I'm");
-                //mPresenter.getLocation(geoPoint);
+        private static final int TILE_SIZE_DP = 256;
 
-                //TODO logic
+        private final float mScaleFactor;
+
+        private final Bitmap mBorderTile;
+        private Context mContext;
+
+        public CoordTileProvider(Context context) {
+            /* Scale factor based on density, with a 0.6 multiplier to increase tile generation
+             * speed */
+            mContext = context;
+            mScaleFactor = context.getResources().getDisplayMetrics().density * 0.6f;
+            Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            borderPaint.setStyle(Paint.Style.STROKE);
+            mBorderTile = Bitmap.createBitmap((int) (TILE_SIZE_DP * mScaleFactor),
+                    (int) (TILE_SIZE_DP * mScaleFactor), ARGB_8888);
+            Canvas canvas = new Canvas(mBorderTile);
+            canvas.drawRect(0, 0, TILE_SIZE_DP * mScaleFactor, TILE_SIZE_DP * mScaleFactor,
+                    borderPaint);
+        }
+
+        @Override
+        public Tile getTile(int x, int y, int zoom) {
+            Bitmap coordTile = drawTileCoords(x, y, zoom);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            coordTile.compress(Bitmap.CompressFormat.PNG, 0, stream);
+            byte[] bitmapData = stream.toByteArray();
+            return new Tile((int) (TILE_SIZE_DP * mScaleFactor),
+                    (int) (TILE_SIZE_DP * mScaleFactor), bitmapData);
+        }
+
+        private Bitmap drawTileCoords(int x, int y, int zoom) {
+            Bitmap copy;
+            synchronized (mBorderTile) {
+                copy = mBorderTile.copy(ARGB_8888, true);
             }
-        };
 
-        getActivity().registerReceiver(br, new IntentFilter(BR_ACTION));
-    }
+            File file = new File(StorageUtils.getStorage() + "/osmdroid/tiles/cache.db");
 
-    @OnClick(R.id.btn_clearmarker)
-    public void ResetMarker(View view) {
-        mPresenter.stop();
-        invalidate();
-    }
-
-    @OnClick(R.id.btn_start)
-    public void start(View view) {
-        iMapController.setZoom(20f);
-        getActivity().startService(new Intent(getActivity(), MyService.class));
-    }
-
-    @Override
-    public void mapViewSettings() {
-        Context ctx = getActivity();
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        Configuration.getInstance().setOsmdroidBasePath(StorageUtils.getStorage());
-
-        mapView.setMaxZoomLevel(20.0);
-        mapView.setMinZoomLevel(13.0);
-        mapView.getController().setZoom(13.0);
-        mapView.setBuiltInZoomControls(true);
-        mapView.setTileSource(TileSourceFactory.MAPNIK);
-        mapView.setUseDataConnection(true);
-        mapView.setScrollableAreaLimitDouble(new BoundingBox(53.7597, 23.9845, 53.5986, 23.7099));
-        iMapController = new MapController(mapView);
-    }
-
-
-    @Override
-    public void setPolyline(List<GeoPoint> geoPointList) {
-        polylineSingleton.getPolyline(mapView, geoPointList);
-    }
-
-    @Override
-    public Marker setPoints(GeoPoint geoPoint) {
-        Marker marker = markerSingleton.getMarker(mapView, geoPoint);
-        marker.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.a_marker));
-        return marker;
-    }
-
-    @Override
-    public Marker setTrackerMarker(GeoPoint geoPoint) {
-        Marker marker = new Marker(mapView);
-        marker.setPosition(geoPoint);
-        marker.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.b_marker));
-        marker.setInfoWindow(new CustomMarkerInfoWindow(mapView, false));
-        mapView.getOverlays().add(marker);
-        return marker;
-    }
-
-    @Override
-    public void invalidate() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mapView.invalidate();
+            if (file.exists()) {
+                copy = new DatabaseHelper(mContext).getTile(getIndex(x, y, zoom), file.getPath());
+                Logs.e(TAG, String.valueOf(getIndex(x, y, zoom)));
             }
-        });
-    }
 
-    @Override
-    public void removePolyline(Polyline polyline) {
-        mapView.getOverlays().remove(polyline);
-    }
+            /*Canvas canvas = new Canvas(copy);
+            String tileCoords = "(" + x + ", " + y + ")";
+            String zoomLevel = "zoom = " + zoom;
+            // Paint is not thread safe.
+            Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mTextPaint.setTextAlign(Paint.Align.CENTER);
+            mTextPaint.setTextSize(18 * mScaleFactor);
+            canvas.drawText(tileCoords, TILE_SIZE_DP * mScaleFactor / 2,
+                    TILE_SIZE_DP * mScaleFactor / 2, mTextPaint);
+            canvas.drawText(zoomLevel, TILE_SIZE_DP * mScaleFactor / 2,
+                    TILE_SIZE_DP * mScaleFactor * 2 / 3, mTextPaint);*/
+            return copy;
+        }
 
-    @Override
-    public void removeMarker(Marker marker) {
-        marker.remove(mapView);
-    }
+        public static long getIndex(final long pX, final long pY, final long pZ) {
+            return ((pZ << pZ) + pX << pZ) + pY;
+        }
 
-    @Override
-    public Polyline initializePolyLine(GeoPoint position) {
-        Polyline polyLine = new Polyline(mapView);
-        polyLine.addPoint(position);
-        polyLine.setColor(Color.RED);
-        mapView.getOverlays().add(polyLine);
-
-        return polyLine;
-    }
-
-    @Override
-    public Marker highLightMarker(Marker marker) {
-        marker.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.c_marker));
-        return marker;
-    }
-
-    @Override
-    public void animateTo(final GeoPoint geoPoint) {
-        getActivity().runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                iMapController.setCenter(geoPoint);
-            }
-        });
-    }
-
-    @Override
-    public void onDestroyView() {
-        getActivity().unregisterReceiver(br);
-        getActivity().stopService(new Intent(getActivity(), MyService.class));
-        super.onDestroyView();
     }
 }
