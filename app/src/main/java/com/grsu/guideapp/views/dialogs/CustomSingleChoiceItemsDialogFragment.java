@@ -31,7 +31,7 @@ public class CustomSingleChoiceItemsDialogFragment extends DialogFragment implem
         try {
             onChoiceItemListener = (OnChoiceItemListener) getActivity();
         } catch (ClassCastException ignored) {
-
+            onChoiceItemListener = (OnChoiceItemListener) getParentFragment();
         }
     }
 

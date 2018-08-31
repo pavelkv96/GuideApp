@@ -31,8 +31,8 @@ public class CustomMultiChoiceItemsDialogFragment extends DialogFragment impleme
         super.onAttach(context);
         try {
             dialogListener = (OnMultiChoiceListDialogFragment) getActivity();
-        } catch (ClassCastException ignored) {
-
+        } catch (ClassCastException e) {
+            dialogListener = (OnMultiChoiceListDialogFragment) getParentFragment();
         }
     }
 

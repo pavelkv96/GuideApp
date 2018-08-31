@@ -28,6 +28,9 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
     private Polyline polyline;
     private List<GeoPoint> turnsList;
 
+    private List<Integer> types = new ArrayList<>();
+    private Integer checkedItem;
+
     private MapViews mapViews;
     private MapInteractor mapInteractor;
 
@@ -59,6 +62,38 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         detach(index);
 
         getCurrentTurn(toLocation(currentGeoPoint));
+    }
+
+    @Override
+    public void setRadius(String radius) {
+        checkedItem = Integer.valueOf(radius);
+    }
+
+    @Override
+    public void setType(List<Integer> typesObjects) {
+        types = typesObjects;
+    }
+
+    @Override
+    public List<Integer> getType() {
+        return types;
+    }
+
+    @Override
+    public void getMarkers() {
+        if (currentGeoPoint != null) {
+            getCurrentTurn(toLocation(currentGeoPoint));
+            //MarkersWithSettings(currentGeoPoint);
+        }
+    }
+
+    private void getMarkersWithSettings(GeoPoint pGeoPoint) {
+        cleanUpMap();
+        if (types != null && types.size() > 0) {
+            mapInteractor.getListPoi(
+                    this, pGeoPoint.getLatitude(), pGeoPoint.getLongitude(), checkedItem, getType()
+            );
+        }
     }
 
     @Override
@@ -111,6 +146,11 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     //--------------------------------------------------------------------------------------------
 
+    private void cleanUpMap() {
+        mapViews.removeMarkers();
+        mapViews.removePolylines();
+    }
+
     private void getCurrentTurn(Location currentLocation) {
         GeoPoint shortestDistance = getShortestDistance(turnsList, currentLocation);
 
@@ -119,8 +159,8 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
                     this,
                     shortestDistance.getLatitude(),
                     shortestDistance.getLongitude(),
-                    1000,
-                    getList());
+                    checkedItem,
+                    getType());
         } else {
             mapViews.removeMarkers();
         }

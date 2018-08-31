@@ -24,9 +24,15 @@ public interface MapContract {
 
         void setGetPoints(Poi poi);
 
+        void setGetPolyline(List<GeoPoint> geoPointList);
+
         void removeMarkers();
 
         void stopped();
+
+        void removePolylines();
+
+        void openDialogViews();
     }
 
     interface MapPresenter extends BasePresenter<MapViews> {
@@ -34,6 +40,14 @@ public interface MapContract {
         void getId(Integer id);
 
         void getLocation(Location location);
+
+        void setRadius(String radius);
+
+        void setType(List<Integer> typesObjects);
+
+        List<Integer> getType();
+
+        void getMarkers();
     }
 
     interface MapInteractor {

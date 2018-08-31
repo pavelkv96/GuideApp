@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.grsu.guideapp.R;
@@ -23,6 +24,10 @@ import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.utils.MarkerSingleton;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.utils.PolylineSingleton;
+import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment;
+import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment.OnMultiChoiceListDialogFragment;
+import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment;
+import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment.OnChoiceItemListener;
 import java.util.ArrayList;
 import java.util.List;
 import org.osmdroid.api.IMapController;
@@ -36,23 +41,28 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
 
-
-public class MapFragment extends BaseFragment<MapPresenter> implements
-        MapViews/*, MapEventsReceiver*/ {
+public class MapFragment extends BaseFragment<MapPresenter> implements OnChoiceItemListener,
+        MapViews, OnMultiChoiceListDialogFragment {
 
     private static final String TAG = MapFragment.class.getSimpleName();
-    public final static String BR_ACTION = MapFragment.class.getPackage().toString();
+    public static final String BR_ACTION = MapFragment.class.getPackage().toString();
     private MarkerSingleton markerSingleton = MarkerSingleton.Marker;
     private PolylineSingleton polylineSingleton = PolylineSingleton.Polyline;
+
     private List<Marker> markers = new ArrayList<>();
+    private List<Polyline> polylines = new ArrayList<>();
+    private List<GeoPoint> geoPoints;
+
     private IMapController iMapController;
     private BroadcastReceiver br;
     private Marker marker;
-    private List<GeoPoint> geoPoints;
     int i = 0;
 
     @BindView(R.id.mv_fragment_map)
     MapView mapView;
+
+    @BindView(R.id.tv_fragment_map_distance)
+    TextView distanceTextView;
 
     @NonNull
     @Override
@@ -72,6 +82,8 @@ public class MapFragment extends BaseFragment<MapPresenter> implements
         mapViewSettings();
         mPresenter.getId(3);
 
+        mPresenter.setRadius("100");
+
         br = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
                 Location location = intent.getParcelableExtra(KEY_GEO_POINT_1);
@@ -88,6 +100,8 @@ public class MapFragment extends BaseFragment<MapPresenter> implements
                 mPresenter.getLocation(location);
             }
         };
+
+        openDialogViews();
     }
 
     @OnClick(R.id.btn_fragment_map_clearmarker)
@@ -163,6 +177,11 @@ public class MapFragment extends BaseFragment<MapPresenter> implements
     }
 
     @Override
+    public void setGetPolyline(List<GeoPoint> geoPointList) {
+        polylines.add(polylineSingleton.getPolyline(mapView, geoPointList));
+    }
+
+    @Override
     public void removeMarkers() {
         markerSingleton.removeMarkers(mapView, markers);
     }
@@ -174,6 +193,23 @@ public class MapFragment extends BaseFragment<MapPresenter> implements
             getActivity().stopService(new Intent(getActivity(), MyService.class));
         } catch (NullPointerException ignore) {
         } catch (IllegalArgumentException ignore) {
+        }
+    }
+
+    @Override
+    public void removePolylines() {
+        polylineSingleton.removePolylines(mapView, polylines);
+    }
+
+    @Override
+    public void openDialogViews() {
+        if (this.getFragmentManager() != null) {
+            CustomSingleChoiceItemsDialogFragment.newInstance(distanceTextView.getText())
+                    .show(this.getFragmentManager(), "CustomSingleChoiceItemsDialogFragment");
+
+            CustomMultiChoiceItemsDialogFragment
+                    .newInstance((ArrayList<Integer>) mPresenter.getType())
+                    .show(this.getFragmentManager(), "CustomMultiChoiceItemsDialogFragment");
         }
     }
 
@@ -348,13 +384,30 @@ public class MapFragment extends BaseFragment<MapPresenter> implements
         return geoPointList;
     }
 
-    /*@Override
-    public boolean singleTapConfirmedHelper(GeoPoint p) {
-        return mPresenter.singleTapConfirmedHelper(p);
+    @Override
+    public void onOk(ArrayList<Integer> arrayList) {
+        mPresenter.setType(arrayList);
+        mPresenter.getMarkers();
+        mapView.invalidate();
     }
 
     @Override
-    public boolean longPressHelper(GeoPoint p) {
-        return false;
-    }*/
+    public void choiceItem(String itemValue) {
+        distanceTextView.setText(itemValue);
+        mPresenter.setRadius(itemValue);
+        mPresenter.getMarkers();
+        mapView.invalidate();
+    }
+
+    @OnClick(R.id.btn_fragment_map_settings)
+    void openSettings(View view) {
+        CustomMultiChoiceItemsDialogFragment.newInstance((ArrayList<Integer>) mPresenter.getType())
+                .show(getChildFragmentManager(), "CustomMultiChoiceItemsDialogFragment");
+    }
+
+    @OnClick(R.id.tv_fragment_map_distance)
+    void openDistanceSettings(View view) {
+        CustomSingleChoiceItemsDialogFragment.newInstance(distanceTextView.getText())
+                .show(getChildFragmentManager(), "CustomSingleChoiceItemsDialogFragment");
+    }
 }
