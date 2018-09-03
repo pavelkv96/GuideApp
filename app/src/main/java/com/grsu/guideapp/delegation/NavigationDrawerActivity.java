@@ -1,5 +1,7 @@
 package com.grsu.guideapp.delegation;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
@@ -24,9 +26,9 @@ public class NavigationDrawerActivity
     @BindView(R.id.toolbar)
     protected Toolbar mToolbar;
 
-    /*public static Intent newIntent(Context context) {
+    public static Intent newIntent(Context context) {
         return new Intent(context, NavigationDrawerActivity.class);
-    }*/
+    }
 
     @Override
     protected NavigationDrawerDelegate instantiateDelegateInstance() {
