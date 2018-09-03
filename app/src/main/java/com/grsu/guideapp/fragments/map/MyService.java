@@ -1,7 +1,7 @@
 package com.grsu.guideapp.fragments.map;
 
 import static android.location.LocationManager.GPS_PROVIDER;
-import static com.grsu.guideapp.utils.Constants.KEY_GEO_POINT_1;
+import static com.grsu.guideapp.utils.constants.Constants.KEY_GEO_POINT;
 
 import android.app.Service;
 import android.content.Intent;
@@ -90,7 +90,7 @@ public class MyService extends Service implements LocationListener {
         mLastLocation.set(currentLocation);*/
 
         Intent intent = new Intent(MapFragment.BR_ACTION);
-        intent.putExtra(KEY_GEO_POINT_1, (Parcelable) location);
+        intent.putExtra(KEY_GEO_POINT, (Parcelable) location);
         sendBroadcast(intent);
         /*}*/
     }

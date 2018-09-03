@@ -1,6 +1,6 @@
 package com.grsu.guideapp.fragments.map;
 
-import static com.grsu.guideapp.utils.Constants.KEY_GEO_POINT_1;
+import static com.grsu.guideapp.utils.constants.Constants.KEY_GEO_POINT;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -86,7 +86,7 @@ public class MapFragment extends BaseFragment<MapPresenter> implements OnChoiceI
 
         br = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
-                Location location = intent.getParcelableExtra(KEY_GEO_POINT_1);
+                Location location = intent.getParcelableExtra(KEY_GEO_POINT);
                 Toasts.makeS(getContext(), String.valueOf(
                         (float) location.getLatitude() + "; " + (float) location.getLongitude()));
                 mapView.getController()
@@ -205,11 +205,11 @@ public class MapFragment extends BaseFragment<MapPresenter> implements OnChoiceI
     public void openDialogViews() {
         if (this.getFragmentManager() != null) {
             CustomSingleChoiceItemsDialogFragment.newInstance(distanceTextView.getText())
-                    .show(this.getFragmentManager(), "CustomSingleChoiceItemsDialogFragment");
+                    .show(getChildFragmentManager(), "CustomSingleChoiceItemsDialogFragment");
 
             CustomMultiChoiceItemsDialogFragment
                     .newInstance((ArrayList<Integer>) mPresenter.getType())
-                    .show(this.getFragmentManager(), "CustomMultiChoiceItemsDialogFragment");
+                    .show(getChildFragmentManager(), "CustomMultiChoiceItemsDialogFragment");
         }
     }
 

@@ -1,8 +1,8 @@
 package com.grsu.guideapp.database;
 
-import static com.grsu.guideapp.utils.Constants.DB_NAME;
-import static com.grsu.guideapp.utils.Constants.ONE_METER_LAT;
-import static com.grsu.guideapp.utils.Constants.ONE_METER_LNG;
+import static com.grsu.guideapp.utils.constants.Constants.DB_NAME;
+import static com.grsu.guideapp.utils.constants.Constants.ONE_METER_LAT;
+import static com.grsu.guideapp.utils.constants.Constants.ONE_METER_LNG;
 import static com.grsu.guideapp.utils.Crypto.encodeP;
 
 import android.content.Context;
@@ -16,7 +16,7 @@ import android.support.annotation.Nullable;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.utils.Constants;
+import com.grsu.guideapp.utils.constants.Constants;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -74,7 +74,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Bitmap getTile(long index, String path) {
         Bitmap bitmap = null;
         openDatabase(path);
-        Cursor cursor = mDatabase.rawQuery("SELECT tile FROM tiles where key = ?", new String[]{String.valueOf(index)});
+        Cursor cursor = mDatabase.rawQuery("SELECT tile FROM tiles where key = ?",
+                new String[]{String.valueOf(index)});
         if (cursor != null) {
             cursor.moveToFirst();
             byte[] a = cursor.getBlob(0);
@@ -144,12 +145,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Poi> getListPoi(double cLatitude, double cLongitude, int radius,
+    public List<Poi> getListPoi(double cLat, double cLng, int radius,
             List<Integer> typesObjects) {
 
         List<Poi> poiList = new ArrayList<>();
         openDatabase();
-        String placeWithRadiusQuery = getPlaceWithRadius(cLatitude, cLongitude, radius, typesObjects);
+        String placeWithRadiusQuery = getPlaceWithRadius(cLat, cLng, radius, typesObjects);
         Cursor cursor = mDatabase.rawQuery(placeWithRadiusQuery, null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {

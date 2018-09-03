@@ -15,7 +15,7 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.adapters.RoutesListAdapter.RouteViewHolder;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.utils.Constants;
+import com.grsu.guideapp.utils.constants.Constants;
 import com.grsu.guideapp.utils.ContextHolder;
 import com.squareup.picasso.Picasso;
 import java.util.List;

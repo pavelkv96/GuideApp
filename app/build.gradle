@@ -47,7 +47,11 @@ dependencies {
     implementation "com.jakewharton:butterknife:${versions.butterknife}"
     annotationProcessor "com.jakewharton:butterknife-compiler:${versions.butterknife}"
 
-    implementation 'com.google.android.gms:play-services-maps:15.0.1'
+    implementation "com.google.android.gms:play-services-maps:${versions.google_maps}"
+
+    implementation "org.mapsforge:mapsforge-map-android:${versions.mapsforge}"
+    implementation "org.mapsforge:mapsforge-map:${versions.mapsforge}"
+    implementation "org.mapsforge:mapsforge-themes:${versions.mapsforge}"
 
     implementation "org.osmdroid:osmdroid-android:${versions.osmdroid}"
 

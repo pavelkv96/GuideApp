@@ -20,8 +20,19 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+-dontwarn android.content.**
+-dontwarn android.graphics.drawable.**
+-dontwarn android.view.LayoutInflater
+-dontwarn android.util.Xml
+
+-dontwarn com.caverock.androidsvg.R$styleable
+-dontwarn com.caverock.androidsvg.SVGImageView
+-dontwarn com.caverock.androidsvg.SVGAndroidRenderer
+
 -dontwarn javax.annotation.**
+
 -keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
 -dontwarn okhttp3.internal.platform.ConscryptPlatform
-
-#-keep class android.support.v7.** { *; }
+-dontwarn org.mapsforge.map.android.rotation.RotateView
+-dontwarn org.mapsforge.map.android.rotation.SmoothCanvas
+-keep class org.xmlpull.v1.** { *; }

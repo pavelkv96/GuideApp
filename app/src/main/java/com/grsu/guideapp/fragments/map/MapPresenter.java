@@ -87,15 +87,6 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         }
     }
 
-    private void getMarkersWithSettings(GeoPoint pGeoPoint) {
-        cleanUpMap();
-        if (types != null && types.size() > 0) {
-            mapInteractor.getListPoi(
-                    this, pGeoPoint.getLatitude(), pGeoPoint.getLongitude(), checkedItem, getType()
-            );
-        }
-    }
-
     @Override
     public void onFinished(List<Line> encodePolylines) {
         allGeoPoints = new ArrayList<>();
@@ -154,7 +145,8 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
     private void getCurrentTurn(Location currentLocation) {
         GeoPoint shortestDistance = getShortestDistance(turnsList, currentLocation);
 
-        if (isMoreDistance(RADIUS, currentLocation, shortestDistance)) {
+        if (isMoreDistance(RADIUS, currentLocation, shortestDistance) && getType().size() != 0) {
+
             mapInteractor.getListPoi(
                     this,
                     shortestDistance.getLatitude(),

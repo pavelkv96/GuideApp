@@ -15,7 +15,7 @@ import com.grsu.guideapp.activities.route.RouteContract.RouteView;
 import com.grsu.guideapp.base.BaseActivity;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.models.Poi;
-import com.grsu.guideapp.utils.Constants;
+import com.grsu.guideapp.utils.constants.Constants;
 import com.grsu.guideapp.utils.MarkerSingleton;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.PolylineSingleton;

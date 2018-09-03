@@ -13,7 +13,7 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.adapters.RoutesListAdapter;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.utils.Constants;
+import com.grsu.guideapp.utils.constants.Constants;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.io.File;
 import java.util.List;
