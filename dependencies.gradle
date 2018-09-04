@@ -6,6 +6,6 @@ ext.versions = [
         support    : "27.1.0",//"28.0.0-beta01",
         butterknife: "8.8.1",
         osmdroid   : "6.0.2",
-        mapsforge  : "0.8.0",
+        mapsforge  : "0.10.0",
         google_maps: "15.0.1"
 ]

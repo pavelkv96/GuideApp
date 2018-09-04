@@ -48,7 +48,7 @@ public class MapUtils {
 
 
     @NonNull
-    public static XYTile getTileNumber(final double lat, final double lon, final int zoom) {
+    private static XYTile getTileNumber(final double lat, final double lon, final int zoom) {
         int xTile = (int) Math.floor((lon + 180) / 360 * (1 << zoom));
         int yTile = (int) Math.floor((1
                 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
@@ -68,7 +68,7 @@ public class MapUtils {
         return new XYTile(xTile, yTile);
     }
 
-    private static long getTileIndex(final int pZoom, final int pX, final int pY) {
+    public static long getTileIndex(final int pZoom, final int pX, final int pY) {
         return (((long) pZoom) << (mMaxZoomLevel * 2)) + (((long) pX) << mMaxZoomLevel) + (long) pY;
     }
 

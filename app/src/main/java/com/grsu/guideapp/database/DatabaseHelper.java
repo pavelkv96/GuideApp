@@ -1,23 +1,21 @@
 package com.grsu.guideapp.database;
 
+import static android.database.sqlite.SQLiteDatabase.OPEN_READWRITE;
+import static com.grsu.guideapp.utils.Crypto.encodeP;
 import static com.grsu.guideapp.utils.constants.Constants.DB_NAME;
 import static com.grsu.guideapp.utils.constants.Constants.ONE_METER_LAT;
 import static com.grsu.guideapp.utils.constants.Constants.ONE_METER_LNG;
-import static com.grsu.guideapp.utils.Crypto.encodeP;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.utils.constants.Constants;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
+import com.grsu.guideapp.utils.constants.Constants;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -30,10 +28,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = DatabaseHelper.class.getSimpleName();
     private final Context mContext;
+    private static final Integer VERSION = 1;
     private SQLiteDatabase mDatabase;
 
     public DatabaseHelper(Context context) {
-        super(context, DB_NAME, null, 1);
+        super(context, DB_NAME, null, VERSION);
         mContext = context;
     }
 
@@ -52,15 +51,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (mDatabase != null && mDatabase.isOpen()) {
             return;
         }
-        mDatabase = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-    }
-
-    private void openDatabase(String s) {
-        //String dbPath = mContext.getDatabasePath(DB_NAME).getPath();
-        if (mDatabase != null && mDatabase.isOpen()) {
-            return;
-        }
-        mDatabase = SQLiteDatabase.openDatabase(s, null, SQLiteDatabase.OPEN_READWRITE);
+        mDatabase = SQLiteDatabase.openDatabase(dbPath, null, OPEN_READWRITE);
     }
 
     private void closeDatabase() {
@@ -68,25 +59,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             mDatabase.close();
         }
     }
-
-
-    @Nullable
-    public Bitmap getTile(long index, String path) {
-        Bitmap bitmap = null;
-        openDatabase(path);
-        Cursor cursor = mDatabase.rawQuery("SELECT tile FROM tiles where key = ?",
-                new String[]{String.valueOf(index)});
-        if (cursor != null) {
-            cursor.moveToFirst();
-            byte[] a = cursor.getBlob(0);
-            bitmap = BitmapFactory.decodeByteArray(a, 0, a.length);
-
-            cursor.close();
-        }
-        closeDatabase();
-        return bitmap;
-    }
-
 
     public static boolean copyDatabase(@NonNull Context context) {
         try {

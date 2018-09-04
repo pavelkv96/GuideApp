@@ -283,11 +283,10 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         lines.add(new Line(1, "ahtfI{iopC", "iitfIenopC", "ahtfI{iopCIa@G]G[EWGU"));
         lines.add(new Line(2, "iitfIenopC", "iotfIulopC", "iitfIenopCG@MBOBSBUDSBSDSBQBSDMB"));
         lines.add(new Line(3, "iotfIulopC", "wotfI_jopC", "iotfIulopC@NAh@MZ"));
-        lines.add(new Line(4, "wotfI_jopC", "sdufIacopC",
-                "wotfI_jopCQDQDQDOBQDQDQDQBODQDQDQBQDQDQDOBQDQDQDQDQDODQDQDQFQDODQDQDQDQDODQDQDQDQDQDMD"));
-        /*lines.add(new Line(5,"","",""));
-        lines.add(new Line(6,"","",""));
-        lines.add(new Line(7,"","",""));*/
+        lines.add(new Line(4, "wotfI_jopC", "sdufIacopC", "wotfI_jopCQDQDQDOBQDQDQDQBODQDQDQBQDQDQDOBQDQDQDQDQDODQDQDQFQDODQDQDQDQDODQDQDQDQDQDMD"));
+        lines.add(new Line(5, "sdufIacopC", "qcufI{nnpC", "sdufIacopC@\\?\\@\\@\\@\\@\\?^@\\@\\@\\@\\?^@\\@\\@\\?\\@\\@\\@\\@^@f@"));
+        lines.add(new Line(6, "qcufI{nnpC", "e_tfIginpC", "qcufI{nnpCNHPHNHPHNFPHPHNHNHPHNHRHRJLFLFPJNHPHNHPHLFRDPDPBNDPBRCPCRCPCRETCTEVCNCPAPCPARCPCPCN?PAP?PAP?P?P?T?T?V@T@P@P@PBV@\\@X@XBRCTCLA"));
+        lines.add(new Line(7, "e_tfIginpC", "qgtfI_hopC", "e_tfIginpCG[G[G[EYG[G[G]GYE[GYG[G[G[E[EYG[E[G_@Ic@G[Ia@Ic@G_@Ga@Ke@Ia@Ie@Ic@Ia@G]Ic@Ic@"));
         return lines;
     }
 

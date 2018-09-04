@@ -7,6 +7,22 @@
   android:weightSum="2">
 
   <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <Button
+      android:id="@+id/btn_fragment_test_settings"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Settings"/>
+
+    <TextView
+      android:id="@+id/tv_fragment_test_distance"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="100"/>
+  </LinearLayout>
+
+  <LinearLayout
     android:id="@+id/rl_map"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -23,36 +39,26 @@
   </LinearLayout>
 
   <LinearLayout
-    android:id="@+id/rl_button"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:weightSum="3">
+    <Button
+      android:id="@+id/btn_fragment_test_start"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="GO"/>
 
-      <Button
-        android:id="@+id/btn_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Play"/>
+    <Button
+      android:id="@+id/btn_fragment_test_clearmarker"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Reset Marker"/>
 
-      <Button
-        android:id="@+id/btn_stop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Stop"/>
+    <Button
+      android:id="@+id/btn_fragment_test_next"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Next"/>
 
-      <Button
-        android:id="@+id/btn_clearmarker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Reset Marker"/>
-    </LinearLayout>
   </LinearLayout>
 </LinearLayout>

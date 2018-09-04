@@ -1,6 +1,7 @@
 package com.grsu.guideapp.activities.splash;
 
 import static com.grsu.guideapp.utils.StreamUtils.copyAssets;
+import static com.grsu.guideapp.utils.constants.Constants.PROVIDER_MAPSFORGE;
 import static com.grsu.guideapp.utils.constants.ConstantsPaths.CACHE;
 import static com.grsu.guideapp.utils.constants.ConstantsPaths.CACHE_FILE;
 
@@ -12,12 +13,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.database.DBHelper;
+import com.grsu.guideapp.database.CacheDBHelper;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.mf.MapsForgeTileSource;
 import com.grsu.guideapp.utils.MapUtils;
+import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.utils.StorageUtils;
 import java.io.File;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
@@ -29,7 +30,7 @@ public class SplashActivity extends AppCompatActivity implements OnClickListener
     private static Button btn_start;
     private Button btn_load;
     private Button btn_remove;
-    private TextView tv_status;
+    private static TextView tv_status;
     private static Activity context;
 
     @Override
@@ -61,28 +62,29 @@ public class SplashActivity extends AppCompatActivity implements OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_activity_splash_start: {
+                finish();
                 startActivity(NavigationDrawerActivity.newIntent(this));
             }
             break;
 
             case R.id.btn_activity_splash_load: {
-                btn_start.setEnabled(false);
-                new DBHelper(this);
                 if (check()) {
+                    new CacheDBHelper(this);
+                    btn_start.setEnabled(false);
                     loadMap();
                 }
             }
             break;
 
             case R.id.btn_activity_splash_remove: {
-                DBHelper.clearCache();
+                CacheDBHelper.clearCache();
                 check();
             }
             break;
         }
     }
 
-    private boolean check() {
+    private static boolean check() {
         File file = new File(CACHE, CACHE_FILE);
         if (file.exists()) {
             tv_status.setText("Map exists");
@@ -98,11 +100,14 @@ public class SplashActivity extends AppCompatActivity implements OnClickListener
         Context cxt = getApplicationContext();
         File file = new File(StorageUtils.getStorage() + "/osmdroid/KA.map");
 
-        Toast.makeText(cxt, "Loaded map file " + file.exists(), Toast.LENGTH_LONG).show();
+        Toasts.makeL(cxt, "Loaded map file " + file.exists());
 
-        MapsForgeTileSource.createFromFiles(new File[]{file}, null, "Mapsforge");
+        if (file.exists()) {
+            MapsForgeTileSource.createFromFiles(new File[]{file}, null, PROVIDER_MAPSFORGE);
+            MapUtils.getTileInRange(53.9229, 23.5187, 53.7850, 23.8790, 11, 18);
+            //MapUtils.getTileInRange(53.7597,23.7099, 53.5986,23.9845, 11, 17);
+        }
 
-        MapUtils.getTileInRange(53.9229, 23.5187, 53.7850, 23.8790, 11, 14);
     }
 
     public static void show() {
@@ -110,6 +115,7 @@ public class SplashActivity extends AppCompatActivity implements OnClickListener
             @Override
             public void run() {
                 btn_start.setEnabled(true);
+                check();
                 AndroidGraphicFactory.clearResourceMemoryCache();
             }
         });
@@ -117,7 +123,7 @@ public class SplashActivity extends AppCompatActivity implements OnClickListener
 
     @Override
     protected void onDestroy() {
-        DBHelper.refreshDb();
+        CacheDBHelper.refreshDb();
         MapsForgeTileSource.dispose();
         AndroidGraphicFactory.clearResourceMemoryCache();
         super.onDestroy();

@@ -12,6 +12,8 @@ public class Constants {
 
     public static final String EMPTY_STRING = "";
 
+    public static final String PROVIDER_MAPSFORGE = "Mapsforge";
+
     //Key constants
     public static final String KEY_CHECKED_ITEM = "checked_item";
     public static final String KEY_SELECTED_ITEM = "selected_item";

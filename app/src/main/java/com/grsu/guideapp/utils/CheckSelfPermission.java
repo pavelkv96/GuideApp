@@ -15,10 +15,23 @@ public class CheckSelfPermission {
             permission.READ_EXTERNAL_STORAGE
     };
 
+    public static final String[] groupAccessLocation = new String[]{
+            permission.ACCESS_FINE_LOCATION,
+            permission.ACCESS_COARSE_LOCATION
+    };
+
     public static boolean writeExternalStorageIsGranted(Context context) {
         return ContextCompat.checkSelfPermission(context, permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED;
     }
+
+    public static boolean getAccessLocationIsGranted(Context context) {
+        return ContextCompat.checkSelfPermission(context, permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(context, permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED;
+    }
+
 
     public static boolean isAllGranted(int[] grantResults) {
 

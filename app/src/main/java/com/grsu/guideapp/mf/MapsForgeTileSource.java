@@ -1,6 +1,7 @@
 package com.grsu.guideapp.mf;
 
 import static android.graphics.Bitmap.Config.RGB_565;
+import static com.grsu.guideapp.utils.MapUtils.getIndex;
 import static com.grsu.guideapp.utils.MapUtils.getX;
 import static com.grsu.guideapp.utils.MapUtils.getY;
 import static com.grsu.guideapp.utils.MapUtils.getZoom;
@@ -10,8 +11,8 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
-import android.util.Log;
-import com.grsu.guideapp.database.DBHelper;
+import com.grsu.guideapp.database.CacheDBHelper;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StreamUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,12 +40,12 @@ public class MapsForgeTileSource {
     private static final float scale = DisplayModel.getDefaultUserScaleFactor();
     private static RenderThemeFuture theme;
     private static DatabaseRenderer renderer;
-    private static String mNameTheme;
+    private static String mProvider;
 
     private static MultiMapDataStore mapDatabase;
 
-    public MapsForgeTileSource(File[] file, XmlRenderTheme xmlRenderTheme, String nameTheme) {
-        mNameTheme = nameTheme;
+    public MapsForgeTileSource(File[] file, XmlRenderTheme xmlRenderTheme, String provider) {
+        mProvider = provider;
         mapDatabase = new MultiMapDataStore(DataPolicy.RETURN_ALL);
         for (File aFile : file) {
             mapDatabase.addMapDataStore(new MapFile(aFile), false, false);
@@ -76,8 +77,8 @@ public class MapsForgeTileSource {
         new Thread(theme).start();
     }
 
-    public static void createFromFiles(File[] file, XmlRenderTheme theme, String nameTheme) {
-        new MapsForgeTileSource(file, theme, nameTheme);
+    public static void createFromFiles(File[] file, XmlRenderTheme theme, String provider) {
+        new MapsForgeTileSource(file, theme, provider);
     }
 
     @Nullable
@@ -97,15 +98,21 @@ public class MapsForgeTileSource {
                 return new BitmapDrawable(AndroidGraphicFactory.getBitmap(bmp));
             }
         } catch (Exception ex) {
-            Log.d(TAG, "Mapsforge tile generation failed", ex);
+            Logs.e(TAG, "Mapsforge tile generation failed", ex);
         }
         //Make the bad tile easy to spot
         Bitmap bitmap = Bitmap.createBitmap(TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, RGB_565);
-        bitmap.eraseColor(Color.YELLOW);
+        bitmap.eraseColor(Color.GRAY);
         return new BitmapDrawable(bitmap);
     }
 
-    public static void loadTile(final long pMapTileIndex) {
+    public static byte[] loadTile(final long pMapTileIndex) {
+        byte[] bytes = CacheDBHelper.getTile(getIndex(pMapTileIndex), mProvider);
+        if (bytes != null) {
+            Logs.e(TAG, "load next tile " + getIndex(pMapTileIndex));
+            return bytes;
+        }
+
         Drawable image = renderTile(pMapTileIndex);
 
         if (image != null && image instanceof BitmapDrawable) {
@@ -119,13 +126,16 @@ public class MapsForgeTileSource {
             ByteArrayInputStream bais = null;
             try {
                 bais = new ByteArrayInputStream(bitmapdata);
-                DBHelper.saveFile(mNameTheme, pMapTileIndex, bais, null);
+                CacheDBHelper.saveFile(pMapTileIndex, mProvider, bais, null);
+                bytes = CacheDBHelper.getTile(getIndex(pMapTileIndex), mProvider);
+                Logs.e(TAG, "Saved tile " + getIndex(pMapTileIndex));
             } catch (Exception ex) {
-                Log.e(TAG, "forge error storing tile cache", ex);
+                Logs.e(TAG, "forge error storing tile cache", ex);
             } finally {
                 StreamUtils.closeStream(bais);
             }
         }
+        return bytes;
     }
 
     public static void dispose() {

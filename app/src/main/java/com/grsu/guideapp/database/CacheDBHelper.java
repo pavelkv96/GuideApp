@@ -11,26 +11,26 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteFullException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import com.grsu.guideapp.utils.MapUtils;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StorageUtils;
+import com.grsu.guideapp.utils.StreamUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 
-public class DBHelper extends SQLiteOpenHelper implements TileConstants {
+public class CacheDBHelper extends SQLiteOpenHelper implements TileConstants {
 
     private static final Object mLock = new Object();
 
     protected static SQLiteDatabase mDb;
     protected static File db_file;
 
-    private static final String TAG = DBHelper.class.getSimpleName();
+    private static final String TAG = CacheDBHelper.class.getSimpleName();
     private static final Integer VERSION = 1;
     private static final String DB_NAME = "cache.db";
 
-    public DBHelper(Context context) {
+    public CacheDBHelper(Context context) {
         super(context, DB_NAME, null, VERSION);
         mDb = getDb();
     }
@@ -44,14 +44,14 @@ public class DBHelper extends SQLiteOpenHelper implements TileConstants {
     }
 
 
-    public static boolean saveFile(final String pTileSourceInfo, final long pMapTileIndex,
+    public static boolean saveFile(final long pMapTileIndex, final String pTileSourceInfo,
             final InputStream pStream, final Long pExpirationTime) {
 
         //final SQLiteDatabase db = getDb();
 
         mDb = getDb();
         if (mDb == null || !mDb.isOpen()) {
-            Log.d(TAG, "Unable to store cached tile from " + pTileSourceInfo + " " + MapUtils
+            Logs.e(TAG, "Unable to store cached tile from " + pTileSourceInfo + " " + MapUtils
                     .toString(pMapTileIndex) + ", database not available.");
             return false;
         }
@@ -83,15 +83,11 @@ public class DBHelper extends SQLiteOpenHelper implements TileConstants {
         } catch (Exception ex) {
             //note, although we check for db null state at the beginning of this method, it's possible for the
             //db to be closed during the execution of this method
-            Log.e(TAG, "Unable to store cached tile from " + pTileSourceInfo + " " + MapUtils
+            Logs.e(TAG, "Unable to store cached tile from " + pTileSourceInfo + " " + MapUtils
                     .toString(pMapTileIndex) + " ", ex);
             catchException(ex);
         } finally {
-            try {
-                bos.close();
-            } catch (IOException | NullPointerException e) {
-                e.printStackTrace();
-            }
+            StreamUtils.closeStream(bos);
         }
         return false;
     }
@@ -109,7 +105,7 @@ public class DBHelper extends SQLiteOpenHelper implements TileConstants {
                     mDb = SQLiteDatabase.openOrCreateDatabase(db_file, null);
                     mDb.execSQL(CREATE_TABLE);
                 } catch (Exception ex) {
-                    Log.e(TAG, "Unable to start the sqlite tile writer.", ex);
+                    Logs.e(TAG, "Unable to start the sqlite tile writer.", ex);
                     catchException(ex);
                     return null;
                 }
@@ -126,7 +122,7 @@ public class DBHelper extends SQLiteOpenHelper implements TileConstants {
         }
     }
 
-    public static boolean isFunctionalException(final SQLiteException pSQLiteException) {
+    private static boolean isFunctionalException(final SQLiteException pSQLiteException) {
         switch (pSQLiteException.getClass().getSimpleName()) {
             case "SQLiteBindOrColumnIndexOutOfRangeException":
             case "SQLiteBlobTooBigException":
@@ -171,14 +167,15 @@ public class DBHelper extends SQLiteOpenHelper implements TileConstants {
     }
 
     public static byte[] getTile(int x, int y, int zoom, String tileProvider) {
+        return getTile(MapUtils.getIndex(x, y, zoom), tileProvider);
+    }
 
-        long index = MapUtils.getIndex(x, y, zoom);
+    public static byte[] getTile(long index, String tileProvider) {
 
         Cursor cur = getTileCursor(getPrimaryKeyParameters(index, tileProvider), queryColumns);
 
         byte[] bits = null;
 
-        Log.e(TAG, "load next tile " + index);
         if (cur.moveToFirst()) {
             bits = cur.getBlob(cur.getColumnIndex(COLUMN_TILE));
         }
