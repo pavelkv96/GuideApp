@@ -44,7 +44,7 @@ public class MapsForgeTileSource {
 
     private static MultiMapDataStore mapDatabase;
 
-    public MapsForgeTileSource(File[] file, XmlRenderTheme xmlRenderTheme, String provider) {
+    public static void createFromFiles(File[] file, XmlRenderTheme theme, String provider) {
         mProvider = provider;
         mapDatabase = new MultiMapDataStore(DataPolicy.RETURN_ALL);
         for (File aFile : file) {
@@ -68,21 +68,17 @@ public class MapsForgeTileSource {
                 true,
                 null);
 
-        if (xmlRenderTheme == null) {
-            xmlRenderTheme = InternalRenderTheme.OSMARENDER;
+        if (theme == null) {
+            theme = InternalRenderTheme.OSMARENDER;
         }
         //we the passed in theme is different that the existing one, or the theme is currently null, create it
-        theme = new RenderThemeFuture(AndroidGraphicFactory.INSTANCE, xmlRenderTheme, model);
+        MapsForgeTileSource.theme = new RenderThemeFuture(AndroidGraphicFactory.INSTANCE, theme, model);
         //super important!! without the following line, all rendering activities will block until the theme is created.
-        new Thread(theme).start();
-    }
-
-    public static void createFromFiles(File[] file, XmlRenderTheme theme, String provider) {
-        new MapsForgeTileSource(file, theme, provider);
+        new Thread(MapsForgeTileSource.theme).start();
     }
 
     @Nullable
-    public static synchronized Drawable renderTile(final long pMapTileIndex) {
+    private static synchronized Drawable renderTile(final long pMapTileIndex) {
 
         Tile tile = new Tile(getX(pMapTileIndex), getY(pMapTileIndex), getZoom(pMapTileIndex), 256);
 

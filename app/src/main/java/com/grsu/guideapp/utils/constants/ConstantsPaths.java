@@ -5,7 +5,7 @@ import com.grsu.guideapp.utils.StorageUtils;
 public interface ConstantsPaths {
 
     String CACHE_FILE = "cache.db";
-    String DEFAULT_FOLDER = "osmdroid/cache/";
-    String CACHE = StorageUtils.getStorage() + "/" + DEFAULT_FOLDER;
-
+    String CURRENT_FOLDER = "osmdroid/";
+    String CACHE_FOLDER = "cache/";
+    String CACHE = StorageUtils.getStorage() + "/" + CURRENT_FOLDER + CACHE_FOLDER;
 }
