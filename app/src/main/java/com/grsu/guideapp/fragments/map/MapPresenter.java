@@ -3,11 +3,12 @@ package com.grsu.guideapp.fragments.map;
 import static com.google.android.gms.maps.model.TileProvider.NO_TILE;
 import static com.grsu.guideapp.utils.Crypto.decodeLL;
 import static com.grsu.guideapp.utils.Crypto.decodePL;
+import static com.grsu.guideapp.utils.MapUtils.getDistanceBetween;
+import static com.grsu.guideapp.utils.MapUtils.toLocation;
 
 import android.location.Location;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.Tile;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.fragments.map.MapContract.MapInteractor.OnFinishedListener;
@@ -28,9 +29,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
     private List<LatLng> latLngs;
     private Integer currentIndex;
     private List<LatLng> allLatLngs;
-    private Polyline polyline;
     private List<LatLng> turnsList;
-    private List<LatLng> poly;
 
     private List<Integer> types = new ArrayList<>();
     private Integer checkedItem;
@@ -54,21 +53,14 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
     public void getLocation(Location currentLocation) {
         LatLng point = findNearestPointInPolyline(currentLocation);
 
-        if (polyline == null) {
-            poly = new ArrayList<>();
-            poly.add(point);
-            polyline = mapViews.setPolyline(poly.get(0));
-        } else {
-            poly.add(point);
-            polyline.setPoints(poly);
-        }
+        mapViews.setCurrentPoint(point);
 
         currentIndex = allLatLngs.indexOf(point);
 
         Integer index = latLngs.indexOf(point);
         detach(index);
 
-        getCurrentTurn(MapUtils.toLocation(currentLatLng));
+        getCurrentTurn(toLocation(currentLatLng));
     }
 
     @Override
@@ -89,7 +81,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
     @Override
     public void getMarkers() {
         if (currentLatLng != null) {
-            getCurrentTurn(MapUtils.toLocation(currentLatLng));
+            getCurrentTurn(toLocation(currentLatLng));
         }
     }
 
@@ -110,15 +102,15 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
         turnsList = new ArrayList<>();
 
         try {
-            for (Line encodeLine : setData1()) {
+            for (Line encodeLine : encodePolylines) {
                 Integer idLine = encodeLine.getIdLine();
 
                 mapViews.setPolyline(decodeLL(encodeLine.getPolyline()), idLine);
 
                 LatLng startPoint = decodePL(encodeLine.getStartPoint());
                 LatLng endPoint = decodePL(encodeLine.getEndPoint());
-                mapViews.setPoints(startPoint);
-                mapViews.setPoints(endPoint);
+                mapViews.setPointsTurn(startPoint);
+                mapViews.setPointsTurn(endPoint);
 
                 List<LatLng> lineList = decodeLL(encodeLine.getPolyline());
 
@@ -147,7 +139,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
     public void onFinished1(List<Poi> poiList) {
         mapViews.removeMarkers();
         for (Poi poi : poiList) {
-            mapViews.setGetPoints(poi);
+            mapViews.setPoi(poi);
         }
     }
 
@@ -244,6 +236,24 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
     private LatLng findNearestPointInPolyline(Location currentLocation) {
         LatLng shortestDistance = getShortestDistance(latLngs, currentLocation);
 
+        if (getDistanceBetween(currentLocation, toLocation(shortestDistance)) > 60) {
+
+            Logs.e(TAG,
+                    getDistanceBetween(currentLocation, toLocation(shortestDistance)) + " meters");
+            try {
+                LatLng latLng = getShortestDistance(allLatLngs, currentLocation);
+                int index = allLatLngs.indexOf(latLng) - 2;
+                latLngs.clear();
+                for (int i = 0; i < 5; i++) {
+                    latLngs.add(i, allLatLngs.get(index + i));
+                }
+                currentLatLng = shortestDistance = latLng;
+            } catch (ArrayIndexOutOfBoundsException ignore) {
+
+            }
+
+        }
+
         if (latLngs.indexOf(shortestDistance) != latLngs.indexOf(currentLatLng)) {
             currentLatLng = shortestDistance;
         }
@@ -251,18 +261,17 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
     }
 
     private LatLng getShortestDistance(List<LatLng> latLngList, Location currentLocation) {
-        Location endLocation = MapUtils.toLocation(latLngList.get(0));
-        Float distance = MapUtils.getDistanceBetween(currentLocation, endLocation);
+        Location endLocation = toLocation(latLngList.get(0));
+        Float distance = getDistanceBetween(currentLocation, endLocation);
         LatLng latLng = latLngList.get(0);
 
         for (LatLng point : latLngList) {
             if (MapUtils.isMoreDistance(distance, currentLocation, point)) {
-                distance = MapUtils.getDistanceBetween(currentLocation, MapUtils.toLocation(point));
+                distance = getDistanceBetween(currentLocation, toLocation(point));
                 latLng = point;
             }
         }
 
-        Logs.e(TAG, distance + " meters");
         return latLng;
     }
 
@@ -272,10 +281,14 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
         lines.add(new Line(1, "ahtfI{iopC", "iitfIenopC", "ahtfI{iopCIa@G]G[EWGU"));
         lines.add(new Line(2, "iitfIenopC", "iotfIulopC", "iitfIenopCG@MBOBSBUDSBSDSBQBSDMB"));
         lines.add(new Line(3, "iotfIulopC", "wotfI_jopC", "iotfIulopC@NAh@MZ"));
-        lines.add(new Line(4, "wotfI_jopC", "sdufIacopC", "wotfI_jopCQDQDQDOBQDQDQDQBODQDQDQBQDQDQDOBQDQDQDQDQDODQDQDQFQDODQDQDQDQDODQDQDQDQDQDMD"));
-        lines.add(new Line(5, "sdufIacopC", "qcufI{nnpC", "sdufIacopC@\\?\\@\\@\\@\\@\\?^@\\@\\@\\@\\?^@\\@\\@\\?\\@\\@\\@\\@^@f@"));
-        lines.add(new Line(6, "qcufI{nnpC", "e_tfIginpC", "qcufI{nnpCNHPHNHPHNFPHPHNHNHPHNHRHRJLFLFPJNHPHNHPHLFRDPDPBNDPBRCPCRCPCRETCTEVCNCPAPCPARCPCPCN?PAP?PAP?P?P?T?T?V@T@P@P@PBV@\\@X@XBRCTCLA"));
-        lines.add(new Line(7, "e_tfIginpC", "qgtfI_hopC", "e_tfIginpCG[G[G[EYG[G[G]GYE[GYG[G[G[E[EYG[E[G_@Ic@G[Ia@Ic@G_@Ga@Ke@Ia@Ie@Ic@Ia@G]Ic@Ic@"));
+        lines.add(new Line(4, "wotfI_jopC", "sdufIacopC",
+                "wotfI_jopCQDQDQDOBQDQDQDQBODQDQDQBQDQDQDOBQDQDQDQDQDODQDQDQFQDODQDQDQDQDODQDQDQDQDQDMD"));
+        lines.add(new Line(5, "sdufIacopC", "qcufI{nnpC",
+                "sdufIacopC@\\?\\@\\@\\@\\@\\?^@\\@\\@\\@\\?^@\\@\\@\\?\\@\\@\\@\\@^@f@"));
+        lines.add(new Line(6, "qcufI{nnpC", "e_tfIginpC",
+                "qcufI{nnpCNHPHNHPHNFPHPHNHNHPHNHRHRJLFLFPJNHPHNHPHLFRDPDPBNDPBRCPCRCPCRETCTEVCNCPAPCPARCPCPCN?PAP?PAP?P?P?T?T?V@T@P@P@PBV@\\@X@XBRCTCLA"));
+        lines.add(new Line(7, "e_tfIginpC", "qgtfI_hopC",
+                "e_tfIginpCG[G[G[EYG[G[G]GYE[GYG[G[G[E[EYG[E[G_@Ic@G[Ia@Ic@G_@Ga@Ke@Ia@Ie@Ic@Ia@G]Ic@Ic@"));
         return lines;
     }
 }

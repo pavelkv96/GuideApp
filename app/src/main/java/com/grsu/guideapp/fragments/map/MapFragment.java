@@ -23,7 +23,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.Tile;
 import com.google.android.gms.maps.model.TileOverlayOptions;
@@ -54,6 +53,7 @@ public class MapFragment extends BaseFragment<MapPresenter> implements TileProvi
     private List<LatLng> geoPoints;
 
     private Marker marker;
+    private Marker current;
     int i = 0;
 
     private GoogleMap mMap;
@@ -75,10 +75,10 @@ public class MapFragment extends BaseFragment<MapPresenter> implements TileProvi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Context cxt = getContext();
         AndroidGraphicFactory.createInstance(getActivity().getApplication());
-        new CacheDBHelper(getContext());
+        new CacheDBHelper(cxt);
 
-        Context cxt = getActivity().getApplicationContext();
         File file = getActivity().getDatabasePath("KA.map");
 
         Toasts.makeL(cxt, "Loaded map file " + file.exists());
@@ -108,13 +108,7 @@ public class MapFragment extends BaseFragment<MapPresenter> implements TileProvi
 
     @Override
     public Tile getTile(int x, int y, int zoom) {
-        /*byte[] bytes = loadTile(MapUtils.getTileIndex(zoom, x, y));
-        if (bytes == null) {
-            return NO_TILE;
-        }*/
-        //MapUtils.getTileInRange(53.9229, 23.5187, 53.7850, 23.8790, 11, 20);
         return mPresenter.getTile(x, y, zoom, PROVIDER_MAPSFORGE);
-        //return new Tile(256, 256, bytes);
     }
 
     @Override
@@ -140,38 +134,32 @@ public class MapFragment extends BaseFragment<MapPresenter> implements TileProvi
 
     @Override
     public void setPolyline(List<LatLng> geoPointList, int id) {
-
-    }
-
-    @Override
-    public Polyline setPolyline(LatLng geoPointList) {
         PolylineOptions polylineOptions = new PolylineOptions()
                 .color(Color.RED)
                 .zIndex(1)
-                .add(geoPointList);
-
-        return mMap.addPolyline(polylineOptions);
+                .addAll(geoPointList);
+        mMap.addPolyline(polylineOptions).setTag(id);
     }
 
     @Override
-    public Marker setPoints(LatLng geoPoint) {
+    public void setCurrentPoint(LatLng geoPointList) {
+        current.setPosition(geoPointList);
+    }
+
+    @Override
+    public void setPointsTurn(LatLng geoPoint) {
         MarkerOptions markerOptions = new MarkerOptions().position(geoPoint).icon(
                 BitmapDescriptorFactory.fromResource(R.drawable.a_marker));
-        return mMap.addMarker(markerOptions);
+        mMap.addMarker(markerOptions);
     }
 
     @Override
-    public void setGetPoints(Poi poi) {
+    public void setPoi(Poi poi) {
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(new LatLng(poi.getLatitude(), poi.getLongitude()))
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.a_marker))
+                .icon(BitmapDescriptorFactory.fromResource(MapUtils.getIconByType(poi.getType())))
                 .snippet(poi.getId());
         markers.add(mMap.addMarker(markerOptions));
-    }
-
-    @Override
-    public void setGetPolyline(List<LatLng> geoPointList) {
-
     }
 
     @Override
@@ -183,25 +171,13 @@ public class MapFragment extends BaseFragment<MapPresenter> implements TileProvi
     }
 
     @Override
-    public void stopped() {
-
-    }
-
-    @Override
-    public void removePolylines() {
-
-    }
-
-    @Override
     public void openDialogViews() {
-        if (this.getFragmentManager() != null) {
-            CustomSingleChoiceItemsDialogFragment.newInstance(distanceTextView.getText())
-                    .show(getChildFragmentManager(), "CustomSingleChoiceItemsDialogFragment");
+        CustomSingleChoiceItemsDialogFragment.newInstance(distanceTextView.getText())
+                .show(getChildFragmentManager(), "CustomSingleChoiceItemsDialogFragment");
 
-            CustomMultiChoiceItemsDialogFragment
-                    .newInstance((ArrayList<Integer>) mPresenter.getType())
-                    .show(getChildFragmentManager(), "CustomMultiChoiceItemsDialogFragment");
-        }
+        CustomMultiChoiceItemsDialogFragment
+                .newInstance((ArrayList<Integer>) mPresenter.getType())
+                .show(getChildFragmentManager(), "CustomMultiChoiceItemsDialogFragment");
     }
 
     @OnClick(R.id.btn_fragment_test_settings)
@@ -228,7 +204,7 @@ public class MapFragment extends BaseFragment<MapPresenter> implements TileProvi
     @SuppressLint("MissingPermission")
     @OnClick(R.id.btn_fragment_test_start)
     public void start(View view) {
-        mMap.setOnMyLocationChangeListener(this);
+//        mMap.setOnMyLocationChangeListener(this);
         mMap.setMyLocationEnabled(true);
     }
 
@@ -240,6 +216,7 @@ public class MapFragment extends BaseFragment<MapPresenter> implements TileProvi
             if (i == 0) {
                 MarkerOptions markerOptions = new MarkerOptions().position(position);
                 marker = mMap.addMarker(markerOptions);
+                current = mMap.addMarker(markerOptions);
             }
             marker.setPosition(position);
             mPresenter.getLocation(MapUtils.toLocation(position));

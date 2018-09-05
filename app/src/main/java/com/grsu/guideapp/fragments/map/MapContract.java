@@ -9,8 +9,6 @@ import com.grsu.guideapp.base.BaseView;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import java.util.List;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.Marker;
 
 public interface MapContract {
 
@@ -18,23 +16,17 @@ public interface MapContract {
 
         void mapViewSettings(GoogleMap googleMap);
 
+        void openDialogViews();
+
         void setPolyline(List<LatLng> geoPointList, int id);
 
-        Polyline setPolyline(LatLng geoPointList);
+        void setCurrentPoint(LatLng geoPointList);
 
-        Marker setPoints(LatLng geoPoint);
+        void setPointsTurn(LatLng geoPoint);
 
-        void setGetPoints(Poi poi);
-
-        void setGetPolyline(List<LatLng> geoPointList);
+        void setPoi(Poi poi);
 
         void removeMarkers();
-
-        void stopped();
-
-        void removePolylines();
-
-        void openDialogViews();
 
     }
 
