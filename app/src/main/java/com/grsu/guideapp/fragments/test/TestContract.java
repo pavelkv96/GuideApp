@@ -1,46 +1,59 @@
 package com.grsu.guideapp.fragments.test;
 
+import android.location.Location;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Tile;
 import com.grsu.guideapp.base.BasePresenter;
 import com.grsu.guideapp.base.BaseView;
 import com.grsu.guideapp.models.Line;
+import com.grsu.guideapp.models.Poi;
 import java.util.List;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.Polyline;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.Marker;
 
 public interface TestContract {
 
     interface TestViews extends BaseView {
 
-        void mapViewSettings();
+        void mapViewSettings(GoogleMap googleMap);
 
-        void setPolyline(List<GeoPoint> geoPointList);
+        void setPolyline(List<LatLng> geoPointList, int id);
 
-        Marker setPoints(GeoPoint geoPoint);
+        Polyline setPolyline(LatLng geoPointList);
 
-        Marker setTrackerMarker(GeoPoint geoPoint);
+        Marker setPoints(LatLng geoPoint);
 
-        void invalidate();
+        void setGetPoints(Poi poi);
 
-        void removePolyline(Polyline polyline);
+        void setGetPolyline(List<LatLng> geoPointList);
 
-        void removeMarker(Marker marker);
+        void removeMarkers();
 
-        Polyline initializePolyLine(GeoPoint position);
+        void stopped();
 
-        Marker highLightMarker(Marker marker);
+        void removePolylines();
 
-        void animateTo(GeoPoint geoPoint);
+        void openDialogViews();
+
     }
 
     interface TestPresenter extends BasePresenter<TestViews> {
-
         void getId(Integer id);
 
-        boolean onMarkerClick(Marker marker, MapView mapView);
+        void getLocation(Location location);
 
-        void getLocation(GeoPoint point);
+        void setRadius(String radius);
+
+        void setType(List<Integer> typesObjects);
+
+        List<Integer> getType();
+
+        void getMarkers();
+
+        Tile getTile(int x, int y, int zoom, String provider);
+
+        void onMapReady(GoogleMap googleMap);
     }
 
     interface TestInteractor {
@@ -48,8 +61,17 @@ public interface TestContract {
         interface OnFinishedListener {
 
             void onFinished(List<Line> encodePolylines);
+
+            void onFinished1(List<Poi> poiList);
+
+            Tile onFinished(byte[] tile);
         }
 
+        Tile getTile(OnFinishedListener listener, long index, String provider);
+
         void getRouteById(OnFinishedListener listener, Integer id);
+
+        void getListPoi(OnFinishedListener listener, double latitude,
+                double longitude, int radius, List<Integer> typesObjects);
     }
 }
