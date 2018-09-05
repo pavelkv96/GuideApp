@@ -1,7 +1,10 @@
 package com.grsu.guideapp.fragments.map;
 
+import static com.grsu.guideapp.mf.MapsForgeTileSource.loadTile;
+
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import com.google.android.gms.maps.model.Tile;
 import com.grsu.guideapp.database.DatabaseHelper;
 import java.util.List;
 
@@ -11,6 +14,11 @@ public class MapInteractor implements MapContract.MapInteractor {
 
     public MapInteractor(@NonNull DatabaseHelper pDbHelper) {
         helper = pDbHelper;
+    }
+
+    @Override
+    public Tile getTile(OnFinishedListener listener, long index, String provider) {
+        return listener.onFinished(loadTile(index));
     }
 
     @Override
@@ -24,8 +32,8 @@ public class MapInteractor implements MapContract.MapInteractor {
     }
 
     @Override
-    public void getListPoi(final OnFinishedListener listener, final double latitude, final double longitude,
-            final int radius, final List<Integer> typesObjects) {
+    public void getListPoi(final OnFinishedListener listener, final double latitude,
+            final double longitude, final int radius, final List<Integer> typesObjects) {
         new Handler().post/*Delayed*/(new Runnable() {
             @Override
             public void run() {

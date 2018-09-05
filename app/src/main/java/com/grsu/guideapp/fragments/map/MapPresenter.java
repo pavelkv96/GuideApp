@@ -1,35 +1,40 @@
 package com.grsu.guideapp.fragments.map;
 
-import static com.grsu.guideapp.utils.Crypto.decodeL;
-import static com.grsu.guideapp.utils.Crypto.decodeP;
+import static com.google.android.gms.maps.model.TileProvider.NO_TILE;
+import static com.grsu.guideapp.utils.Crypto.decodeLL;
+import static com.grsu.guideapp.utils.Crypto.decodePL;
 
-import android.graphics.Color;
 import android.location.Location;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.Tile;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.fragments.map.MapContract.MapInteractor.OnFinishedListener;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
+import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.ArrayList;
 import java.util.List;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.overlay.Polyline;
 
-public class MapPresenter extends BasePresenterImpl<MapViews> implements MapContract.MapPresenter,
-        OnFinishedListener {
+public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinishedListener,
+        MapContract.MapPresenter {
 
     private static final Integer RADIUS = 100;
     private static final String TAG = MapPresenter.class.getSimpleName();
-    private GeoPoint currentGeoPoint;
-    private List<GeoPoint> geoPoints;
+    private LatLng currentLatLng;
+    private List<LatLng> latLngs;
     private Integer currentIndex;
-    private List<GeoPoint> allGeoPoints;
+    private List<LatLng> allLatLngs;
     private Polyline polyline;
-    private List<GeoPoint> turnsList;
+    private List<LatLng> turnsList;
+    private List<LatLng> poly;
 
     private List<Integer> types = new ArrayList<>();
     private Integer checkedItem;
+
 
     private MapViews mapViews;
     private MapInteractor mapInteractor;
@@ -47,21 +52,23 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     @Override
     public void getLocation(Location currentLocation) {
-        GeoPoint point = findNearestPointInPolyline(currentLocation);
+        LatLng point = findNearestPointInPolyline(currentLocation);
 
         if (polyline == null) {
-            polyline = mapViews.setPolyline((point));
-            polyline.setColor(Color.RED);
+            poly = new ArrayList<>();
+            poly.add(point);
+            polyline = mapViews.setPolyline(poly.get(0));
         } else {
-            polyline.addPoint(point);
+            poly.add(point);
+            polyline.setPoints(poly);
         }
 
-        currentIndex = allGeoPoints.indexOf(point);
+        currentIndex = allLatLngs.indexOf(point);
 
-        Integer index = geoPoints.indexOf(point);
+        Integer index = latLngs.indexOf(point);
         detach(index);
 
-        getCurrentTurn(toLocation(currentGeoPoint));
+        getCurrentTurn(MapUtils.toLocation(currentLatLng));
     }
 
     @Override
@@ -81,46 +88,55 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     @Override
     public void getMarkers() {
-        if (currentGeoPoint != null) {
-            getCurrentTurn(toLocation(currentGeoPoint));
-            //MarkersWithSettings(currentGeoPoint);
+        if (currentLatLng != null) {
+            getCurrentTurn(MapUtils.toLocation(currentLatLng));
         }
     }
 
     @Override
+    public Tile getTile(int x, int y, int zoom, String provider) {
+        return mapInteractor.getTile(this, MapUtils.getTileIndex(zoom, x, y), provider);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mapViews.mapViewSettings(googleMap);
+    }
+
+    @Override
     public void onFinished(List<Line> encodePolylines) {
-        allGeoPoints = new ArrayList<>();
-        geoPoints = new ArrayList<>();
+        allLatLngs = new ArrayList<>();
+        latLngs = new ArrayList<>();
         turnsList = new ArrayList<>();
 
         try {
             for (Line encodeLine : setData1()) {
                 Integer idLine = encodeLine.getIdLine();
 
-                mapViews.setPolyline(decodeL(encodeLine.getPolyline()), idLine);
+                mapViews.setPolyline(decodeLL(encodeLine.getPolyline()), idLine);
 
-                GeoPoint startPoint = decodeP(encodeLine.getStartPoint());
-                GeoPoint endPoint = decodeP(encodeLine.getEndPoint());
+                LatLng startPoint = decodePL(encodeLine.getStartPoint());
+                LatLng endPoint = decodePL(encodeLine.getEndPoint());
                 mapViews.setPoints(startPoint);
                 mapViews.setPoints(endPoint);
 
-                List<GeoPoint> lineList = decodeL(encodeLine.getPolyline());
+                List<LatLng> lineList = decodeLL(encodeLine.getPolyline());
 
-                if (currentGeoPoint != null) {
+                if (currentLatLng != null) {
                     lineList.remove(0);
                     turnsList.add(endPoint);
                 } else {
                     currentIndex = 0;
-                    currentGeoPoint = startPoint;
+                    currentLatLng = startPoint;
                     turnsList.add(endPoint);
                     turnsList.add(startPoint);
                 }
 
-                allGeoPoints.addAll(lineList);
+                allLatLngs.addAll(lineList);
             }
 
             for (int i = 0; i < 5; i++) {
-                geoPoints.add(allGeoPoints.get(i));
+                latLngs.add(allLatLngs.get(i));
             }
         } catch (NullPointerException ignored) {
         }
@@ -135,22 +151,25 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         }
     }
 
-    //--------------------------------------------------------------------------------------------
+    @Override
+    public Tile onFinished(byte[] tile) {
+        if (tile == null) {
+            return NO_TILE;
+        }
 
-    private void cleanUpMap() {
-        mapViews.removeMarkers();
-        mapViews.removePolylines();
+        return new Tile(256, 256, tile);
     }
 
     private void getCurrentTurn(Location currentLocation) {
-        GeoPoint shortestDistance = getShortestDistance(turnsList, currentLocation);
+        LatLng shortestDistance = getShortestDistance(turnsList, currentLocation);
+        int size = getType().size();
 
-        if (isMoreDistance(RADIUS, currentLocation, shortestDistance) && getType().size() != 0) {
+        if (MapUtils.isMoreDistance(RADIUS, currentLocation, shortestDistance) && size != 0) {
 
             mapInteractor.getListPoi(
                     this,
-                    shortestDistance.getLatitude(),
-                    shortestDistance.getLongitude(),
+                    shortestDistance.latitude,
+                    shortestDistance.longitude,
                     checkedItem,
                     getType());
         } else {
@@ -158,125 +177,95 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         }
     }
 
-    private List<Integer> getList() {
-        //TODO it is multi choice response
-        List<Integer> integers = new ArrayList<>();
-        integers.add(1);
-        integers.add(2);
-        integers.add(3);
-        integers.add(4);
-        return integers;
-    }
-
-    public Location toLocation(GeoPoint position) {
-        Location location = new Location("");
-        location.setLatitude(position.getLatitude());
-        location.setLongitude(position.getLongitude());
-        return location;
-    }
-
-    public static GeoPoint toGeoPoint(Location location) {
-        return new GeoPoint(location.getLatitude(), location.getLongitude());
-    }
-
     private void detach(int newCenterIndex) {
-        //int start = geoPoints.size();
-        GeoPoint geoPoint = geoPoints.get(newCenterIndex);
+        LatLng latLng = latLngs.get(newCenterIndex);
 
         if (newCenterIndex > 2) {
-            removeLast(geoPoint);
+            removeLast(latLng);
         }
 
         if (newCenterIndex < 2) {
-            removePrevious(geoPoint);
+            removePrevious(latLng);
         }
     }
 
-    private void removeLast(GeoPoint geoPoint) {
-        while (geoPoints.indexOf(geoPoint) - 1 >= 2) {
-            geoPoints.remove(0);
+    private void removeLast(LatLng latLng) {
+        while (latLngs.indexOf(latLng) - 1 >= 2) {
+            latLngs.remove(0);
         }
 
         //get next points
-        if (geoPoints.size() == 3) {
-            if (currentIndex + 1 < allGeoPoints.size()) {
-                geoPoints.add(allGeoPoints.get(currentIndex + 1));
+        if (latLngs.size() == 3) {
+            if (currentIndex + 1 < allLatLngs.size()) {
+                latLngs.add(allLatLngs.get(currentIndex + 1));
             } else {
-                geoPoints.add(new GeoPoint((double) -geoPoints.size(), (double) -geoPoints.size()));
+                latLngs.add(new LatLng((double) -latLngs.size(), (double) -latLngs.size()));
             }
 
         }
 
-        if (geoPoints.size() == 4) {
-            if (currentIndex + 2 < allGeoPoints.size()) {
-                geoPoints.add(allGeoPoints.get(currentIndex + 2));
+        if (latLngs.size() == 4) {
+            if (currentIndex + 2 < allLatLngs.size()) {
+                latLngs.add(allLatLngs.get(currentIndex + 2));
             } else {
-                geoPoints.add(new GeoPoint((double) -geoPoints.size(), (double) -geoPoints.size()));
+                latLngs.add(new LatLng((double) -latLngs.size(), (double) -latLngs.size()));
             }
         }
     }
 
-    private void removePrevious(GeoPoint geoPoint) {
-        while (geoPoints.indexOf(geoPoint) + 2 < geoPoints
-                .indexOf(geoPoints.get(geoPoints.size() - 1))) {
-            geoPoints.remove(geoPoints.size() - 1);
+    private void removePrevious(LatLng latLng) {
+        while (latLngs.indexOf(latLng) + 2 < latLngs.indexOf(latLngs.get(latLngs.size() - 1))) {
+            latLngs.remove(latLngs.size() - 1);
         }
         //get previous points
-        List<GeoPoint> list = new ArrayList<>();
-        if (geoPoints.size() == 3) {
+        List<LatLng> list = new ArrayList<>();
+        if (latLngs.size() == 3) {
 
             if (currentIndex > 1) {
-                list.add(allGeoPoints.get(currentIndex - 1));
+                list.add(allLatLngs.get(currentIndex - 1));
             } else {
-                list.add(new GeoPoint((double) -geoPoints.size(), (double) -geoPoints.size()));
+                list.add(new LatLng((double) -latLngs.size(), (double) -latLngs.size()));
             }
-            geoPoints.addAll(0, list);
+            latLngs.addAll(0, list);
             list.clear();
         }
 
-        if (geoPoints.size() == 4) {
+        if (latLngs.size() == 4) {
             if (currentIndex > 2) {
-                list.add(allGeoPoints.get(currentIndex - 2));
+                list.add(allLatLngs.get(currentIndex - 2));
             } else {
-                list.add(new GeoPoint((double) -geoPoints.size() - 1,
-                        (double) -geoPoints.size() - 1));
+                list.add(new LatLng((double) -latLngs.size() - 1,
+                        (double) -latLngs.size() - 1));
             }
-            geoPoints.addAll(0, list);
+            latLngs.addAll(0, list);
         }
     }
 
-    private GeoPoint findNearestPointInPolyline(Location currentLocation) {
-        GeoPoint shortestDistance = getShortestDistance(geoPoints, currentLocation);
+    private LatLng findNearestPointInPolyline(Location currentLocation) {
+        LatLng shortestDistance = getShortestDistance(latLngs, currentLocation);
 
-        if (geoPoints.indexOf(shortestDistance) != geoPoints.indexOf(currentGeoPoint)) {
-            currentGeoPoint = shortestDistance;
+        if (latLngs.indexOf(shortestDistance) != latLngs.indexOf(currentLatLng)) {
+            currentLatLng = shortestDistance;
         }
         return shortestDistance;
     }
 
-    private GeoPoint getShortestDistance(List<GeoPoint> geoPointList, Location currentLocation) {
-        Location endLocation = toLocation(geoPointList.get(0));
-        Float distance = getDistanceBetween(currentLocation, endLocation);
-        GeoPoint geoPoint = geoPointList.get(0);
+    private LatLng getShortestDistance(List<LatLng> latLngList, Location currentLocation) {
+        Location endLocation = MapUtils.toLocation(latLngList.get(0));
+        Float distance = MapUtils.getDistanceBetween(currentLocation, endLocation);
+        LatLng latLng = latLngList.get(0);
 
-        for (GeoPoint point : geoPointList) {
-            if (isMoreDistance(distance, currentLocation, point)) {
-                distance = getDistanceBetween(currentLocation, toLocation(point));
-                geoPoint = point;
+        for (LatLng point : latLngList) {
+            if (MapUtils.isMoreDistance(distance, currentLocation, point)) {
+                distance = MapUtils.getDistanceBetween(currentLocation, MapUtils.toLocation(point));
+                latLng = point;
             }
         }
 
         Logs.e(TAG, distance + " meters");
-        return geoPoint;
+        return latLng;
     }
 
-    private boolean isMoreDistance(float distance, Location currentLocation, GeoPoint geoPoint) {
-        return distance > getDistanceBetween(currentLocation, toLocation(geoPoint));
-    }
-
-    private float getDistanceBetween(Location startLocation, Location endLocation) {
-        return startLocation.distanceTo(endLocation);
-    }
 
     private static List<Line> setData1() {
         List<Line> lines = new ArrayList<>();
@@ -289,5 +278,4 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         lines.add(new Line(7, "e_tfIginpC", "qgtfI_hopC", "e_tfIginpCG[G[G[EYG[G[G]GYE[GYG[G[G[E[EYG[E[G_@Ic@G[Ia@Ic@G_@Ga@Ke@Ia@Ie@Ic@Ia@G]Ic@Ic@"));
         return lines;
     }
-
 }

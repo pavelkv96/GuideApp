@@ -3,32 +3,27 @@ package com.grsu.guideapp.fragments;
 import static android.content.Context.LOCATION_SERVICE;
 import static android.location.LocationManager.GPS_PROVIDER;
 
-import android.content.Context;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.location.LocationListener;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
+import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.fragments.map.MapPresenter;
+import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import org.osmdroid.tileprovider.util.StorageUtils;
-import org.osmdroid.util.GeoPoint;
 
 public class Tracker extends Fragment implements LocationListener {
 
@@ -124,11 +119,11 @@ public class Tracker extends Fragment implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         Logs.e("TAG", location.toString());
-        GeoPoint geoPoint = MapPresenter.toGeoPoint(location);
-        data.setText(geoPoint.toString());
+        LatLng latLng = MapUtils.toLatLng(location);
+        data.setText(latLng.toString());
         try {
             stream.write(String.valueOf(
-                    "geoPointList.add(new GeoPoint(" + geoPoint + "));\n")
+                    "latLngList.add(new LatLng(" + latLng + "));\n")
                     .getBytes());
         } catch (IOException e) {
             e.printStackTrace();
