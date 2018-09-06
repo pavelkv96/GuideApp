@@ -1,4 +1,4 @@
-package com.grsu.guideapp.utils.constants;
+package com.grsu.guideapp.project_settings.constants;
 
 import com.grsu.guideapp.utils.StorageUtils;
 

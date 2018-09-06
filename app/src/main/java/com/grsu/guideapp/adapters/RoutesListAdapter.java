@@ -1,8 +1,8 @@
 package com.grsu.guideapp.adapters;
 
-import android.content.Intent;
-import android.os.Bundle;
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
@@ -15,38 +15,37 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.adapters.RoutesListAdapter.RouteViewHolder;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.utils.constants.Constants;
-import com.grsu.guideapp.utils.ContextHolder;
 import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class RoutesListAdapter extends RecyclerView.Adapter<RouteViewHolder> {
 
     private List<Route> routesList;
+    private FragmentActivity activity;
 
-    public RoutesListAdapter(List<Route> routesList) {
-        this.routesList = routesList;
+    public RoutesListAdapter(FragmentActivity activity, List<Route> mRoutesList) {
+        this.activity = activity;
+        this.routesList = mRoutesList;
     }
 
     @NonNull
     @Override
     public RouteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View rootView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_routes, parent, false);
+        Context context = parent.getContext();
+        View rootView = LayoutInflater.from(context).inflate(R.layout.item_routes, parent, false);
         return new RouteViewHolder(rootView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RouteViewHolder holder, int position) {
-        final Integer id_route = routesList.get(position).getIdRoute();
-        holder.tv_item_routes_id_author
-                .setText(String.valueOf(routesList.get(position).getIdAuthor()));
-        holder.tv_item_routes_distance
-                .setText(String.valueOf(routesList.get(position).getDistance()));
-        holder.tv_item_routes_name_route
-                .setText(String.valueOf(routesList.get(position).getNameRoute()));
+        Route route = routesList.get(position);
+        final Integer id_route = route.getIdRoute();
 
-        Picasso.get().load(routesList.get(position).getReferencePhotoRoute())
+        holder.tv_item_routes_id_author.setText(String.valueOf(route.getIdAuthor()));
+        holder.tv_item_routes_distance.setText(String.valueOf(route.getDistance()));
+        holder.tv_item_routes_name_route.setText(String.valueOf(route.getNameRoute()));
+
+        Picasso.get().load(route.getReferencePhotoRoute())
                 .placeholder(R.drawable.ic_launcher_background)
                 .error(R.drawable.ic_launcher_foreground)
                 .into(holder.iv_item_preview_photo_route);
@@ -54,11 +53,7 @@ public class RoutesListAdapter extends RecyclerView.Adapter<RouteViewHolder> {
         holder.mView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable(Constants.KEY_ID_ROUTE, id_route);
-                ContextHolder.getContext().startActivity(
-                        new Intent(ContextHolder.getContext(), RouteActivity.class)
-                                .putExtras(bundle));
+                activity.startActivity(RouteActivity.newIntent(activity, id_route));
             }
         });
     }

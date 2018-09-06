@@ -46,13 +46,13 @@
       android:id="@+id/btn_fragment_test_start"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="GO"/>
+      android:text="Start"/>
 
     <Button
-      android:id="@+id/btn_fragment_test_clearmarker"
+      android:id="@+id/btn_fragment_test_stop"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="Reset Marker"/>
+      android:text="Stop"/>
 
     <Button
       android:id="@+id/btn_fragment_test_next"

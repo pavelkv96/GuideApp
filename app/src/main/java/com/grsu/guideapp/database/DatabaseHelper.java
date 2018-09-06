@@ -1,28 +1,28 @@
 package com.grsu.guideapp.database;
 
 import static android.database.sqlite.SQLiteDatabase.OPEN_READWRITE;
-import static com.grsu.guideapp.utils.Crypto.encodeP;
-import static com.grsu.guideapp.utils.constants.Constants.DB_NAME;
-import static com.grsu.guideapp.utils.constants.Constants.ONE_METER_LAT;
-import static com.grsu.guideapp.utils.constants.Constants.ONE_METER_LNG;
+import static com.grsu.guideapp.utils.CryptoUtils.encodeP;
+import static com.grsu.guideapp.project_settings.constants.Constants.DB_NAME;
+import static com.grsu.guideapp.project_settings.constants.Constants.ONE_METER_LAT;
+import static com.grsu.guideapp.project_settings.constants.Constants.ONE_METER_LNG;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
-import com.grsu.guideapp.utils.constants.Constants;
+import com.grsu.guideapp.project_settings.constants.Constants;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import org.osmdroid.util.GeoPoint;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -145,7 +145,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         openDatabase();
         Cursor cursor = mDatabase.rawQuery(
                 "select c2.sequence, c1.start_point, c1.end_point, c1.polyline from lines c1, list_lines c2 where c1.id_line=c2.id_line and c2.id_route = ? order by sequence",
-                //"select c1.* from lines c1, list_lines c2 where c1.id_line=c2.id_line and c2.id_route = ?",
                 new String[]{String.valueOf(id_route)});
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
@@ -193,6 +192,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @NonNull
     private String d(double cLatitude, double cLongitude) {
-        return " AND (c1.id_point = '" + encodeP(new GeoPoint(cLatitude, cLongitude)) + "')";
+        return " AND (c1.id_point = '" + encodeP(new LatLng(cLatitude, cLongitude)) + "')";
     }
 }

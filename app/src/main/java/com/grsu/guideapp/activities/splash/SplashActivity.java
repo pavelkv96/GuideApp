@@ -1,8 +1,8 @@
 package com.grsu.guideapp.activities.splash;
 
 import static com.grsu.guideapp.utils.StreamUtils.copyAssets;
-import static com.grsu.guideapp.utils.constants.ConstantsPaths.CACHE;
-import static com.grsu.guideapp.utils.constants.ConstantsPaths.CACHE_FILE;
+import static com.grsu.guideapp.project_settings.constants.ConstantsPaths.CACHE;
+import static com.grsu.guideapp.project_settings.constants.ConstantsPaths.CACHE_FILE;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

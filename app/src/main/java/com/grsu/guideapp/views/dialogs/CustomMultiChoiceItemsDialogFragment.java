@@ -1,6 +1,6 @@
 package com.grsu.guideapp.views.dialogs;
 
-import static com.grsu.guideapp.utils.constants.Constants.KEY_SELECTED_ITEM;
+import static com.grsu.guideapp.project_settings.constants.Constants.KEY_SELECTED_ITEM;
 
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
@@ -51,7 +51,7 @@ public class CustomMultiChoiceItemsDialogFragment extends DialogFragment impleme
 
         Builder builder = new Builder(getActivity());
 
-        builder.setTitle("Radius (in meters)")
+        builder.setTitle("Types objects")
                 .setMultiChoiceItems(items, checkedItems, this)
                 .setPositiveButton("OK", this);
         return builder.create();
@@ -73,11 +73,10 @@ public class CustomMultiChoiceItemsDialogFragment extends DialogFragment impleme
         }
     }
 
-    public static CustomMultiChoiceItemsDialogFragment newInstance(
-            ArrayList<Integer> selectedItemsIndexList) {
+    public static CustomMultiChoiceItemsDialogFragment newInstance(ArrayList<Integer> IndexList) {
 
         Bundle args = new Bundle();
-        args.putIntegerArrayList(KEY_SELECTED_ITEM, selectedItemsIndexList);
+        args.putIntegerArrayList(KEY_SELECTED_ITEM, IndexList);
 
         CustomMultiChoiceItemsDialogFragment fragment = new CustomMultiChoiceItemsDialogFragment();
         fragment.setArguments(args);

@@ -53,7 +53,7 @@ dependencies {
     implementation "org.mapsforge:mapsforge-map:${versions.mapsforge}"
     implementation "org.mapsforge:mapsforge-themes:${versions.mapsforge}"
 
-    implementation "org.osmdroid:osmdroid-android:${versions.osmdroid}"
+//    implementation "org.osmdroid:osmdroid-android:${versions.osmdroid}"
 
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 

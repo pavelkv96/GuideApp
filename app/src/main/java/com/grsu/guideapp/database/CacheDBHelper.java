@@ -1,8 +1,8 @@
 package com.grsu.guideapp.database;
 
 import static com.grsu.guideapp.utils.MapUtils.getIndex;
-import static com.grsu.guideapp.utils.constants.ConstantsPaths.CACHE;
-import static com.grsu.guideapp.utils.constants.ConstantsPaths.CACHE_FILE;
+import static com.grsu.guideapp.project_settings.constants.ConstantsPaths.CACHE;
+import static com.grsu.guideapp.project_settings.constants.ConstantsPaths.CACHE_FILE;
 
 import android.content.ContentValues;
 import android.content.Context;
