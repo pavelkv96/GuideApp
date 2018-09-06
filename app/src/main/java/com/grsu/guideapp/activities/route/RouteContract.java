@@ -1,34 +1,32 @@
 package com.grsu.guideapp.activities.route;
 
+import android.location.Location;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Tile;
 import com.grsu.guideapp.base.BasePresenter;
 import com.grsu.guideapp.base.BaseView;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import java.util.List;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.Polyline;
 
 public interface RouteContract {
 
     interface RouteView extends BaseView {
 
-        void mapViewSettings();
+        void mapViewSettings(GoogleMap googleMap);
 
-        void setPolyline(List<GeoPoint> geoPointList);
+        void openDialogViews();
 
-        void setPoints(GeoPoint geoPoint);
+        void setPolyline(List<LatLng> geoPointList, int id);
 
-        void setGetPoints(Poi poi);
+        void setCurrentPoint(LatLng geoPointList);
 
-        void setGetPolyline(List<GeoPoint> geoPointList);
+        void setPointsTurn(LatLng geoPoint);
 
-        void removeMarker();
+        void setPoi(Poi poi);
 
-        void removePolylines();
-
-        void openDialogFragment();
+        void removePoi();
     }
 
 
@@ -36,15 +34,7 @@ public interface RouteContract {
 
         void getId(Integer id);
 
-        boolean singleTapConfirmedHelper(GeoPoint geoPoint, MapView mapView);
-
-        boolean longPressHelper(GeoPoint p);
-
-        boolean onMarkerClick(Marker marker, MapView mapView);
-
-        boolean onClickPolyline(Polyline polyline, MapView mapView, GeoPoint eventPos);
-
-        void getMarkers(GeoPoint geoPoint);
+        void getProjectionLocation(Location location);
 
         void setRadius(String radius);
 
@@ -52,7 +42,11 @@ public interface RouteContract {
 
         List<Integer> getType();
 
-        void getMarkersWithSettings(GeoPoint geoPoint);
+        void getPoi();
+
+        Tile getTile(int x, int y, int zoom, String provider);
+
+        void onMapReady(GoogleMap googleMap);
     }
 
 
@@ -63,7 +57,11 @@ public interface RouteContract {
             void onFinished(List<Line> encodePolylines);
 
             void onFinished1(List<Poi> poiList);
+
+            Tile onFinished(byte[] tile);
         }
+
+        Tile getTile(OnFinishedListener listener, long index, String provider);
 
         void getRouteById(OnFinishedListener listener, Integer id);
 

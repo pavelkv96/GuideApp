@@ -1,32 +1,41 @@
 package com.grsu.guideapp.activities.route;
 
-import static com.grsu.guideapp.utils.Crypto.decodeL;
-import static com.grsu.guideapp.utils.Crypto.decodeP;
+import static com.google.android.gms.maps.model.TileProvider.NO_TILE;
+import static com.grsu.guideapp.utils.CryptoUtils.decodeL;
+import static com.grsu.guideapp.utils.CryptoUtils.decodeP;
+import static com.grsu.guideapp.utils.MapUtils.getDistanceBetween;
+import static com.grsu.guideapp.utils.MapUtils.toLocation;
 
+import android.location.Location;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Tile;
 import com.grsu.guideapp.activities.route.RouteContract.RouteInteractor.OnFinishedListener;
 import com.grsu.guideapp.activities.route.RouteContract.RouteView;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
+import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.ArrayList;
 import java.util.List;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.Polyline;
-import org.osmdroid.views.overlay.infowindow.InfoWindow;
 
 public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFinishedListener,
         RouteContract.RoutePresenter {
 
+    private static final Integer RADIUS = 100;
     private static final String TAG = RoutePresenter.class.getSimpleName();
+    private LatLng currentLatLng;
+    private List<LatLng> latLngs;
+    private Integer currentIndex;
+    private List<LatLng> allLatLngs;
+    private List<LatLng> turnsList;
+
+    private List<Integer> types = new ArrayList<>();
+    private Integer checkedItem;
 
     private RouteView routeView;
     private RouteInteractor routeInteractor;
-    private List<Integer> types = new ArrayList<>();
-    private Integer checkedItem;
-    private GeoPoint mGeoPoint;
 
     public RoutePresenter(RouteView routeView, RouteInteractor routeInteractor) {
         this.routeView = routeView;
@@ -35,50 +44,22 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
 
     @Override
     public void getId(Integer id) {
-        mView.showProgress(null, "Loading");
+        mView.showProgress(null, "Loading...");
         routeInteractor.getRouteById(this, id);
     }
 
     @Override
-    public boolean singleTapConfirmedHelper(GeoPoint pGeoPoint, MapView mapView) {
-        InfoWindow.closeAllInfoWindowsOn(mapView);
-        return false;
-    }
+    public void getProjectionLocation(Location currentLocation) {
+        LatLng point = findNearestPointInPolyline(currentLocation);
 
-    @Override
-    public boolean longPressHelper(GeoPoint pGeoPoint) {
-        return false;
-    }
+        routeView.setCurrentPoint(point);
 
-    @Override
-    public boolean onMarkerClick(Marker marker, MapView mapView) {
-        InfoWindow.closeAllInfoWindowsOn(mapView);
-        mapView.getController().animateTo(marker.getPosition());
-        marker.showInfoWindow();
-        mGeoPoint = marker.getPosition();
-        getMarkers(mGeoPoint);
-        return true;
-    }
+        currentIndex = allLatLngs.indexOf(point);
 
-    @Override
-    public boolean onClickPolyline(Polyline polyline, MapView mapView, GeoPoint eventPos) {
-        InfoWindow.closeAllInfoWindowsOn(mapView);
-        mapView.getController().animateTo(eventPos);
-        polyline.setInfoWindowLocation(eventPos);
-        polyline.showInfoWindow();
-        return true;
-    }
+        Integer index = latLngs.indexOf(point);
+        detach(index);
 
-    @Override
-    public void getMarkers(GeoPoint pGeoPoint) {
-        if (pGeoPoint != null) {
-            getMarkersWithSettings(pGeoPoint);
-            return;
-        }
-        if (mGeoPoint != null) {
-            getMarkersWithSettings(mGeoPoint);
-        }
-
+        getCurrentTurn(toLocation(currentLatLng));
     }
 
     @Override
@@ -97,25 +78,57 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
     }
 
     @Override
-    public void getMarkersWithSettings(GeoPoint pGeoPoint) {
-        cleanUpMap();
-        if (types != null && types.size() > 0) {
-            routeInteractor.getListPoi(
-                    this, pGeoPoint.getLatitude(), pGeoPoint.getLongitude(), checkedItem, types
-            );
+    public void getPoi() {
+        if (currentLatLng != null) {
+            getCurrentTurn(toLocation(currentLatLng));
         }
     }
 
     @Override
+    public Tile getTile(int x, int y, int zoom, String provider) {
+        return routeInteractor.getTile(this, MapUtils.getTileIndex(zoom, x, y), provider);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        routeView.mapViewSettings(googleMap);
+    }
+
+    @Override
     public void onFinished(List<Line> encodePolylines) {
+        allLatLngs = new ArrayList<>();
+        latLngs = new ArrayList<>();
+        turnsList = new ArrayList<>();
+
         try {
-            Line line = null;
-            for (Line encodePolyline : encodePolylines) {
-                routeView.setPolyline(decodeL(encodePolyline.getPolyline()));
-                routeView.setPoints(decodeP(encodePolyline.getStartPoint()));
-                line = encodePolyline;
+            for (Line encodeLine : encodePolylines) {
+                Integer idLine = encodeLine.getIdLine();
+
+                routeView.setPolyline(decodeL(encodeLine.getPolyline()), idLine);
+
+                LatLng startPoint = decodeP(encodeLine.getStartPoint());
+                LatLng endPoint = decodeP(encodeLine.getEndPoint());
+                routeView.setPointsTurn(startPoint);
+                routeView.setPointsTurn(endPoint);
+
+                List<LatLng> lineList = decodeL(encodeLine.getPolyline());
+
+                if (currentLatLng != null) {
+                    lineList.remove(0);
+                    turnsList.add(endPoint);
+                } else {
+                    currentIndex = 0;
+                    currentLatLng = startPoint;
+                    turnsList.add(endPoint);
+                    turnsList.add(startPoint);
+                }
+
+                allLatLngs.addAll(lineList);
             }
-            routeView.setPoints(decodeP(line.getEndPoint()));
+
+            for (int i = 0; i < 5; i++) {
+                latLngs.add(allLatLngs.get(i));
+            }
         } catch (NullPointerException ignored) {
         }
         mView.hideProgress();
@@ -123,26 +136,141 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
 
     @Override
     public void onFinished1(List<Poi> poiList) {
-        //routeView.removeMarker();
-        List<GeoPoint> geoPointList = new ArrayList<>();
-        geoPointList.add(mGeoPoint);
+        routeView.removePoi();
         for (Poi poi : poiList) {
-            geoPointList.add(new GeoPoint(poi.getLatitude(), poi.getLongitude()));
-            routeView.setGetPolyline(geoPointList);
-            geoPointList.remove(geoPointList.size() - 1);
-            routeView.setGetPoints(poi);
-            Logs.e(TAG, poi.getId() + "; " + poi.getLatitude() + "; " + poi.getLongitude());
+            routeView.setPoi(poi);
         }
     }
 
     @Override
-    public void attachView(RouteView view) {
-        super.attachView(view);
-        cleanUpMap();
+    public Tile onFinished(byte[] tile) {
+        if (tile == null) {
+            return NO_TILE;
+        }
+
+        return new Tile(256, 256, tile);
     }
 
-    private void cleanUpMap() {
-        routeView.removeMarker();
-        routeView.removePolylines();
+    private void getCurrentTurn(Location currentLocation) {
+        LatLng shortestDistance = getShortestDistance(turnsList, currentLocation);
+        int size = getType().size();
+
+        if (MapUtils.isMoreDistance(RADIUS, currentLocation, shortestDistance) && size != 0) {
+
+            routeInteractor.getListPoi(
+                    this,
+                    shortestDistance.latitude,
+                    shortestDistance.longitude,
+                    checkedItem,
+                    getType());
+        } else {
+            routeView.removePoi();
+        }
+    }
+
+    private void detach(int newCenterIndex) {
+        LatLng latLng = latLngs.get(newCenterIndex);
+
+        if (newCenterIndex > 2) {
+            removeLast(latLng);
+        }
+
+        if (newCenterIndex < 2) {
+            removePrevious(latLng);
+        }
+    }
+
+    private void removeLast(LatLng latLng) {
+        while (latLngs.indexOf(latLng) - 1 >= 2) {
+            latLngs.remove(0);
+        }
+
+        //get next points
+        if (latLngs.size() == 3) {
+            if (currentIndex + 1 < allLatLngs.size()) {
+                latLngs.add(allLatLngs.get(currentIndex + 1));
+            } else {
+                latLngs.add(new LatLng((double) -latLngs.size(), (double) -latLngs.size()));
+            }
+
+        }
+
+        if (latLngs.size() == 4) {
+            if (currentIndex + 2 < allLatLngs.size()) {
+                latLngs.add(allLatLngs.get(currentIndex + 2));
+            } else {
+                latLngs.add(new LatLng((double) -latLngs.size(), (double) -latLngs.size()));
+            }
+        }
+    }
+
+    private void removePrevious(LatLng latLng) {
+        while (latLngs.indexOf(latLng) + 2 < latLngs.indexOf(latLngs.get(latLngs.size() - 1))) {
+            latLngs.remove(latLngs.size() - 1);
+        }
+        //get previous points
+        List<LatLng> list = new ArrayList<>();
+        if (latLngs.size() == 3) {
+
+            if (currentIndex > 1) {
+                list.add(allLatLngs.get(currentIndex - 1));
+            } else {
+                list.add(new LatLng((double) -latLngs.size(), (double) -latLngs.size()));
+            }
+            latLngs.addAll(0, list);
+            list.clear();
+        }
+
+        if (latLngs.size() == 4) {
+            if (currentIndex > 2) {
+                list.add(allLatLngs.get(currentIndex - 2));
+            } else {
+                list.add(new LatLng((double) -latLngs.size() - 1,
+                        (double) -latLngs.size() - 1));
+            }
+            latLngs.addAll(0, list);
+        }
+    }
+
+    private LatLng findNearestPointInPolyline(Location currentLocation) {
+        LatLng shortestDistance = getShortestDistance(latLngs, currentLocation);
+
+        if (getDistanceBetween(currentLocation, toLocation(shortestDistance)) > 60) {
+
+            Logs.e(TAG,
+                    getDistanceBetween(currentLocation, toLocation(shortestDistance)) + " meters");
+            try {
+                LatLng latLng = getShortestDistance(allLatLngs, currentLocation);
+                int index = allLatLngs.indexOf(latLng) - 2;
+                latLngs.clear();
+                for (int i = 0; i < 5; i++) {
+                    latLngs.add(i, allLatLngs.get(index + i));
+                }
+                currentLatLng = shortestDistance = latLng;
+            } catch (ArrayIndexOutOfBoundsException ignore) {
+
+            }
+
+        }
+
+        if (latLngs.indexOf(shortestDistance) != latLngs.indexOf(currentLatLng)) {
+            currentLatLng = shortestDistance;
+        }
+        return shortestDistance;
+    }
+
+    private LatLng getShortestDistance(List<LatLng> latLngList, Location currentLocation) {
+        Location endLocation = toLocation(latLngList.get(0));
+        Float distance = getDistanceBetween(currentLocation, endLocation);
+        LatLng latLng = latLngList.get(0);
+
+        for (LatLng point : latLngList) {
+            if (MapUtils.isMoreDistance(distance, currentLocation, point)) {
+                distance = getDistanceBetween(currentLocation, toLocation(point));
+                latLng = point;
+            }
+        }
+
+        return latLng;
     }
 }

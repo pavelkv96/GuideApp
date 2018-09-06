@@ -12,106 +12,88 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
+import com.grsu.guideapp.utils.StorageUtils;
+import com.grsu.guideapp.utils.StreamUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import org.osmdroid.tileprovider.util.StorageUtils;
 
 public class Tracker extends Fragment implements LocationListener {
 
+    @BindView(R.id.tv_fragment_tracker_data)
     TextView data;
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 0;
-    private static final float LOCATION_DISTANCE = 10;
-    private Location mLastLocation;
-    private File file = null;
+    private static final int INTERVAL = 0;
+    private static final float DISTANCE = 10;
     FileOutputStream stream = null;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_tracker, container, false);
-
-        data = view.findViewById(R.id.tv_fragment_tracker_data);
-
-        view.findViewById(R.id.btn_fragment_tracker_start)
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        initializeLocationManager();
-
-                        file = new File(StorageUtils.getStorage() + "/tracker.txt");
-                        Logs.e("TAG", file.getAbsolutePath());
-                        if (!file.exists()) {
-                            try {
-                                file.createNewFile();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }else {
-                            file.delete();
-                            try {
-                                file.createNewFile();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        try {
-                            stream = new FileOutputStream(file);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-
-                        try {
-                            mLocationManager.requestLocationUpdates(
-                                    GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                                    Tracker.this);
-                        } catch (SecurityException ignored) {
-                        } catch (IllegalArgumentException ignored) {
-                        }
-                    }
-                });
-
-        view.findViewById(R.id.btn_fragment_tracker_stop)
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        try {
-                            stream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        if (mLocationManager != null) {
-                            try {
-                                mLocationManager.removeUpdates(Tracker.this);
-                            } catch (Exception ignored) {
-                            }
-                        }
-                    }
-                });
-
+        ButterKnife.bind(this, view);
         return view;
     }
 
+    @OnClick(R.id.btn_fragment_tracker_start)
+    public void start(View view) {
+        initializeLocationManager();
+
+        File file = new File(StorageUtils.getStorage() + "/tracker.txt");
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            file.delete();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            stream = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mLocationManager.requestLocationUpdates(GPS_PROVIDER, INTERVAL, DISTANCE, Tracker.this);
+        } catch (SecurityException ignored) {
+        } catch (IllegalArgumentException ignored) {
+        }
+    }
+
+    @OnClick(R.id.btn_fragment_tracker_stop)
+    public void stop(View view) {
+
+        StreamUtils.closeStream(stream);
+        if (mLocationManager != null) {
+            try {
+                mLocationManager.removeUpdates(Tracker.this);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
     private void initializeLocationManager() {
-        mLastLocation = new Location(GPS_PROVIDER);
-//        Log.e(TAG, "initializeLocationManager");
-        if (mLocationManager == null) {
-            mLocationManager = (LocationManager) getActivity()
-                    .getSystemService(LOCATION_SERVICE);
+        if (mLocationManager == null && getActivity() != null) {
+            mLocationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
         }
     }
 
@@ -122,9 +104,9 @@ public class Tracker extends Fragment implements LocationListener {
         LatLng latLng = MapUtils.toLatLng(location);
         data.setText(latLng.toString());
         try {
-            stream.write(String.valueOf(
-                    "latLngList.add(new LatLng(" + latLng + "));\n")
-                    .getBytes());
+            stream.write(
+                    String.valueOf("latLngList.add(new LatLng(" + latLng + "));\n").getBytes()
+            );
         } catch (IOException e) {
             e.printStackTrace();
         }

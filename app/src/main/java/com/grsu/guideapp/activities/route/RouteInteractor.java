@@ -1,7 +1,10 @@
 package com.grsu.guideapp.activities.route;
 
+import static com.grsu.guideapp.mf.MapsForgeTileSource.loadTile;
+
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import com.google.android.gms.maps.model.Tile;
 import com.grsu.guideapp.database.DatabaseHelper;
 import java.util.List;
 
@@ -11,6 +14,11 @@ public class RouteInteractor implements RouteContract.RouteInteractor {
 
     public RouteInteractor(@NonNull DatabaseHelper pDbHelper) {
         helper = pDbHelper;
+    }
+
+    @Override
+    public Tile getTile(OnFinishedListener listener, long index, String provider) {
+        return listener.onFinished(loadTile(index));
     }
 
     @Override

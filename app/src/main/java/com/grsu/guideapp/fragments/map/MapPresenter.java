@@ -1,8 +1,8 @@
 package com.grsu.guideapp.fragments.map;
 
 import static com.google.android.gms.maps.model.TileProvider.NO_TILE;
-import static com.grsu.guideapp.utils.Crypto.decodeLL;
-import static com.grsu.guideapp.utils.Crypto.decodePL;
+import static com.grsu.guideapp.utils.CryptoUtils.decodeL;
+import static com.grsu.guideapp.utils.CryptoUtils.decodeP;
 import static com.grsu.guideapp.utils.MapUtils.getDistanceBetween;
 import static com.grsu.guideapp.utils.MapUtils.toLocation;
 
@@ -20,8 +20,8 @@ import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinishedListener,
-        MapContract.MapPresenter {
+public class MapPresenter extends BasePresenterImpl<MapViews> implements MapContract.MapPresenter,
+        OnFinishedListener {
 
     private static final Integer RADIUS = 100;
     private static final String TAG = MapPresenter.class.getSimpleName();
@@ -50,7 +50,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
     }
 
     @Override
-    public void getLocation(Location currentLocation) {
+    public void getProjectionLocation(Location currentLocation) {
         LatLng point = findNearestPointInPolyline(currentLocation);
 
         mapViews.setCurrentPoint(point);
@@ -79,7 +79,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
     }
 
     @Override
-    public void getMarkers() {
+    public void getPoi() {
         if (currentLatLng != null) {
             getCurrentTurn(toLocation(currentLatLng));
         }
@@ -105,14 +105,14 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
             for (Line encodeLine : encodePolylines) {
                 Integer idLine = encodeLine.getIdLine();
 
-                mapViews.setPolyline(decodeLL(encodeLine.getPolyline()), idLine);
+                mapViews.setPolyline(decodeL(encodeLine.getPolyline()), idLine);
 
-                LatLng startPoint = decodePL(encodeLine.getStartPoint());
-                LatLng endPoint = decodePL(encodeLine.getEndPoint());
+                LatLng startPoint = decodeP(encodeLine.getStartPoint());
+                LatLng endPoint = decodeP(encodeLine.getEndPoint());
                 mapViews.setPointsTurn(startPoint);
                 mapViews.setPointsTurn(endPoint);
 
-                List<LatLng> lineList = decodeLL(encodeLine.getPolyline());
+                List<LatLng> lineList = decodeL(encodeLine.getPolyline());
 
                 if (currentLatLng != null) {
                     lineList.remove(0);
@@ -137,7 +137,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
 
     @Override
     public void onFinished1(List<Poi> poiList) {
-        mapViews.removeMarkers();
+        mapViews.removePoi();
         for (Poi poi : poiList) {
             mapViews.setPoi(poi);
         }
@@ -165,7 +165,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
                     checkedItem,
                     getType());
         } else {
-            mapViews.removeMarkers();
+            mapViews.removePoi();
         }
     }
 
@@ -273,22 +273,5 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements OnFinis
         }
 
         return latLng;
-    }
-
-
-    private static List<Line> setData1() {
-        List<Line> lines = new ArrayList<>();
-        lines.add(new Line(1, "ahtfI{iopC", "iitfIenopC", "ahtfI{iopCIa@G]G[EWGU"));
-        lines.add(new Line(2, "iitfIenopC", "iotfIulopC", "iitfIenopCG@MBOBSBUDSBSDSBQBSDMB"));
-        lines.add(new Line(3, "iotfIulopC", "wotfI_jopC", "iotfIulopC@NAh@MZ"));
-        lines.add(new Line(4, "wotfI_jopC", "sdufIacopC",
-                "wotfI_jopCQDQDQDOBQDQDQDQBODQDQDQBQDQDQDOBQDQDQDQDQDODQDQDQFQDODQDQDQDQDODQDQDQDQDQDMD"));
-        lines.add(new Line(5, "sdufIacopC", "qcufI{nnpC",
-                "sdufIacopC@\\?\\@\\@\\@\\@\\?^@\\@\\@\\@\\?^@\\@\\@\\?\\@\\@\\@\\@^@f@"));
-        lines.add(new Line(6, "qcufI{nnpC", "e_tfIginpC",
-                "qcufI{nnpCNHPHNHPHNFPHPHNHNHPHNHRHRJLFLFPJNHPHNHPHLFRDPDPBNDPBRCPCRCPCRETCTEVCNCPAPCPARCPCPCN?PAP?PAP?P?P?T?T?V@T@P@P@PBV@\\@X@XBRCTCLA"));
-        lines.add(new Line(7, "e_tfIginpC", "qgtfI_hopC",
-                "e_tfIginpCG[G[G[EYG[G[G]GYE[GYG[G[G[E[EYG[E[G_@Ic@G[Ia@Ic@G_@Ga@Ke@Ia@Ie@Ic@Ia@G]Ic@Ic@"));
-        return lines;
     }
 }

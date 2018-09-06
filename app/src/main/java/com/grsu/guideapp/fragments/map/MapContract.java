@@ -26,14 +26,14 @@ public interface MapContract {
 
         void setPoi(Poi poi);
 
-        void removeMarkers();
+        void removePoi();
 
     }
 
     interface MapPresenter extends BasePresenter<MapViews> {
         void getId(Integer id);
 
-        void getLocation(Location location);
+        void getProjectionLocation(Location location);
 
         void setRadius(String radius);
 
@@ -41,7 +41,7 @@ public interface MapContract {
 
         List<Integer> getType();
 
-        void getMarkers();
+        void getPoi();
 
         Tile getTile(int x, int y, int zoom, String provider);
 
