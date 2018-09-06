@@ -28,6 +28,7 @@ public class MyService extends Service implements LocationListener {
             mLocationManager.requestLocationUpdates(GPS_PROVIDER, INTERVAL, DISTANCE, this);
         } catch (SecurityException ex) {
             Logs.e(TAG, "fail to request location update, ignore", ex);
+            onDestroy();
         } catch (IllegalArgumentException ex) {
             Logs.e(TAG, "gps provider does not exist " + ex.getMessage());
         }
@@ -36,8 +37,7 @@ public class MyService extends Service implements LocationListener {
     private void initializeLocationManager() {
         Logs.e(TAG, "initializeLocationManager");
         if (mLocationManager == null) {
-            mLocationManager = (LocationManager) getApplicationContext()
-                    .getSystemService(LOCATION_SERVICE);
+            mLocationManager = (LocationManager) getApplication().getSystemService(LOCATION_SERVICE);
         }
     }
 

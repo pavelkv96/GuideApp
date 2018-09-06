@@ -37,10 +37,11 @@ import com.grsu.guideapp.database.CacheDBHelper;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.mf.MapsForgeTileSource;
 import com.grsu.guideapp.models.Poi;
+import com.grsu.guideapp.project_settings.constants.Constants;
+import com.grsu.guideapp.utils.CheckSelfPermission;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
-import com.grsu.guideapp.project_settings.constants.Constants;
 import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment;
 import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment.OnMultiChoiceListDialogFragment;
 import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment;
@@ -78,6 +79,12 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (CheckSelfPermission.writeExternalStorageIsGranted(this)) {
+            Toasts.makeS(this, "Don't have permission");
+            finish();
+        }
+
         setContentView(R.layout.activity_route);
 
         SupportMapFragment mapFragment = ((SupportMapFragment) getSupportFragmentManager()
@@ -102,6 +109,10 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
     public void onStart() {
         super.onStart();
         Logs.e(TAG, "onStart");
+
+        if (CheckSelfPermission.writeExternalStorageIsGranted(this)) {
+            finish();
+        }
 
         AndroidGraphicFactory.createInstance(getApplication());
         new CacheDBHelper(this);
@@ -224,7 +235,6 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
         if (br != null) {
             try {
                 unregisterReceiver(br);
-                br = null;
             } catch (IllegalArgumentException ignore) {
             } finally {
                 stopService(new Intent(this, MyService.class));
@@ -256,10 +266,12 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
     @SuppressLint("MissingPermission")
     @OnClick(R.id.btn_activity_route_start)
     public void startService(View view) {
-        if (br != null) {
+        if (br != null && !CheckSelfPermission.getAccessLocationIsGranted(this)) {
             registerReceiver(br, new IntentFilter(BR_ACTION));
             startService(new Intent(this, MyService.class));
             mMap.setMyLocationEnabled(true);
+        } else {
+            Toasts.makeS(this, "Don't have permission");
         }
     }
 
