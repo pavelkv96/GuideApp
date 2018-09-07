@@ -1,8 +1,8 @@
 package com.grsu.guideapp.activities.route;
 
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NONE;
-import static com.grsu.guideapp.project_settings.constants.Constants.KEY_GEO_POINT;
-import static com.grsu.guideapp.project_settings.constants.Constants.PROVIDER_MAPSFORGE;
+import static com.grsu.guideapp.project_settings.Constants.KEY_GEO_POINT;
+import static com.grsu.guideapp.project_settings.Settings.CURRENT_PROVIDER;
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
@@ -37,7 +37,7 @@ import com.grsu.guideapp.database.CacheDBHelper;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.mf.MapsForgeTileSource;
 import com.grsu.guideapp.models.Poi;
-import com.grsu.guideapp.project_settings.constants.Constants;
+import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.CheckSelfPermission;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
@@ -122,7 +122,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
         Toasts.makeL(this, "Loaded map file " + file.exists());
 
         if (file.exists()) {
-            MapsForgeTileSource.createFromFiles(new File[]{file}, null, PROVIDER_MAPSFORGE);
+            MapsForgeTileSource.createFromFiles(new File[]{file}, null, CURRENT_PROVIDER);
         }
     }
 
@@ -134,7 +134,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
 
     @Override
     public Tile getTile(int x, int y, int zoom) {
-        return mPresenter.getTile(x, y, zoom, PROVIDER_MAPSFORGE);
+        return mPresenter.getTile(x, y, zoom, CURRENT_PROVIDER);
     }
 
     @Override

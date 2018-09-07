@@ -1,6 +1,6 @@
 package com.grsu.guideapp.views.dialogs;
 
-import static com.grsu.guideapp.project_settings.constants.Constants.KEY_SELECTED_ITEM;
+import static com.grsu.guideapp.project_settings.Constants.KEY_SELECTED_ITEM;
 
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;

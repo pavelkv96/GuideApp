@@ -13,7 +13,7 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.adapters.RoutesListAdapter;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.project_settings.constants.Constants;
+import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.io.File;
 import java.util.List;
@@ -29,7 +29,7 @@ public class ListRoutesFragment extends Fragment {
 
         DatabaseHelper mDBHelper = new DatabaseHelper(getContext());
 
-        File database = getContext().getDatabasePath(Constants.DB_NAME);
+        File database = getContext().getDatabasePath(Settings.DATABASE_INFORMATION_NAME);
         if (!database.exists()) {
             mDBHelper.getReadableDatabase();
             //Copy db

@@ -1,8 +1,9 @@
 package com.grsu.guideapp.database;
 
+import static com.grsu.guideapp.project_settings.Settings.CACHE;
+import static com.grsu.guideapp.project_settings.Settings.CACHE_DATABASE_NAME;
+import static com.grsu.guideapp.project_settings.Settings.CACHE_DATABASE_VERSION;
 import static com.grsu.guideapp.utils.MapUtils.getIndex;
-import static com.grsu.guideapp.project_settings.constants.ConstantsPaths.CACHE;
-import static com.grsu.guideapp.project_settings.constants.ConstantsPaths.CACHE_FILE;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -26,13 +27,11 @@ public class CacheDBHelper extends SQLiteOpenHelper implements TileConstants {
     private static SQLiteDatabase mDb;
 
     private static final String TAG = CacheDBHelper.class.getSimpleName();
-    private static final Integer VERSION = 1;
-    private static final String DB_NAME = "cache.db";
     private static final String primaryKey = COLUMN_KEY + "=? and " + COLUMN_PROVIDER + "=?";
     private static final String[] queryColumns = {COLUMN_TILE};
 
     public CacheDBHelper(Context context) {
-        super(context, DB_NAME, null, VERSION);
+        super(context, CACHE_DATABASE_NAME, null, CACHE_DATABASE_VERSION);
         mDb = getDb();
     }
 
@@ -50,7 +49,7 @@ public class CacheDBHelper extends SQLiteOpenHelper implements TileConstants {
         }
         synchronized (mLock) {
             new File(CACHE).mkdir();
-            File db_file = new File(CACHE + CACHE_FILE);
+            File db_file = new File(CACHE + CACHE_DATABASE_NAME);
 
             if (mDb == null) {
                 try {

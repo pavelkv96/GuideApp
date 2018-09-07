@@ -1,7 +1,7 @@
 package com.grsu.guideapp.fragments.map;
 
 import static android.location.LocationManager.GPS_PROVIDER;
-import static com.grsu.guideapp.project_settings.constants.Constants.KEY_GEO_POINT;
+import static com.grsu.guideapp.project_settings.Constants.KEY_GEO_POINT;
 
 import android.app.Service;
 import android.content.Intent;

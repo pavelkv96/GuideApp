@@ -1,10 +1,11 @@
 package com.grsu.guideapp.database;
 
 import static android.database.sqlite.SQLiteDatabase.OPEN_READWRITE;
+import static com.grsu.guideapp.project_settings.Settings.DATABASE_INFORMATION_NAME;
+import static com.grsu.guideapp.project_settings.Settings.DATABASE_INFORMATION_VERSION;
+import static com.grsu.guideapp.project_settings.Constants.ONE_METER_LAT;
+import static com.grsu.guideapp.project_settings.Constants.ONE_METER_LNG;
 import static com.grsu.guideapp.utils.CryptoUtils.encodeP;
-import static com.grsu.guideapp.project_settings.constants.Constants.DB_NAME;
-import static com.grsu.guideapp.project_settings.constants.Constants.ONE_METER_LAT;
-import static com.grsu.guideapp.project_settings.constants.Constants.ONE_METER_LNG;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -15,8 +16,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Route;
+import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
-import com.grsu.guideapp.project_settings.constants.Constants;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -28,11 +29,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = DatabaseHelper.class.getSimpleName();
     private final Context mContext;
-    private static final Integer VERSION = 1;
+    private static final String DB_NAME = DATABASE_INFORMATION_NAME;
     private SQLiteDatabase mDatabase;
 
     public DatabaseHelper(Context context) {
-        super(context, DB_NAME, null, VERSION);
+        super(context, DB_NAME, null, DATABASE_INFORMATION_VERSION);
         mContext = context;
     }
 
@@ -84,7 +85,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public static boolean deleteDatabase(@NonNull Context context) {
-        File database = context.getDatabasePath(Constants.DB_NAME);
+        File database = context.getDatabasePath(Settings.DATABASE_INFORMATION_NAME);
 
         if (database.exists()) {
             database.delete();
