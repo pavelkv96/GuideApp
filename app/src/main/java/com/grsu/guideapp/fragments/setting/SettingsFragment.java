@@ -1,19 +1,18 @@
 package com.grsu.guideapp.fragments.setting;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.View;
 import butterknife.OnClick;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseFragment;
+import com.grsu.guideapp.database.CacheDBHelper;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 
 public class SettingsFragment extends BaseFragment<SettingPresenter> {
 
-    private static final String TAG = "SettingsFragment";
+    private static final String TAG = SettingsFragment.class.getSimpleName();
 
     @NonNull
     @Override
@@ -26,13 +25,7 @@ public class SettingsFragment extends BaseFragment<SettingPresenter> {
         return R.layout.fragment_settings;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-
-    @OnClick(R.id.btn_snackbar)
+    @OnClick(R.id.btn_fragment_settings_clear_content)
     public void buttonClick(View view) {
         Context context = getContext();
 
@@ -45,4 +38,15 @@ public class SettingsFragment extends BaseFragment<SettingPresenter> {
         }
     }
 
+    @OnClick(R.id.btn_fragment_settings_clear_map_cache)
+    public void clear(View view) {
+        CacheDBHelper.clearCache();
+        if (getActivity() != null) {
+            if (getActivity().getDatabasePath("KA.map").delete()) {
+                Toasts.makeS(getActivity(), "Database deleted");
+            } else {
+                Toasts.makeS(getActivity(), "Database not found");
+            }
+        }
+    }
 }
