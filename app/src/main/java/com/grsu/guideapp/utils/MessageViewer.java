@@ -25,7 +25,7 @@ public class MessageViewer {
             makeToast(context, message.toString(), Toast.LENGTH_SHORT);
         }
 
-        private static void makeToast(Context context, String message, int lenght) {
+        private static void makeToast(Context context, String message, int length) {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         }
     }

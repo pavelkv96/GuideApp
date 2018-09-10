@@ -33,6 +33,8 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
 
     private List<Integer> types = new ArrayList<>();
     private Integer checkedItem;
+    private boolean flag;
+    private Integer id;
 
     private RouteView routeView;
     private RouteInteractor routeInteractor;
@@ -46,6 +48,7 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
     public void getId(Integer id) {
         mView.showProgress(null, "Loading...");
         routeInteractor.getRouteById(this, id);
+        this.id = id;
     }
 
     @Override
@@ -75,6 +78,22 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
     @Override
     public List<Integer> getType() {
         return types;
+    }
+
+    @Override
+    public void setAllPoi(boolean getAll) {
+        flag = getAll;
+        getAllPoi();
+    }
+
+    @Override
+    public void getAllPoi() {
+        int size = getType().size();
+        if (flag && size != 0) {
+            routeInteractor.getListPoi(this, id, getType());
+        } else {
+            getPoi();
+        }
     }
 
     @Override
@@ -152,6 +171,10 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
     }
 
     private void getCurrentTurn(Location currentLocation) {
+        if (flag) {
+            return;
+        }
+
         LatLng shortestDistance = getShortestDistance(turnsList, currentLocation);
         int size = getType().size();
 

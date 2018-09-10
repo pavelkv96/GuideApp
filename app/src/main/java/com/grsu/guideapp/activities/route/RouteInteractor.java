@@ -41,4 +41,15 @@ public class RouteInteractor implements RouteContract.RouteInteractor {
             }
         }/*, 3000*/);
     }
+
+    @Override
+    public void getListPoi(final OnFinishedListener listener, final Integer id,
+            final List<Integer> typesObjects) {
+        new Handler().post/*Delayed*/(new Runnable() {
+            @Override
+            public void run() {
+                listener.onFinished1(helper.getListPoi(id, typesObjects));
+            }
+        }/*, 3000*/);
+    }
 }

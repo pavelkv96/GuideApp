@@ -1,9 +1,5 @@
 package com.grsu.guideapp.activities.route;
 
-import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NONE;
-import static com.grsu.guideapp.project_settings.Constants.KEY_GEO_POINT;
-import static com.grsu.guideapp.project_settings.Settings.CURRENT_PROVIDER;
-
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,8 +11,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import butterknife.BindView;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -38,6 +36,7 @@ import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.mf.MapsForgeTileSource;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.project_settings.Constants;
+import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CheckSelfPermission;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
@@ -122,7 +121,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
         Toasts.makeL(this, "Loaded map file " + file.exists());
 
         if (file.exists()) {
-            MapsForgeTileSource.createFromFiles(new File[]{file}, null, CURRENT_PROVIDER);
+            MapsForgeTileSource.createFromFiles(new File[]{file}, null, Settings.CURRENT_PROVIDER);
         }
     }
 
@@ -134,7 +133,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
 
     @Override
     public Tile getTile(int x, int y, int zoom) {
-        return mPresenter.getTile(x, y, zoom, CURRENT_PROVIDER);
+        return mPresenter.getTile(x, y, zoom, Settings.CURRENT_PROVIDER);
     }
 
     @Override
@@ -155,11 +154,11 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
     public void mapViewSettings(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mMap.setMapType(MAP_TYPE_NONE);
+        mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
 
-        LatLng sydney = new LatLng(53.899045, 23.624377);
+        LatLng sydney = new LatLng(53.684860, 23.838478);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 11));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 15));
 
         mMap.addTileOverlay(new TileOverlayOptions().tileProvider(this));
     }
@@ -196,6 +195,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(new LatLng(poi.getLatitude(), poi.getLongitude()))
                 .icon(BitmapDescriptorFactory.fromResource(icon))
+                .draggable(true)
                 .snippet(poi.getId());
         nearPoi.add(mMap.addMarker(markerOptions));
     }
@@ -222,6 +222,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
     public void onOk(ArrayList<Integer> arrayList) {
         mPresenter.setType(arrayList);
         mPresenter.getPoi();
+        mPresenter.getAllPoi();
     }
 
     @Override
@@ -229,6 +230,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
         distanceTextView.setText(itemValue);
         mPresenter.setRadius(itemValue);
         mPresenter.getPoi();
+        mPresenter.getAllPoi();
     }
 
     private void unregisterListeners() {
@@ -292,6 +294,12 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
             mPresenter.getProjectionLocation(
                     MapUtils.toLocation(myMovement.get(myMovement.size() - 1)));
         }
+    }
+
+    @OnCheckedChanged(R.id.cb_activity_route_get_all)
+    public void isAllPoi(CompoundButton compoundButton, boolean isChecked){
+        Toasts.makeS(this, isChecked+"");
+        mPresenter.setAllPoi(isChecked);
     }
 
     private List<LatLng> getList() {
@@ -462,7 +470,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Location location = intent.getParcelableExtra(KEY_GEO_POINT);
+            Location location = intent.getParcelableExtra(Constants.KEY_GEO_POINT);
             Logs.e(TAG, String.valueOf(location));
 
             mPresenter.getProjectionLocation(location);

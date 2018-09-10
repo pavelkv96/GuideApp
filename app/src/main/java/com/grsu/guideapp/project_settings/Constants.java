@@ -2,8 +2,8 @@ package com.grsu.guideapp.project_settings;
 
 public class Constants {
 
-    public static final Double ONE_METER_LAT = 0.000009;
-    public static final Double ONE_METER_LNG = 0.000015;
+    public static final Double ONE_METER_LAT = 0.000009;//1m ~ 0.000009
+    public static final Double ONE_METER_LNG = 0.000015;//1m ~ 0.000015
 
     public static final String EMPTY_STRING = "";
 

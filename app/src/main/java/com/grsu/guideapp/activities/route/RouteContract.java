@@ -42,6 +42,10 @@ public interface RouteContract {
 
         List<Integer> getType();
 
+        void setAllPoi(boolean getAll);
+
+        void getAllPoi();
+
         void getPoi();
 
         Tile getTile(int x, int y, int zoom, String provider);
@@ -67,5 +71,7 @@ public interface RouteContract {
 
         void getListPoi(OnFinishedListener listener, double latitude, double longitude, int radius,
                 List<Integer> typesObjects);
+
+        void getListPoi(OnFinishedListener listener, Integer id, List<Integer> typesObjects);
     }
 }

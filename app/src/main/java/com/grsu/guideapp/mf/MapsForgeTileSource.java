@@ -44,7 +44,7 @@ public class MapsForgeTileSource {
 
     private static MultiMapDataStore mapDatabase;
 
-    public static void createFromFiles(File[] file, XmlRenderTheme theme, String provider) {
+    public static void createFromFiles(File[] file, XmlRenderTheme renderTheme, String provider) {
         mProvider = provider;
         mapDatabase = new MultiMapDataStore(DataPolicy.RETURN_ALL);
         for (File aFile : file) {
@@ -56,7 +56,6 @@ public class MapsForgeTileSource {
                     "Must call MapsForgeTileSource.createInstance(context.getApplication()); once before MapsForgeTileSource.createFromFiles().");
         }
 
-        // mapsforge0.8.0
         InMemoryTileCache tileCache = new InMemoryTileCache(2);
         TileBasedLabelStore labelStore = new TileBasedLabelStore(tileCache.getCapacityFirstLevel());
         renderer = new DatabaseRenderer(
@@ -68,13 +67,11 @@ public class MapsForgeTileSource {
                 true,
                 null);
 
-        if (theme == null) {
-            theme = InternalRenderTheme.OSMARENDER;
+        if (renderTheme == null) {
+            renderTheme = InternalRenderTheme.OSMARENDER;
         }
-        //we the passed in theme is different that the existing one, or the theme is currently null, create it
-        MapsForgeTileSource.theme = new RenderThemeFuture(AndroidGraphicFactory.INSTANCE, theme, model);
-        //super important!! without the following line, all rendering activities will block until the theme is created.
-        new Thread(MapsForgeTileSource.theme).start();
+        theme = new RenderThemeFuture(AndroidGraphicFactory.INSTANCE, renderTheme, model);
+        new Thread(theme).start();
     }
 
     @Nullable
@@ -86,7 +83,6 @@ public class MapsForgeTileSource {
             return null;
         }
         try {
-            //Draw the tile
             RendererJob mapGeneratorJob = new RendererJob(tile, mapDatabase, theme, model, scale,
                     false, false);
             AndroidTileBitmap bmp = (AndroidTileBitmap) renderer.executeJob(mapGeneratorJob);
@@ -96,7 +92,6 @@ public class MapsForgeTileSource {
         } catch (Exception ex) {
             Logs.e(TAG, "Mapsforge tile generation failed", ex);
         }
-        //Make the bad tile easy to spot
         Bitmap bitmap = Bitmap.createBitmap(TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, RGB_565);
         bitmap.eraseColor(Color.GRAY);
         return new BitmapDrawable(bitmap);
@@ -117,8 +112,7 @@ public class MapsForgeTileSource {
             byte[] bitmapdata = stream.toByteArray();
             StreamUtils.closeStream(stream);
 
-            //TODO Set image in database
-
+            //Set image in database
             ByteArrayInputStream bais = null;
             try {
                 bais = new ByteArrayInputStream(bitmapdata);

@@ -140,6 +140,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return poiList;
     }
 
+    public List<Poi> getListPoi(Integer id, List<Integer> typesObjects) {
+
+        List<Poi> poiList = new ArrayList<>();
+        openDatabase();
+        String placeWithRadiusQuery = getPlace(id) + getByTypes(typesObjects);
+        Cursor cursor = mDatabase.rawQuery(placeWithRadiusQuery, null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            poiList.add(new Poi(
+                    cursor.getString(0),
+                    cursor.getFloat(1),
+                    cursor.getFloat(2),
+                    cursor.getInt(3)
+            ));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        closeDatabase();
+        return poiList;
+    }
+
 
     public List<Line> getRouteById(Integer id_route) {
         List<Line> linesList = new ArrayList<>();
@@ -165,18 +186,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @NonNull
     private String getPlaceWithRadius(double cLatitude, double cLongitude, int radius,
             List<Integer> typesObjects) {
-        double lat = radius * ONE_METER_LAT;//1m ~ 0.000009
-        double lng = radius * ONE_METER_LNG;//1m ~ 0.000015
+        double lat = radius * ONE_METER_LAT;
+        double lng = radius * ONE_METER_LNG;
 
         String rightDownLan = String.valueOf(cLatitude - lat);
         String leftUpLan = String.valueOf(cLatitude + lat);
         String rightDownLng = String.valueOf(cLongitude - lng);
         String leftUpLng = String.valueOf(cLongitude + lng);
 
-        return "select c2.* from `list_poi` c1, `poi` c2 where c1.id_poi=c2.id_poi AND  (c2.latitude BETWEEN "
-                + rightDownLan
-                + " AND " + leftUpLan + ") AND (c2.longitude BETWEEN " + rightDownLng + " AND "
-                + leftUpLng + ")" + getByTypes(typesObjects) + d(cLatitude, cLongitude);
+        return getPlace() + getByRadius(rightDownLan, leftUpLan, rightDownLng, leftUpLng)
+                + getByTypes(typesObjects) + getByIdPoint(cLatitude, cLongitude);
+    }
+
+    @NonNull
+    private String getPlace(Integer id) {
+        return "select c2.* from `list_poi` c1, `poi` c2, (" + getPointByIdRoute(id) + ") z1 " +
+                "where c1.id_poi=c2.id_poi" + " AND (c1.id_point = z1.end_point)";
+    }
+
+    @NonNull
+    private String getPlace() {
+        return "select c2.* from `list_poi` c1, `poi` c2 where c1.id_poi=c2.id_poi";
+    }
+
+    @NonNull
+    private String getByRadius(String rightDownLan, String leftUpLan, String rightDownLng,
+            String leftUpLng) {
+        return " AND (c2.latitude BETWEEN " + rightDownLan + " AND " + leftUpLan
+                + ") AND (c2.longitude BETWEEN " + rightDownLng + " AND " + leftUpLng + ")";
     }
 
     @NonNull
@@ -192,7 +229,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @NonNull
-    private String d(double cLatitude, double cLongitude) {
+    private String getByIdPoint(double cLatitude, double cLongitude) {
         return " AND (c1.id_point = '" + encodeP(new LatLng(cLatitude, cLongitude)) + "')";
+    }
+
+    @NonNull
+    private String getPointByIdRoute(Integer id) {
+        return "SELECT c2.end_point FROM list_lines c1, lines c2 WHERE c1.id_line=c2.id_line"
+                + " AND c1.id_route = " + id;
     }
 }

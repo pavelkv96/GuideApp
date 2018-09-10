@@ -3,8 +3,7 @@ package com.grsu.guideapp.utils;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,37 +37,10 @@ public class StreamUtils {
         }
     }
 
-    public static void closeStream(ByteArrayInputStream bais) {
-        if (bais != null) {
+    public static void closeStream(Closeable stream) {
+        if (stream != null) {
             try {
-                bais.close();
-            } catch (IOException ignore) {
-            }
-        }
-    }
-
-    public static void closeStream(ByteArrayOutputStream baos) {
-        if (baos != null) {
-            try {
-                baos.close();
-            } catch (IOException ignore) {
-            }
-        }
-    }
-
-    public static void closeStream(InputStream is) {
-        if (is != null) {
-            try {
-                is.close();
-            } catch (IOException ignore) {
-            }
-        }
-    }
-
-    public static void closeStream(OutputStream os) {
-        if (os != null) {
-            try {
-                os.close();
+                stream.close();
             } catch (IOException ignore) {
             }
         }
