@@ -1,17 +1,9 @@
 package com.grsu.guideapp.models;
 
+import android.database.Cursor;
 import java.io.Serializable;
 
 public class Poi implements Serializable {
-
-    public static final String ID = "id";
-
-    public static final String LATITUDE = "Latitude";
-
-    public static final String LONGITUDE = "Longitude";
-
-    public static final String TYPE = "Type";
-
 
     private String id;
     private Float latitude;
@@ -58,5 +50,10 @@ public class Poi implements Serializable {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public static Poi fromCursor(Cursor cursor) {
+        return new Poi(cursor.getString(0), cursor.getFloat(1),
+                cursor.getFloat(2), cursor.getInt(3));
     }
 }

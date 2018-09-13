@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import com.google.android.gms.maps.model.LatLng;
+import com.grsu.guideapp.models.InformationAboutPoi;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Route;
@@ -101,15 +102,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = mDatabase.rawQuery("SELECT * FROM Routes", null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            routesList.add(new Route(
-                    cursor.getInt(0),
-                    cursor.getString(1),
-                    cursor.getInt(2),
-                    cursor.getInt(3),
-                    cursor.getInt(4),
-                    cursor.getString(5),
-                    cursor.getString(6)
-            ));
+            routesList.add(Route.fromCursor(cursor));
             cursor.moveToNext();
         }
         cursor.close();
@@ -127,12 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = mDatabase.rawQuery(placeWithRadiusQuery, null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            poiList.add(new Poi(
-                    cursor.getString(0),
-                    cursor.getFloat(1),
-                    cursor.getFloat(2),
-                    cursor.getInt(3)
-            ));
+            poiList.add(Poi.fromCursor(cursor));
             cursor.moveToNext();
         }
         cursor.close();
@@ -148,12 +136,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = mDatabase.rawQuery(placeWithRadiusQuery, null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            poiList.add(new Poi(
-                    cursor.getString(0),
-                    cursor.getFloat(1),
-                    cursor.getFloat(2),
-                    cursor.getInt(3)
-            ));
+            poiList.add(Poi.fromCursor(cursor));
             cursor.moveToNext();
         }
         cursor.close();
@@ -170,17 +153,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(id_route)});
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            linesList.add(new Line(
-                    cursor.getInt(0),
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    cursor.getString(3)
-            ));
+            linesList.add(Line.fromCursor(cursor));
             cursor.moveToNext();
         }
         cursor.close();
         closeDatabase();
         return linesList;
+    }
+
+    public InformationAboutPoi getInfoById(String id_point) {
+        openDatabase();
+        String query = String.format("select type, %s, short_description_point, audio_reference, photo_reference, link from poi c1, name_by_language c2 where c1.name_poi = c2.id_name and id_poi = ? limit 1", "name_ru");
+
+        Cursor cursor = mDatabase.rawQuery(query,new String[]{id_point});
+
+        InformationAboutPoi poi = null;
+        if (cursor.moveToFirst()) {
+            poi = InformationAboutPoi.fromCursor(cursor);
+        }
+        cursor.close();
+        closeDatabase();
+        return poi;
     }
 
     @NonNull

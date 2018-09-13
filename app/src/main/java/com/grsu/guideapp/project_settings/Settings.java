@@ -4,15 +4,17 @@ import com.grsu.guideapp.utils.StorageUtils;
 
 public class Settings {
 
+    private static final String DEFAULT_PATH = StorageUtils.getStorage() + "/";
+    private static final String APP_FOLDER = "osmdroid/";
+
     //-------------------------------------------
     //	Summary: settings map database
     //-------------------------------------------
 
     public static final Integer CACHE_DATABASE_VERSION = 1;
     public static final String CACHE_DATABASE_NAME = "cache.db";
-    public static final String CURRENT_FOLDER = "osmdroid/";
-    public static final String CACHE_FOLDER = "cache/";
-    public static final String CACHE = StorageUtils.getStorage() + "/" + CURRENT_FOLDER + CACHE_FOLDER;
+    private static final String CACHE_FOLDER = "cache/";
+    public static final String CACHE = DEFAULT_PATH + APP_FOLDER + CACHE_FOLDER;
 
 
     //-------------------------------------------
@@ -29,4 +31,25 @@ public class Settings {
 
     private static final String PROVIDER_MAPSFORGE = "Mapsforge";
     public static final String CURRENT_PROVIDER = PROVIDER_MAPSFORGE;
+
+
+    //-------------------------------------------
+    //	Summary: settings photo and audio folder
+    //-------------------------------------------
+
+    private static final String PHOTO_FOLDER = "photo/";
+    private static final String AUDIO_FOLDER = "audio/";
+    private static final String CONTENT_FOLDER = "content/";
+    public static final String CONTENT = DEFAULT_PATH + APP_FOLDER + CONTENT_FOLDER;
+    public static final String PHOTO_CONTENT = CONTENT + PHOTO_FOLDER;
+    public static final String AUDIO_CONTENT = CONTENT + AUDIO_FOLDER;
+
+
+    //-------------------------------------------
+    //	Summary: settings names important file
+    //-------------------------------------------
+
+    public static final String ZOOM_TABLE = "ZoomTables.data";
+    public static final String MAP_FILE = "KA.map";
+
 }

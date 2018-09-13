@@ -1,38 +1,9 @@
 package com.grsu.guideapp.models;
 
-import com.grsu.database_library.annotations.dbInteger;
-import com.grsu.database_library.annotations.dbNotNull.NotNull;
-import com.grsu.database_library.annotations.dbPrimaryKey;
-import com.grsu.database_library.annotations.dbTable;
-import com.grsu.database_library.annotations.dbText;
+import android.database.Cursor;
 import java.io.Serializable;
 
-@dbTable(Route.class)
 public class Route implements Serializable {
-
-    //CONSTANTS
-
-    @dbPrimaryKey
-    @dbInteger(isNotNull = NotNull.NOT_NULL)
-    public static final String ID_ROUTE = "id_route";
-
-    @dbText
-    public static final String NAME_ROUTE = "name_route";
-
-    @dbInteger(isNotNull = NotNull.NOT_NULL)
-    public static final String ID_AUTHOR = "id_author";
-
-    @dbInteger
-    public static final String DURATION = "duration";
-
-    @dbInteger
-    public static final String DISTANCE = "distance";
-
-    @dbText
-    public static final String SHORT_DESCRIPTION = "short_description";
-
-    @dbText
-    public static final String REFERENCE_PHOTO_ROUTE = "reference_photo_route";
 
     //POJO model
 
@@ -133,5 +104,10 @@ public class Route implements Serializable {
 
     public void setReferencePhotoRoute(String referencePhotoRoute) {
         this.referencePhotoRoute = referencePhotoRoute;
+    }
+
+    public static Route fromCursor(Cursor cursor) {
+        return new Route(cursor.getInt(0), cursor.getString(1), cursor.getInt(2),
+                cursor.getInt(3), cursor.getInt(4), cursor.getString(5), cursor.getString(6));
     }
 }

@@ -49,7 +49,7 @@ public class CacheDBHelper extends SQLiteOpenHelper implements TileConstants {
         }
         synchronized (mLock) {
             new File(CACHE).mkdir();
-            File db_file = new File(CACHE + CACHE_DATABASE_NAME);
+            File db_file = new File(CACHE, CACHE_DATABASE_NAME);
 
             if (mDb == null) {
                 try {
@@ -188,7 +188,3 @@ public class CacheDBHelper extends SQLiteOpenHelper implements TileConstants {
     }
 
 }
-
-
-
-
