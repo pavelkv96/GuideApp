@@ -18,6 +18,7 @@ import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -35,6 +36,7 @@ import com.grsu.guideapp.database.CacheDBHelper;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.mf.MapsForgeTileSource;
 import com.grsu.guideapp.models.Poi;
+import com.grsu.guideapp.models.Tag;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CheckSelfPermission;
@@ -51,7 +53,8 @@ import java.util.List;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 public class RouteActivity extends BaseActivity<RoutePresenter> implements TileProvider, RouteView,
-        OnMapReadyCallback, OnChoiceItemListener, OnMultiChoiceListDialogFragment {
+        OnMarkerClickListener, OnChoiceItemListener, OnMultiChoiceListDialogFragment,
+        OnMapReadyCallback {
 
     private static final String TAG = RouteActivity.class.getSimpleName();
 
@@ -89,9 +92,9 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
         SupportMapFragment mapFragment = ((SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.activity_route_map));
 
-        Integer route = (Integer) getIntent().getSerializableExtra(Constants.KEY_ID_ROUTE);
+        Integer route = getIntent().getIntExtra(Constants.KEY_ID_ROUTE, -1);
 
-        if (mapFragment != null && route != null) {
+        if (mapFragment != null && route != -1) {
             mapFragment.getMapAsync(this);
 
             mPresenter.getId(route);
@@ -155,6 +158,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
         mMap = googleMap;
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
+        mMap.setOnMarkerClickListener(this);
 
         LatLng sydney = new LatLng(53.684860, 23.838478);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -195,9 +199,10 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(new LatLng(poi.getLatitude(), poi.getLongitude()))
                 .icon(BitmapDescriptorFactory.fromResource(icon))
-                .draggable(true)
-                .snippet(poi.getId());
-        nearPoi.add(mMap.addMarker(markerOptions));
+                .draggable(true);
+        Marker e = mMap.addMarker(markerOptions);
+        e.setTag(new Tag(true, poi.getId()));
+        nearPoi.add(e);
     }
 
     @Override
@@ -297,8 +302,8 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
     }
 
     @OnCheckedChanged(R.id.cb_activity_route_get_all)
-    public void isAllPoi(CompoundButton compoundButton, boolean isChecked){
-        Toasts.makeS(this, isChecked+"");
+    public void isAllPoi(CompoundButton compoundButton, boolean isChecked) {
+        Toasts.makeS(this, isChecked + "");
         mPresenter.setAllPoi(isChecked);
     }
 
@@ -466,6 +471,15 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
         return latLngList;
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Intent intent = mPresenter.onMarkerClick(this, marker);
+        if (intent != null) {
+            startActivity(intent);
+        }
+        return false;
+    }
+
     private class MyBroadcastReceiver extends BroadcastReceiver {
 
         @Override
@@ -479,7 +493,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
 
     public static Intent newIntent(Context context, Integer id_route) {
         Bundle args = new Bundle();
-        args.putSerializable(Constants.KEY_ID_ROUTE, id_route);
+        args.putInt(Constants.KEY_ID_ROUTE, id_route);
         return new Intent(context, RouteActivity.class).putExtras(args);
     }
 }

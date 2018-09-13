@@ -6,15 +6,20 @@ import static com.grsu.guideapp.utils.CryptoUtils.decodeP;
 import static com.grsu.guideapp.utils.MapUtils.getDistanceBetween;
 import static com.grsu.guideapp.utils.MapUtils.toLocation;
 
+import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Tile;
+import com.grsu.guideapp.activities.details.DetailsActivity;
 import com.grsu.guideapp.activities.route.RouteContract.RouteInteractor.OnFinishedListener;
 import com.grsu.guideapp.activities.route.RouteContract.RouteView;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
+import com.grsu.guideapp.models.Tag;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.ArrayList;
@@ -111,6 +116,19 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
     @Override
     public void onMapReady(GoogleMap googleMap) {
         routeView.mapViewSettings(googleMap);
+    }
+
+    @Override
+    public Intent onMarkerClick(Context context, Marker marker) {
+        Tag tag = (Tag) marker.getTag();
+        if (tag == null) {
+            return null;
+        }
+
+        if (tag.isPoi()) {
+            return DetailsActivity.newIntent(context, tag.getId());
+        }
+        return null;
     }
 
     @Override

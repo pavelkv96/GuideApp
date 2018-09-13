@@ -1,8 +1,11 @@
 package com.grsu.guideapp.activities.route;
 
+import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Tile;
 import com.grsu.guideapp.base.BasePresenter;
 import com.grsu.guideapp.base.BaseView;
@@ -51,6 +54,8 @@ public interface RouteContract {
         Tile getTile(int x, int y, int zoom, String provider);
 
         void onMapReady(GoogleMap googleMap);
+
+        Intent onMarkerClick(Context context, Marker marker);
     }
 
 

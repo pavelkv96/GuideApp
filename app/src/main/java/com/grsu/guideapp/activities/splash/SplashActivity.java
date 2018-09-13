@@ -3,39 +3,61 @@ package com.grsu.guideapp.activities.splash;
 import static com.grsu.guideapp.utils.StreamUtils.copyAssets;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
 import android.view.View;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.grsu.guideapp.R;
+import com.grsu.guideapp.base.BaseActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
+import com.grsu.guideapp.activities.splash.SplashContract.SplashView;
+import com.grsu.guideapp.project_settings.Settings;
 import java.io.File;
 
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends BaseActivity<SplashPresenter> implements SplashView {
 
     private static final String TAG = SplashActivity.class.getSimpleName();
+
+    @NonNull
+    @Override
+    protected SplashPresenter getPresenterInstance() {
+        return new SplashPresenter(this, new SplashInteractor(this));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
-        ButterKnife.bind(this);
     }
 
     @OnClick(R.id.btn_activity_splash_load_and_start)
     public void load(View view) {
-        File file = new File(getFilesDir() + "/ZoomTables.data");
-        File file1 = getDatabasePath("KA.map");
+        File file = new File(getFilesDir(), Settings.ZOOM_TABLE);
+        File file1 = getDatabasePath(Settings.MAP_FILE);
 
         if (!file.exists()) {
-            copyAssets("ZoomTables.data", getFilesDir() + "/ZoomTables.data", this);
+            copyAssets(Settings.ZOOM_TABLE, file.getAbsolutePath(), this);
         }
 
         if (!file1.exists()) {
-            copyAssets("KA.map", getDatabasePath("KA.map").toString(), this);
+            String toFilePath = file1.getAbsolutePath();
+            copyAssets(Settings.MAP_FILE, toFilePath, this);
         }
 
         startActivity(NavigationDrawerActivity.newIntent(this));
+    }
+
+    @OnClick(R.id.btn_activity_splash_loading)
+    public void loading(View view) {
+        mPresenter.getProgress();
+    }
+
+    @OnClick(R.id.btn_activity_splash_delete)
+    public void delete(View view) {
+        mPresenter.delProgress();
+    }
+
+    @OnClick(R.id.btn_activity_splash_un_zip)
+    public void unZip(View view) {
+        mPresenter.unZipProgress();
     }
 }

@@ -1,0 +1,72 @@
+package com.grsu.guideapp.activities.splash;
+
+import static com.grsu.guideapp.utils.StreamUtils.copyAssetsFolder;
+
+import android.content.Context;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
+import com.grsu.guideapp.utils.StorageUtils;
+import com.grsu.guideapp.utils.StreamUtils;
+import java.io.File;
+import java.io.IOException;
+
+public class SplashInteractor implements SplashContract.SplashInteractor {
+
+    private static final String TAG = SplashInteractor.class.getSimpleName();
+    private Context mContext;
+
+    public SplashInteractor(Context context) {
+        this.mContext = context;
+    }
+
+    @Override
+    public void copyContentFromAssets(final OnFinishedListener listener, final File file) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!file.exists()) {
+                    Logs.e(TAG, "THIS " + file.mkdirs());
+                    copyAssetsFolder(file.getName(), file, mContext);
+                }
+                listener.onFinished();
+            }
+        }).start();
+    }
+
+    @Override
+    public void deleteAll(final OnFinishedListener listener, final File file) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                StorageUtils.deleteRecursive(file);
+                listener.onFinished();
+            }
+        }).start();
+    }
+
+    @Override
+    public void upZipContent(final OnFinishedListener listener, final File rootFolder) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    for (File currentFile : rootFolder.listFiles()) {
+                        int pos = currentFile.getName().lastIndexOf(".");
+                        if (pos != -1) {
+                            String name = currentFile.getName().substring(0, pos);
+                            File currentSubFile = new File(rootFolder, name);
+                            currentSubFile.mkdir();
+
+                            StreamUtils.unzip(currentFile, currentSubFile);
+                            currentFile.delete();
+                        }
+                    }
+                } catch (IOException e) {
+                    Logs.e(TAG, e.getMessage(), e);
+                } finally {
+                    listener.onFinished();
+                }
+            }
+        }).start();
+    }
+}
