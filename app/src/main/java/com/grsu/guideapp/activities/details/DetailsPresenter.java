@@ -31,14 +31,14 @@ public class DetailsPresenter extends BasePresenterImpl<DetailsView> implements
             public void onFinished(InfoAboutPoi poi) {
                 Logs.e(TAG, poi + "");
                 detailsView.setContent(poi);
-                getImageByName("drb");
+                getImageByName(poi.getPhotoReference());
             }
         }, idPoint);
     }
 
     @Override
     public void getImageByName(String imageName) {
-        File content = new File(Settings.PHOTO_CONTENT, imageName + ".png");
+        File content = new File(Settings.PHOTO_CONTENT, imageName + ".jpg");
         detailsInteractor.getImageFromStorage(new OnSuccessListener<Bitmap>() {
             @Override
             public void onSuccess(Bitmap bitmap) {

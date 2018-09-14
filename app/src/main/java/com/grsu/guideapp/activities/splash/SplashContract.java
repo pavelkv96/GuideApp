@@ -10,7 +10,6 @@ public interface SplashContract {
 
     }
 
-
     interface SplashPresenter extends BasePresenter<SplashView> {
 
         void getProgress();

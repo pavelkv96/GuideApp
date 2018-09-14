@@ -5,7 +5,11 @@ import static com.grsu.guideapp.mf.MapsForgeTileSource.loadTile;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import com.google.android.gms.maps.model.Tile;
+import com.grsu.guideapp.base.listeners.OnFinishedListener;
+import com.grsu.guideapp.base.listeners.OnFinishedTileListener;
 import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.models.Line;
+import com.grsu.guideapp.models.Poi;
 import java.util.List;
 
 public class RouteInteractor implements RouteContract.RouteInteractor {
@@ -17,12 +21,12 @@ public class RouteInteractor implements RouteContract.RouteInteractor {
     }
 
     @Override
-    public Tile getTile(OnFinishedListener listener, long index, String provider) {
+    public Tile getTile(OnFinishedTileListener<Tile> listener, long index, String provider) {
         return listener.onFinished(loadTile(index));
     }
 
     @Override
-    public void getRouteById(final OnFinishedListener listener, final Integer routeId) {
+    public void getRouteById(final OnFinishedListener<List<Line>> listener, final Integer routeId) {
         new Handler().post/*Delayed*/(new Runnable() {
             @Override
             public void run() {
@@ -32,23 +36,23 @@ public class RouteInteractor implements RouteContract.RouteInteractor {
     }
 
     @Override
-    public void getListPoi(final OnFinishedListener listener, final double latitude,
+    public void getListPoi(final OnFinishedListener<List<Poi>> listener, final double latitude,
             final double longitude, final int radius, final List<Integer> typesObjects) {
         new Handler().post/*Delayed*/(new Runnable() {
             @Override
             public void run() {
-                listener.onFinished1(helper.getListPoi(latitude, longitude, radius, typesObjects));
+                listener.onFinished(helper.getListPoi(latitude, longitude, radius, typesObjects));
             }
         }/*, 3000*/);
     }
 
     @Override
-    public void getListPoi(final OnFinishedListener listener, final Integer id,
+    public void getListPoi(final OnFinishedListener<List<Poi>> listener, final Integer id,
             final List<Integer> typesObjects) {
         new Handler().post/*Delayed*/(new Runnable() {
             @Override
             public void run() {
-                listener.onFinished1(helper.getListPoi(id, typesObjects));
+                listener.onFinished(helper.getListPoi(id, typesObjects));
             }
         }/*, 3000*/);
     }

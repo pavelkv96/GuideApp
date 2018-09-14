@@ -14,9 +14,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Tile;
 import com.grsu.guideapp.activities.details.DetailsActivity;
-import com.grsu.guideapp.activities.route.RouteContract.RouteInteractor.OnFinishedListener;
 import com.grsu.guideapp.activities.route.RouteContract.RouteView;
 import com.grsu.guideapp.base.BasePresenterImpl;
+import com.grsu.guideapp.base.listeners.OnFinishedListener;
+import com.grsu.guideapp.base.listeners.OnFinishedTileListener;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Tag;
@@ -25,8 +26,8 @@ import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFinishedListener,
-        RouteContract.RoutePresenter {
+public class RoutePresenter extends BasePresenterImpl<RouteView> implements
+        OnFinishedListener<List<Poi>>, RouteContract.RoutePresenter {
 
     private static final Integer RADIUS = 100;
     private static final String TAG = RoutePresenter.class.getSimpleName();
@@ -52,7 +53,47 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
     @Override
     public void getId(Integer id) {
         mView.showProgress(null, "Loading...");
-        routeInteractor.getRouteById(this, id);
+        routeInteractor.getRouteById(new OnFinishedListener<List<Line>>() {
+            @Override
+            public void onFinished(List<Line> encodePolylines) {
+                allLatLngs = new ArrayList<>();
+                latLngs = new ArrayList<>();
+                turnsList = new ArrayList<>();
+
+                try {
+                    for (Line encodeLine : encodePolylines) {
+                        Integer idLine = encodeLine.getIdLine();
+
+                        routeView.setPolyline(decodeL(encodeLine.getPolyline()), idLine);
+
+                        LatLng startPoint = decodeP(encodeLine.getStartPoint());
+                        LatLng endPoint = decodeP(encodeLine.getEndPoint());
+                        routeView.setPointsTurn(startPoint);
+                        routeView.setPointsTurn(endPoint);
+
+                        List<LatLng> lineList = decodeL(encodeLine.getPolyline());
+
+                        if (currentLatLng != null) {
+                            lineList.remove(0);
+                            turnsList.add(endPoint);
+                        } else {
+                            currentIndex = 0;
+                            currentLatLng = startPoint;
+                            turnsList.add(endPoint);
+                            turnsList.add(startPoint);
+                        }
+
+                        allLatLngs.addAll(lineList);
+                    }
+
+                    for (int i = 0; i < 5; i++) {
+                        latLngs.add(allLatLngs.get(i));
+                    }
+                } catch (NullPointerException ignored) {
+                }
+                mView.hideProgress();
+            }
+        }, id);
         this.id = id;
     }
 
@@ -110,7 +151,12 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
 
     @Override
     public Tile getTile(int x, int y, int zoom, String provider) {
-        return routeInteractor.getTile(this, MapUtils.getTileIndex(zoom, x, y), provider);
+        return routeInteractor.getTile(new OnFinishedTileListener<Tile>() {
+            @Override
+            public Tile onFinished(byte[] tile) {
+                return tile != null ? new Tile(256, 256, tile) : NO_TILE;
+            }
+        }, MapUtils.getTileIndex(zoom, x, y), provider);
     }
 
     @Override
@@ -132,60 +178,11 @@ public class RoutePresenter extends BasePresenterImpl<RouteView> implements OnFi
     }
 
     @Override
-    public void onFinished(List<Line> encodePolylines) {
-        allLatLngs = new ArrayList<>();
-        latLngs = new ArrayList<>();
-        turnsList = new ArrayList<>();
-
-        try {
-            for (Line encodeLine : encodePolylines) {
-                Integer idLine = encodeLine.getIdLine();
-
-                routeView.setPolyline(decodeL(encodeLine.getPolyline()), idLine);
-
-                LatLng startPoint = decodeP(encodeLine.getStartPoint());
-                LatLng endPoint = decodeP(encodeLine.getEndPoint());
-                routeView.setPointsTurn(startPoint);
-                routeView.setPointsTurn(endPoint);
-
-                List<LatLng> lineList = decodeL(encodeLine.getPolyline());
-
-                if (currentLatLng != null) {
-                    lineList.remove(0);
-                    turnsList.add(endPoint);
-                } else {
-                    currentIndex = 0;
-                    currentLatLng = startPoint;
-                    turnsList.add(endPoint);
-                    turnsList.add(startPoint);
-                }
-
-                allLatLngs.addAll(lineList);
-            }
-
-            for (int i = 0; i < 5; i++) {
-                latLngs.add(allLatLngs.get(i));
-            }
-        } catch (NullPointerException ignored) {
-        }
-        mView.hideProgress();
-    }
-
-    @Override
-    public void onFinished1(List<Poi> poiList) {
+    public void onFinished(List<Poi> poiList) {
         routeView.removePoi();
         for (Poi poi : poiList) {
             routeView.setPoi(poi);
         }
-    }
-
-    @Override
-    public Tile onFinished(byte[] tile) {
-        if (tile == null) {
-            return NO_TILE;
-        }
-
-        return new Tile(256, 256, tile);
     }
 
     private void getCurrentTurn(Location currentLocation) {

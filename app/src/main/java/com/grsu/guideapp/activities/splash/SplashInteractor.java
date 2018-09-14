@@ -51,15 +51,8 @@ public class SplashInteractor implements SplashContract.SplashInteractor {
             public void run() {
                 try {
                     for (File currentFile : rootFolder.listFiles()) {
-                        int pos = currentFile.getName().lastIndexOf(".");
-                        if (pos != -1) {
-                            String name = currentFile.getName().substring(0, pos);
-                            File currentSubFile = new File(rootFolder, name);
-                            currentSubFile.mkdir();
-
-                            StreamUtils.unzip(currentFile, currentSubFile);
-                            currentFile.delete();
-                        }
+                        StreamUtils.unzip(currentFile, rootFolder);
+                        currentFile.delete();
                     }
                 } catch (IOException e) {
                     Logs.e(TAG, e.getMessage(), e);

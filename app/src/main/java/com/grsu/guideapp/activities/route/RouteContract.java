@@ -9,11 +9,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Tile;
 import com.grsu.guideapp.base.BasePresenter;
 import com.grsu.guideapp.base.BaseView;
+import com.grsu.guideapp.base.listeners.OnFinishedListener;
+import com.grsu.guideapp.base.listeners.OnFinishedTileListener;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import java.util.List;
 
-public interface RouteContract {
+public interface RouteContract extends OnFinishedListener, OnFinishedTileListener {
 
     interface RouteView extends BaseView {
 
@@ -61,22 +63,14 @@ public interface RouteContract {
 
     interface RouteInteractor {
 
-        interface OnFinishedListener {
+        Tile getTile(OnFinishedTileListener<Tile> listener, long index, String provider);
 
-            void onFinished(List<Line> encodePolylines);
+        void getRouteById(OnFinishedListener<List<Line>> listener, Integer id);
 
-            void onFinished1(List<Poi> poiList);
+        void getListPoi(OnFinishedListener<List<Poi>> listener, double latitude, double longitude,
+                int radius, List<Integer> typesObjects);
 
-            Tile onFinished(byte[] tile);
-        }
-
-        Tile getTile(OnFinishedListener listener, long index, String provider);
-
-        void getRouteById(OnFinishedListener listener, Integer id);
-
-        void getListPoi(OnFinishedListener listener, double latitude, double longitude, int radius,
+        void getListPoi(OnFinishedListener<List<Poi>> listener, Integer id,
                 List<Integer> typesObjects);
-
-        void getListPoi(OnFinishedListener listener, Integer id, List<Integer> typesObjects);
     }
 }
