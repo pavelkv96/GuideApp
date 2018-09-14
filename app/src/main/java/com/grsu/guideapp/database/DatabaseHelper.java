@@ -13,7 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import com.google.android.gms.maps.model.LatLng;
-import com.grsu.guideapp.models.InformationAboutPoi;
+import com.grsu.guideapp.models.InfoAboutPoi;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Route;
@@ -161,15 +161,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return linesList;
     }
 
-    public InformationAboutPoi getInfoById(String id_point) {
+    public InfoAboutPoi getInfoById(String id_point) {
         openDatabase();
         String query = String.format("select type, %s, short_description_point, audio_reference, photo_reference, link from poi c1, name_by_language c2 where c1.name_poi = c2.id_name and id_poi = ? limit 1", "name_ru");
 
         Cursor cursor = mDatabase.rawQuery(query,new String[]{id_point});
 
-        InformationAboutPoi poi = null;
+        InfoAboutPoi poi = null;
         if (cursor.moveToFirst()) {
-            poi = InformationAboutPoi.fromCursor(cursor);
+            poi = InfoAboutPoi.fromCursor(cursor);
         }
         cursor.close();
         closeDatabase();

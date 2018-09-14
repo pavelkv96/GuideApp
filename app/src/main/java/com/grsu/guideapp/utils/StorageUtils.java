@@ -1,6 +1,9 @@
 package com.grsu.guideapp.utils;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.io.File;
 
@@ -40,5 +43,15 @@ public class StorageUtils {
         }
 
         fileOrDirectory.delete();
+    }
+
+
+    @Nullable
+    public static Bitmap getImageFromFile(File pathToImage) throws NullPointerException {
+        if (pathToImage.exists()) {
+            return BitmapFactory.decodeFile(pathToImage.getAbsolutePath());
+        }
+
+        throw new NullPointerException("Image not found by path " + pathToImage.getAbsoluteFile());
     }
 }

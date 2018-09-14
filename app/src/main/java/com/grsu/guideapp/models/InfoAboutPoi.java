@@ -3,7 +3,7 @@ package com.grsu.guideapp.models;
 import android.database.Cursor;
 import java.io.Serializable;
 
-public class InformationAboutPoi implements Serializable {
+public class InfoAboutPoi implements Serializable {
 
     //POJO model
     private String type;
@@ -18,7 +18,7 @@ public class InformationAboutPoi implements Serializable {
     /**
      * No args constructor for use in serialization
      */
-    public InformationAboutPoi() {
+    public InfoAboutPoi() {
     }
 
     /**
@@ -30,7 +30,7 @@ public class InformationAboutPoi implements Serializable {
      * @param link
      */
 
-    public InformationAboutPoi(String type, String name_locale, String shortDescriptionPoint,
+    public InfoAboutPoi(String type, String name_locale, String shortDescriptionPoint,
             String audioReference, String photoReference, String link) {
         this.type = type;
         this.name_locale = name_locale;
@@ -66,7 +66,7 @@ public class InformationAboutPoi implements Serializable {
 
     @Override
     public String toString() {
-        return "InformationAboutPoi{" +
+        return "InfoAboutPoi{" +
                 "type='" + type + '\'' +
                 ", name_locale='" + name_locale + '\'' +
                 ", shortDescriptionPoint='" + shortDescriptionPoint + '\'' +
@@ -75,8 +75,8 @@ public class InformationAboutPoi implements Serializable {
                 ", link='" + link + "\'}";
     }
 
-    public static InformationAboutPoi fromCursor(Cursor cursor) {
-        return new InformationAboutPoi(
+    public static InfoAboutPoi fromCursor(Cursor cursor) {
+        return new InfoAboutPoi(
                 cursor.getString(0), cursor.getString(1), cursor.getString(2),
                 cursor.getString(3), cursor.getString(4), cursor.getString(5));
     }

@@ -1,28 +1,35 @@
 package com.grsu.guideapp.activities.details;
 
+import android.graphics.Bitmap;
 import com.grsu.guideapp.base.BasePresenter;
 import com.grsu.guideapp.base.BaseView;
-import com.grsu.guideapp.models.InformationAboutPoi;
+import com.grsu.guideapp.base.listeners.OnFinishedListener;
+import com.grsu.guideapp.base.listeners.OnSuccessListener;
+import com.grsu.guideapp.models.InfoAboutPoi;
+import java.io.File;
 
-public interface DetailsContract {
+public interface DetailsContract extends OnSuccessListener, OnFinishedListener {
 
     interface DetailsView extends BaseView {
 
-        void onSomethingDone();
+        void showImage(Bitmap image);
+
+        void showImage(int resource);
+
+        void setContent(InfoAboutPoi content);
     }
 
     interface DetailsPresenter extends BasePresenter<DetailsView> {
 
         void getById(String idPoint);
+
+        void getImageByName(String imageName);
     }
 
     interface DetailsInteractor {
 
-        interface OnFinishedListener {
+        void getInfoById(OnFinishedListener<InfoAboutPoi> listener, String id);
 
-            void onFinished(InformationAboutPoi poi);
-        }
-
-        void getInfoById(OnFinishedListener listener, String id);
+        void getImageFromStorage(OnSuccessListener<Bitmap> listener, File file);
     }
 }
