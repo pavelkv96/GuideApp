@@ -16,13 +16,13 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -42,6 +42,7 @@ import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CheckSelfPermission;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
+import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment;
 import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment.OnMultiChoiceListDialogFragment;
@@ -82,11 +83,6 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (CheckSelfPermission.writeExternalStorageIsGranted(this)) {
-            Toasts.makeS(this, "Don't have permission");
-            finish();
-        }
-
         setContentView(R.layout.activity_route);
 
         SupportMapFragment mapFragment = ((SupportMapFragment) getSupportFragmentManager()
@@ -119,7 +115,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
         AndroidGraphicFactory.createInstance(getApplication());
         new CacheDBHelper(this);
 
-        File file = getDatabasePath("KA.map");
+        File file = getDatabasePath(Settings.MAP_FILE);
 
         Toasts.makeL(this, "Loaded map file " + file.exists());
 
@@ -158,11 +154,13 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
         mMap = googleMap;
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
-        mMap.setOnMarkerClickListener(this);
+        mMap.setMinZoomPreference(Settings.MIN_ZOOM_LEVEL);
+        mMap.setMaxZoomPreference(Settings.MAX_ZOOM_LEVEL);
 
-        LatLng sydney = new LatLng(53.684860, 23.838478);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 15));
+        LatLngBounds borders = new LatLngBounds(Settings.NORTH_WEST, Settings.SOUTH_EAST);
+        mMap.setLatLngBoundsForCameraTarget(borders);
+
+        mMap.setOnMarkerClickListener(this);
 
         mMap.addTileOverlay(new TileOverlayOptions().tileProvider(this));
     }
@@ -278,7 +276,7 @@ public class RouteActivity extends BaseActivity<RoutePresenter> implements TileP
             startService(new Intent(this, MyService.class));
             mMap.setMyLocationEnabled(true);
         } else {
-            Toasts.makeS(this, "Don't have permission");
+            MySnackbar.makeL(view, R.string.error_do_not_have_permission, this);
         }
     }
 

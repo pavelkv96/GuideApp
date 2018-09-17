@@ -1,5 +1,6 @@
 package com.grsu.guideapp.project_settings;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.utils.StorageUtils;
 
 public class Settings {
@@ -52,4 +53,12 @@ public class Settings {
     public static final String ZOOM_TABLE = "ZoomTables.data";
     public static final String MAP_FILE = "KA.map";
 
+    //-------------------------------------------
+    //	Summary: map settings
+    //-------------------------------------------
+
+    public static final float MIN_ZOOM_LEVEL = 13;
+    public static final float MAX_ZOOM_LEVEL = 19;
+    public static final LatLng NORTH_WEST = new LatLng(53.5986, 23.7099);
+    public static final LatLng SOUTH_EAST = new LatLng(53.7597, 23.9845);
 }

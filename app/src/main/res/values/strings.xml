@@ -8,7 +8,13 @@
   <string name="nav_header_desc">Navigation header</string>
   <string name="action_settings">Settings</string>
 
-  <!-- TODO: Remove or change this placeholder text -->
-  <string name="hello_blank_fragment">Hello blank fragment</string>
-  <string name="descriptiodrgdrgrdn">Descriptiodrgdrgrdn</string>
+
+  <!--ERRORS MESSAGES-->
+  <string name="error.snackbar.open_settings">Open settings</string>
+  <string name="error.do_not_have_permission">Don`t have permission</string>
+  <string name="error.snackbar.do_not_have_permission_write_on_the_storage">Don`t have permission write on the storage</string>
+  <string name="error.copy_data_error">Copy data error</string>
+
+  <!--SUCCESS MESSAGES-->
+  <string name="success.copy_database_success">Copy database success</string>
 </resources>

@@ -1,7 +1,5 @@
 package com.grsu.guideapp.activities.splash;
 
-import static com.grsu.guideapp.utils.StreamUtils.copyAssetsFolder;
-
 import android.content.Context;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StorageUtils;
@@ -26,7 +24,7 @@ public class SplashInteractor implements SplashContract.SplashInteractor {
             public void run() {
                 if (!file.exists()) {
                     Logs.e(TAG, "THIS " + file.mkdirs());
-                    copyAssetsFolder(file.getName(), file, mContext);
+                    StorageUtils.copyAssetsFolder(file.getName(), file, mContext);
                 }
                 listener.onFinished();
             }
@@ -51,7 +49,7 @@ public class SplashInteractor implements SplashContract.SplashInteractor {
             public void run() {
                 try {
                     for (File currentFile : rootFolder.listFiles()) {
-                        StreamUtils.unzip(currentFile, rootFolder);
+                        StorageUtils.unzip(currentFile, rootFolder);
                         currentFile.delete();
                     }
                 } catch (IOException e) {

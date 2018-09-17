@@ -1,5 +1,6 @@
 package com.grsu.guideapp.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,10 +16,13 @@ import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
+import com.grsu.guideapp.utils.StorageUtils;
 import java.io.File;
 import java.util.List;
 
 public class ListRoutesFragment extends Fragment {
+
+    private static final String TAG = ListRoutesFragment.class.getSimpleName();
 
     private RecyclerView rw_fragment_list_routes;
 
@@ -27,16 +31,17 @@ public class ListRoutesFragment extends Fragment {
             @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_list_routes, container, false);
 
-        DatabaseHelper mDBHelper = new DatabaseHelper(getContext());
+        Context context = getContext();
+        DatabaseHelper mDBHelper = new DatabaseHelper(context);
 
-        File database = getContext().getDatabasePath(Settings.DATABASE_INFORMATION_NAME);
+        File database = context.getDatabasePath(Settings.DATABASE_INFORMATION_NAME);
         if (!database.exists()) {
             mDBHelper.getReadableDatabase();
             //Copy db
-            if (DatabaseHelper.copyDatabase(getContext())) {
-                Logs.e(ListRoutesFragment.class.getSimpleName(), "Copy database success");
+            if (StorageUtils.copyDatabase(context)) {
+                Logs.e(TAG, getString(R.string.success_copy_database_success));
             } else {
-                Logs.e(ListRoutesFragment.class.getSimpleName(), "Copy data error");
+                Logs.e(TAG, getString(R.string.error_copy_data_error));
                 return rootView;
             }
         }
@@ -45,7 +50,7 @@ public class ListRoutesFragment extends Fragment {
 
         rw_fragment_list_routes = rootView.findViewById(R.id.rw_fragment_list_routes);
         rw_fragment_list_routes.setHasFixedSize(true);
-        rw_fragment_list_routes.setLayoutManager(new LinearLayoutManager(getContext()));
+        rw_fragment_list_routes.setLayoutManager(new LinearLayoutManager(context));
 
         loadData(mRoutesList);
 

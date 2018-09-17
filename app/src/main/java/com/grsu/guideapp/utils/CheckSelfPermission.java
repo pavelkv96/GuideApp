@@ -3,10 +3,13 @@ package com.grsu.guideapp.utils;
 import android.Manifest.permission;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build.VERSION;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import com.grsu.guideapp.project_settings.Constants;
 
 public class CheckSelfPermission {
 
@@ -54,6 +57,13 @@ public class CheckSelfPermission {
 
     public static boolean checkVersionSdk(int version) {
         return VERSION.SDK_INT >= version;
+    }
+
+    public static <T extends Activity> void settingsIntent(T activity) {
+        Intent intent = new Intent();
+        intent.setAction(Constants.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.setData(Uri.fromParts(Constants.PACKAGE, Constants.PACKAGE_NAME, null));
+        activity.startActivity(intent);
     }
 }
 
