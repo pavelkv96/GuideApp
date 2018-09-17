@@ -92,9 +92,10 @@ public class MapsForgeTileSource {
         } catch (Exception ex) {
             Logs.e(TAG, "Mapsforge tile generation failed", ex);
         }
-        Bitmap bitmap = Bitmap.createBitmap(TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, RGB_565);
+        /*Bitmap bitmap = Bitmap.createBitmap(TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, RGB_565);
         bitmap.eraseColor(Color.GRAY);
-        return new BitmapDrawable(bitmap);
+        return new BitmapDrawable(bitmap);*/
+        return null;
     }
 
     public static byte[] loadTile(final long pMapTileIndex) {

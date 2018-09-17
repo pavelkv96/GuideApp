@@ -27,7 +27,8 @@ public class CacheDBHelper extends SQLiteOpenHelper implements TileConstants {
     private static SQLiteDatabase mDb;
 
     private static final String TAG = CacheDBHelper.class.getSimpleName();
-    private static final String primaryKey = COLUMN_KEY + "=? and " + COLUMN_PROVIDER + "=?";
+    private static final String primaryKey =
+            COLUMN_KEY + "=? and " + COLUMN_PROVIDER + "=? limit 1";
     private static final String[] queryColumns = {COLUMN_TILE};
 
     public CacheDBHelper(Context context) {
@@ -115,23 +116,18 @@ public class CacheDBHelper extends SQLiteOpenHelper implements TileConstants {
         }
     }
 
-    public static byte[] getTile(int x, int y, int zoom, String tileProvider) {
-        return getTile(MapUtils.getIndex(x, y, zoom), tileProvider);
-    }
-
     public static byte[] getTile(long index, String tileProvider) {
 
         Cursor cur = getTileCursor(getPrimaryKeyParameters(index, tileProvider), queryColumns);
-
         byte[] bits = null;
+        try {
+            if (cur.moveToFirst()) {
+                bits = cur.getBlob(cur.getColumnIndex(COLUMN_TILE));
+            }
+        } finally {
+            cur.close();
+        }
 
-        if (cur.moveToFirst()) {
-            bits = cur.getBlob(cur.getColumnIndex(COLUMN_TILE));
-        }
-        cur.close();
-        if (bits == null) {
-            return null;
-        }
         return bits;
     }
 

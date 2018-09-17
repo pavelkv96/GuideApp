@@ -1,10 +1,10 @@
 package com.grsu.guideapp.database;
 
 import static android.database.sqlite.SQLiteDatabase.OPEN_READWRITE;
-import static com.grsu.guideapp.project_settings.Settings.DATABASE_INFORMATION_NAME;
-import static com.grsu.guideapp.project_settings.Settings.DATABASE_INFORMATION_VERSION;
 import static com.grsu.guideapp.project_settings.Constants.ONE_METER_LAT;
 import static com.grsu.guideapp.project_settings.Constants.ONE_METER_LNG;
+import static com.grsu.guideapp.project_settings.Settings.DATABASE_INFORMATION_NAME;
+import static com.grsu.guideapp.project_settings.Settings.DATABASE_INFORMATION_VERSION;
 import static com.grsu.guideapp.utils.CryptoUtils.encodeP;
 
 import android.content.Context;
@@ -17,12 +17,6 @@ import com.grsu.guideapp.models.InfoAboutPoi;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.project_settings.Settings;
-import com.grsu.guideapp.utils.MessageViewer.Logs;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,39 +56,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public static boolean copyDatabase(@NonNull Context context) {
-        try {
-
-            InputStream inputStream = context.getAssets().open(DB_NAME);
-            String outFileName = context.getDatabasePath(DB_NAME).getPath();
-            OutputStream outputStream = new FileOutputStream(outFileName);
-            byte[] buff = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buff)) > 0) {
-                outputStream.write(buff, 0, length);
-            }
-            outputStream.flush();
-            outputStream.close();
-            Logs.e(DatabaseHelper.class.getSimpleName(), "DB copied");
-            return true;
-        } catch (Exception e) {
-            e.getMessage();
-            Logs.e(DatabaseHelper.class.getSimpleName(), "DB don't copied");
-
-            return false;
-        }
-    }
-
-    public static boolean deleteDatabase(@NonNull Context context) {
-        File database = context.getDatabasePath(Settings.DATABASE_INFORMATION_NAME);
-
-        if (database.exists()) {
-            database.delete();
-            return true;
-        }
-
-        return false;
-    }
 
     public List<Route> getListRoutes() {
         List<Route> routesList = new ArrayList<>();
@@ -163,9 +124,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public InfoAboutPoi getInfoById(String id_point) {
         openDatabase();
-        String query = String.format("select type, %s, short_description_point, audio_reference, photo_reference, link from poi c1, name_by_language c2 where c1.name_poi = c2.id_name and id_poi = ? limit 1", "name_ru");
+        String query = String
+                .format("select type, %s, short_description_point, audio_reference, photo_reference, link from poi c1, name_by_language c2 where c1.name_poi = c2.id_name and id_poi = ? limit 1",
+                        "name_ru");
 
-        Cursor cursor = mDatabase.rawQuery(query,new String[]{id_point});
+        Cursor cursor = mDatabase.rawQuery(query, new String[]{id_point});
 
         InfoAboutPoi poi = null;
         if (cursor.moveToFirst()) {
