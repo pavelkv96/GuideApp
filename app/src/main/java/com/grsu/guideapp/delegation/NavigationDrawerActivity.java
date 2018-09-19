@@ -9,7 +9,7 @@ import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseDelegationActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
-import com.grsu.guideapp.fragments.ListRoutesFragment;
+import com.grsu.guideapp.fragments.list_routes.ListRoutesFragment;
 import com.grsu.guideapp.fragments.Tracker;
 import com.grsu.guideapp.fragments.map.MapFragment;
 import com.grsu.guideapp.fragments.setting.SettingsFragment;

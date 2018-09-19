@@ -46,7 +46,7 @@ public class DetailsPresenter extends BasePresenterImpl<DetailsView> implements
             }
 
             @Override
-            public void onFail(Throwable throwable) {
+            public void onFailure(Throwable throwable) {
                 Logs.e(TAG, throwable.getMessage(), throwable);
                 detailsView.showImage(R.mipmap.ic_launcher_round);
             }

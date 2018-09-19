@@ -1,6 +1,7 @@
 package com.grsu.guideapp.activities.details;
 
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.base.listeners.OnSuccessListener;
@@ -19,25 +20,25 @@ public class DetailsInteractor implements DetailsContract.DetailsInteractor {
 
     @Override
     public void getInfoById(final OnFinishedListener<InfoAboutPoi> listener, final String id) {
-        new Thread(new Runnable() {
+        new Handler().post(new Runnable() {
             @Override
             public void run() {
                 listener.onFinished(helper.getInfoById(id));
             }
-        }).start();
+        });
     }
 
     @Override
     public void getImageFromStorage(final OnSuccessListener<Bitmap> listener, final File file) {
-        new Thread(new Runnable() {
+        new Handler().post(new Runnable() {
             @Override
             public void run() {
                 try {
                     listener.onSuccess(StorageUtils.getImageFromFile(file));
                 } catch (NullPointerException e) {
-                    listener.onFail(e);
+                    listener.onFailure(e);
                 }
             }
-        }).start();
+        });
     }
 }

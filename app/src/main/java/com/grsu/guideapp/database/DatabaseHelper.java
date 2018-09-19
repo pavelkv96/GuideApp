@@ -1,12 +1,5 @@
 package com.grsu.guideapp.database;
 
-import static android.database.sqlite.SQLiteDatabase.OPEN_READWRITE;
-import static com.grsu.guideapp.project_settings.Constants.ONE_METER_LAT;
-import static com.grsu.guideapp.project_settings.Constants.ONE_METER_LNG;
-import static com.grsu.guideapp.project_settings.Settings.DATABASE_INFORMATION_NAME;
-import static com.grsu.guideapp.project_settings.Settings.DATABASE_INFORMATION_VERSION;
-import static com.grsu.guideapp.utils.CryptoUtils.encodeP;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,6 +10,9 @@ import com.grsu.guideapp.models.InfoAboutPoi;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Route;
+import com.grsu.guideapp.project_settings.Constants;
+import com.grsu.guideapp.project_settings.Settings;
+import com.grsu.guideapp.utils.CryptoUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +20,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = DatabaseHelper.class.getSimpleName();
     private final Context mContext;
-    private static final String DB_NAME = DATABASE_INFORMATION_NAME;
+    private static final String DB_NAME = Settings.DATABASE_INFORMATION_NAME;
     private SQLiteDatabase mDatabase;
 
     public DatabaseHelper(Context context) {
-        super(context, DB_NAME, null, DATABASE_INFORMATION_VERSION);
+        super(context, DB_NAME, null, Settings.DATABASE_INFORMATION_VERSION);
         mContext = context;
     }
 
@@ -47,7 +43,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (mDatabase != null && mDatabase.isOpen()) {
             return;
         }
-        mDatabase = SQLiteDatabase.openDatabase(dbPath, null, OPEN_READWRITE);
+        mDatabase = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
     }
 
     private void closeDatabase() {
@@ -142,8 +138,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @NonNull
     private String getPlaceWithRadius(double cLatitude, double cLongitude, int radius,
             List<Integer> typesObjects) {
-        double lat = radius * ONE_METER_LAT;
-        double lng = radius * ONE_METER_LNG;
+        double lat = radius * Constants.ONE_METER_LAT;
+        double lng = radius * Constants.ONE_METER_LNG;
 
         String rightDownLan = String.valueOf(cLatitude - lat);
         String leftUpLan = String.valueOf(cLatitude + lat);
@@ -186,7 +182,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @NonNull
     private String getByIdPoint(double cLatitude, double cLongitude) {
-        return " AND (c1.id_point = '" + encodeP(new LatLng(cLatitude, cLongitude)) + "')";
+        return " AND (c1.id_point = '" + CryptoUtils.encodeP(new LatLng(cLatitude, cLongitude))
+                + "')";
     }
 
     @NonNull

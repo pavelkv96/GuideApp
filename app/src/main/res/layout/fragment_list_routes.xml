@@ -3,10 +3,11 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context=".fragments.ListRoutesFragment">
+  android:orientation="vertical"
+  tools:context=".fragments.list_routes.ListRoutesFragment">
 
   <android.support.v7.widget.RecyclerView
-    android:id="@+id/rw_fragment_list_routes"
+    android:id="@+id/rv_fragment_list_routes"
     android:layout_width="match_parent"
     android:layout_height="match_parent"/>
 

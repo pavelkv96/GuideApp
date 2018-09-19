@@ -4,6 +4,6 @@ public interface OnSuccessListener<Task> {
 
     void onSuccess(Task task);
 
-    void onFail(Throwable throwable);
+    void onFailure(Throwable throwable);
 
 }

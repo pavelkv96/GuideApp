@@ -1,13 +1,11 @@
 package com.grsu.guideapp.mf;
 
-import static android.graphics.Bitmap.Config.RGB_565;
 import static com.grsu.guideapp.utils.MapUtils.getIndex;
 import static com.grsu.guideapp.utils.MapUtils.getX;
 import static com.grsu.guideapp.utils.MapUtils.getY;
 import static com.grsu.guideapp.utils.MapUtils.getZoom;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;

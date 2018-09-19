@@ -3,7 +3,6 @@ package com.grsu.guideapp.activities.splash;
 import android.content.Context;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StorageUtils;
-import com.grsu.guideapp.utils.StreamUtils;
 import java.io.File;
 import java.io.IOException;
 
