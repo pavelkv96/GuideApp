@@ -51,7 +51,7 @@ public class SplashInteractor implements SplashContract.SplashInteractor {
                         StorageUtils.unzip(currentFile, rootFolder);
                         currentFile.delete();
                     }
-                } catch (IOException e) {
+                } catch (IOException | NullPointerException e) {
                     Logs.e(TAG, e.getMessage(), e);
                 } finally {
                     listener.onFinished();

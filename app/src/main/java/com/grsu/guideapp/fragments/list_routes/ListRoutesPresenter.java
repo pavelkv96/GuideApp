@@ -37,6 +37,8 @@ public class ListRoutesPresenter extends BasePresenterImpl<ListRoutesViews> impl
             } else {
                 listRoutesViews.showMessage(R.string.error_copy_data_error);
             }
+        } else {
+            listRoutesViews.initial();
         }
     }
 
