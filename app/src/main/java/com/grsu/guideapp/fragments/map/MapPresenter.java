@@ -6,22 +6,36 @@ import static com.grsu.guideapp.utils.CryptoUtils.decodeP;
 import static com.grsu.guideapp.utils.MapUtils.getDistanceBetween;
 import static com.grsu.guideapp.utils.MapUtils.toLocation;
 
+import android.content.Context;
 import android.location.Location;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Tile;
+import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.base.BasePresenterImpl;
-import com.grsu.guideapp.fragments.map.MapContract.MapInteractor.OnFinishedListener;
+import com.grsu.guideapp.base.listeners.OnFinishedListener;
+import com.grsu.guideapp.base.listeners.OnFinishedTileListener;
+import com.grsu.guideapp.fragments.details.DetailsFragment;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
+import com.grsu.guideapp.models.Tag;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MapPresenter extends BasePresenterImpl<MapViews> implements MapContract.MapPresenter,
-        OnFinishedListener {
+        OnFinishedListener<List<Poi>> {
+
+    private MapViews mapViews;
+    private MapInteractor mapInteractor;
+
+    public MapPresenter(MapViews mapViews, MapInteractor mapInteractor) {
+        this.mapViews = mapViews;
+        this.mapInteractor = mapInteractor;
+    }
 
     private static final Integer RADIUS = 100;
     private static final String TAG = MapPresenter.class.getSimpleName();
@@ -33,20 +47,54 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     private List<Integer> types = new ArrayList<>();
     private Integer checkedItem;
-
-
-    private MapViews mapViews;
-    private MapInteractor mapInteractor;
-
-    public MapPresenter(MapViews mapViews, MapInteractor mapInteractor) {
-        this.mapViews = mapViews;
-        this.mapInteractor = mapInteractor;
-    }
+    private boolean flag;
+    private Integer id;
 
     @Override
     public void getId(Integer id) {
         mView.showProgress(null, "Loading...");
-        mapInteractor.getRouteById(this, id);
+        mapInteractor.getRouteById(new OnFinishedListener<List<Line>>() {
+            @Override
+            public void onFinished(List<Line> encodePolylines) {
+                allLatLngs = new ArrayList<>();
+                latLngs = new ArrayList<>();
+                turnsList = new ArrayList<>();
+
+                try {
+                    for (Line encodeLine : encodePolylines) {
+                        Integer idLine = encodeLine.getIdLine();
+
+                        mapViews.setPolyline(decodeL(encodeLine.getPolyline()), idLine);
+
+                        LatLng startPoint = decodeP(encodeLine.getStartPoint());
+                        LatLng endPoint = decodeP(encodeLine.getEndPoint());
+                        mapViews.setPointsTurn(startPoint);
+                        mapViews.setPointsTurn(endPoint);
+
+                        List<LatLng> lineList = decodeL(encodeLine.getPolyline());
+
+                        if (currentLatLng != null) {
+                            lineList.remove(0);
+                            turnsList.add(endPoint);
+                        } else {
+                            currentIndex = 0;
+                            currentLatLng = startPoint;
+                            turnsList.add(endPoint);
+                            turnsList.add(startPoint);
+                        }
+
+                        allLatLngs.addAll(lineList);
+                    }
+
+                    for (int i = 0; i < 5; i++) {
+                        latLngs.add(allLatLngs.get(i));
+                    }
+                } catch (NullPointerException ignored) {
+                }
+                mView.hideProgress();
+            }
+        }, id);
+        this.id = id;
     }
 
     @Override
@@ -79,6 +127,22 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
     }
 
     @Override
+    public void setAllPoi(boolean getAll) {
+        flag = getAll;
+        getAllPoi();
+    }
+
+    @Override
+    public void getAllPoi() {
+        int size = getType().size();
+        if (flag && size != 0) {
+            mapInteractor.getListPoi(this, id, getType());
+        } else {
+            getPoi();
+        }
+    }
+
+    @Override
     public void getPoi() {
         if (currentLatLng != null) {
             getCurrentTurn(toLocation(currentLatLng));
@@ -87,7 +151,12 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     @Override
     public Tile getTile(int x, int y, int zoom, String provider) {
-        return mapInteractor.getTile(this, MapUtils.getTileIndex(zoom, x, y), provider);
+        return mapInteractor.getTile(new OnFinishedTileListener<Tile>() {
+            @Override
+            public Tile onFinished(byte[] tile) {
+                return tile != null ? new Tile(256, 256, tile) : NO_TILE;
+            }
+        }, MapUtils.getTileIndex(zoom, x, y), provider);
     }
 
     @Override
@@ -96,63 +165,30 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
     }
 
     @Override
-    public void onFinished(List<Line> encodePolylines) {
-        allLatLngs = new ArrayList<>();
-        latLngs = new ArrayList<>();
-        turnsList = new ArrayList<>();
-
-        try {
-            for (Line encodeLine : encodePolylines) {
-                Integer idLine = encodeLine.getIdLine();
-
-                mapViews.setPolyline(decodeL(encodeLine.getPolyline()), idLine);
-
-                LatLng startPoint = decodeP(encodeLine.getStartPoint());
-                LatLng endPoint = decodeP(encodeLine.getEndPoint());
-                mapViews.setPointsTurn(startPoint);
-                mapViews.setPointsTurn(endPoint);
-
-                List<LatLng> lineList = decodeL(encodeLine.getPolyline());
-
-                if (currentLatLng != null) {
-                    lineList.remove(0);
-                    turnsList.add(endPoint);
-                } else {
-                    currentIndex = 0;
-                    currentLatLng = startPoint;
-                    turnsList.add(endPoint);
-                    turnsList.add(startPoint);
-                }
-
-                allLatLngs.addAll(lineList);
-            }
-
-            for (int i = 0; i < 5; i++) {
-                latLngs.add(allLatLngs.get(i));
-            }
-        } catch (NullPointerException ignored) {
+    public void onMarkerClick(Context context, Marker marker) {
+        Tag tag = (Tag) marker.getTag();
+        if (tag == null) {
+            return;
         }
-        mView.hideProgress();
+
+        if (tag.isPoi()) {
+            ((RouteActivity) context).onReplace(DetailsFragment.newInstance(tag.getId()));
+        }
     }
 
     @Override
-    public void onFinished1(List<Poi> poiList) {
+    public void onFinished(List<Poi> poiList) {
         mapViews.removePoi();
         for (Poi poi : poiList) {
             mapViews.setPoi(poi);
         }
     }
 
-    @Override
-    public Tile onFinished(byte[] tile) {
-        if (tile == null) {
-            return NO_TILE;
+    private void getCurrentTurn(Location currentLocation) {
+        if (flag) {
+            return;
         }
 
-        return new Tile(256, 256, tile);
-    }
-
-    private void getCurrentTurn(Location currentLocation) {
         LatLng shortestDistance = getShortestDistance(turnsList, currentLocation);
         int size = getType().size();
 

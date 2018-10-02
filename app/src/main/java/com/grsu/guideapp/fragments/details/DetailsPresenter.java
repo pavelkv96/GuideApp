@@ -1,8 +1,8 @@
-package com.grsu.guideapp.activities.details;
+package com.grsu.guideapp.fragments.details;
 
 import android.graphics.Bitmap;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.activities.details.DetailsContract.DetailsView;
+import com.grsu.guideapp.fragments.details.DetailsContract.DetailsView;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.base.listeners.OnSuccessListener;

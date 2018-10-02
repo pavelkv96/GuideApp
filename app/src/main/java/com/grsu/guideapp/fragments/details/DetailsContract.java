@@ -1,4 +1,4 @@
-package com.grsu.guideapp.activities.details;
+package com.grsu.guideapp.fragments.details;
 
 import android.graphics.Bitmap;
 import com.grsu.guideapp.base.BasePresenter;
