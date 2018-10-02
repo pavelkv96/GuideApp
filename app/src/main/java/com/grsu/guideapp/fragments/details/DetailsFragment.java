@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindView;
@@ -17,12 +18,15 @@ import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.details.DetailsContract.DetailsView;
 import com.grsu.guideapp.models.InfoAboutPoi;
 import com.grsu.guideapp.project_settings.Constants;
+import com.grsu.guideapp.utils.MessageViewer.Toasts;
+import java.io.File;
 
 public class DetailsFragment extends BaseFragment<DetailsPresenter> implements DetailsView {
 
+    private Intent intent;
+
     @BindView(R.id.tv_fragment_details_id_point)
     TextView textView;
-
     @BindView(R.id.tv_fragment_details_type)
     TextView textView1;
     @BindView(R.id.tv_fragment_details_name_locale)
@@ -34,9 +38,11 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter> implements D
     @BindView(R.id.tv_fragment_details_link)
     TextView textView5;
 
-
     @BindView(R.id.iv_fragment_details_content)
     ImageView iv_fragment_details_content;
+
+    @BindView(R.id.btn_fragment_details_start)
+    Button button;
 
     @NonNull
     @Override
@@ -52,11 +58,18 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter> implements D
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        String s = getArguments().getString(Constants.KEY_ID_POINT);
+        Bundle bundle = getArguments();
 
-        textView.setText(s);
+        if (bundle != null) {
+            String s = bundle.getString(Constants.KEY_ID_POINT);
+            intent = new Intent(getActivity(), DetailsPlayerService.class);
 
-        mPresenter.getById(s);
+            textView.setText(s);
+
+            mPresenter.getById(s);
+        } else {
+            Toasts.makeS(getActivity(), "Error get data");
+        }
     }
 
     public static DetailsFragment newInstance(String idPoint) {
@@ -88,11 +101,27 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter> implements D
         textView5.setText(content.getLink());
     }
 
+    @Override
+    public void returnedIntent(File file) {
+        intent.putExtra("KEY", file);
+    }
+
+    @Override
+    public void hideButton(String message) {
+        button.setVisibility(View.GONE);
+        //Toasts.makeL(getActivity(), message);
+    }
+
+    @Override
+    public void showButton() {
+        button.setVisibility(View.VISIBLE);
+    }
+
     @OnClick(R.id.btn_fragment_details_start)
     public void startService(View view) {
         if (getActivity() != null) {
             getActivity().stopService(new Intent(getActivity(), DetailsPlayerService.class));
-            getActivity().startService(new Intent(getActivity(), DetailsPlayerService.class)
+            getActivity().startService(intent
                     .putExtra(Constants.KEY_RECORD, textView.getText().toString())
                     .setAction(Constants.KEY_RECORD)
             );

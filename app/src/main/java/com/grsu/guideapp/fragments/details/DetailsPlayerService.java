@@ -4,18 +4,14 @@ import static com.grsu.guideapp.project_settings.NotificationBuilder.createNotif
 
 import android.app.Notification;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.Toast;
-import com.grsu.guideapp.R;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.NotificationBuilder;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
@@ -40,9 +36,10 @@ public class DetailsPlayerService extends Service implements OnPreparedListener,
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getAction() != null) {
-            Logs.e(TAG, "onStartCommand:" + intent.getAction());
-            switch (intent.getAction()) {
+        String action = intent.getAction();
+        if (action != null) {
+            Logs.e(TAG, "onStartCommand:" + action);
+            switch (action) {
                 case Constants.NOTIFY_PLAY:
                     play();
                     break;
@@ -59,14 +56,7 @@ public class DetailsPlayerService extends Service implements OnPreparedListener,
                     previous();
                     break;
                 case Constants.KEY_RECORD:
-                    String stringExtra = intent.getStringExtra(Constants.KEY_RECORD);
-
-                    player = DetailsPlayerService.create(this, R.raw.music);
-                    player.setOnPreparedListener(this);
-                    player.setOnCompletionListener(this);
-                    Logs.e(TAG, "onStartCommand: " + stringExtra);
-                    NotificationBuilder
-                            .nameUpdate(this, stringExtra);
+                    createPlayer(intent);
                     break;
             }
         }
@@ -105,32 +95,6 @@ public class DetailsPlayerService extends Service implements OnPreparedListener,
         player.pause();
         player.seekTo(0);
         NotificationBuilder.pauseUpdate(this);
-    }
-
-    @Deprecated
-    @NonNull
-    private static MediaPlayer create(Context context, int resId) {
-        try {
-            AssetFileDescriptor afd = context.getResources().openRawResourceFd(resId);
-            if (afd == null) {
-                return null;
-            }
-            MediaPlayer mp = new MediaPlayer();
-            mp.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-            afd.close();
-            mp.prepareAsync();
-            return mp;
-        } catch (IOException ex) {
-            Log.d(TAG, "create failed:", ex);
-            // fall through
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "create failed:", ex);
-            // fall through
-        } catch (SecurityException ex) {
-            Log.d(TAG, "create failed:", ex);
-            // fall through
-        }
-        return null;
     }
 
     @NonNull
@@ -176,5 +140,21 @@ public class DetailsPlayerService extends Service implements OnPreparedListener,
         player.start();
         Toast.makeText(this, "NOTIFY_PLAY", Toast.LENGTH_SHORT).show();
         NotificationBuilder.playUpdate(this);
+    }
+
+    private void createPlayer(Intent intent) {
+        String stringExtra = intent.getStringExtra(Constants.KEY_RECORD);
+        File stringExtr = (File) intent.getSerializableExtra("KEY");
+        if (stringExtr != null) {
+            Logs.e(TAG, "onStartCommand: " + stringExtr.getAbsolutePath());
+
+            player = DetailsPlayerService.create(/*this, R.raw.music*/stringExtr);
+            player.setOnPreparedListener(this);
+            player.setOnCompletionListener(this);
+            NotificationBuilder.nameUpdate(this, stringExtra);
+        } else {
+            Logs.e(TAG, "onStartCommand: NULL");
+            delete();
+        }
     }
 }

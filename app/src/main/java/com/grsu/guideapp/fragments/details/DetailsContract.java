@@ -17,6 +17,12 @@ public interface DetailsContract extends OnSuccessListener, OnFinishedListener {
         void showImage(int resource);
 
         void setContent(InfoAboutPoi content);
+
+        void returnedIntent(File content);
+
+        void hideButton(String message);
+
+        void showButton();
     }
 
     interface DetailsPresenter extends BasePresenter<DetailsView> {
@@ -24,6 +30,8 @@ public interface DetailsContract extends OnSuccessListener, OnFinishedListener {
         void getById(String idPoint);
 
         void getImageByName(String imageName);
+
+        void getAudio(String name);
     }
 
     interface DetailsInteractor {
@@ -31,5 +39,7 @@ public interface DetailsContract extends OnSuccessListener, OnFinishedListener {
         void getInfoById(OnFinishedListener<InfoAboutPoi> listener, String id);
 
         void getImageFromStorage(OnSuccessListener<Bitmap> listener, File file);
+
+        void getAudioFromStorage(OnSuccessListener<File> listener, String name);
     }
 }

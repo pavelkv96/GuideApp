@@ -32,6 +32,7 @@ public class DetailsPresenter extends BasePresenterImpl<DetailsView> implements
                 Logs.e(TAG, poi + "");
                 detailsView.setContent(poi);
                 getImageByName(poi.getPhotoReference());
+                getAudio(poi.getAudioReference());
             }
         }, idPoint);
     }
@@ -51,6 +52,22 @@ public class DetailsPresenter extends BasePresenterImpl<DetailsView> implements
                 detailsView.showImage(R.mipmap.ic_launcher_round);
             }
         }, content);
+    }
+
+    @Override
+    public void getAudio(String name) {
+        detailsInteractor.getAudioFromStorage(new OnSuccessListener<File>() {
+            @Override
+            public void onSuccess(File file) {
+                detailsView.showButton();
+                detailsView.returnedIntent(file);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                detailsView.hideButton(throwable.getMessage());
+            }
+        }, name);
     }
 
 }
