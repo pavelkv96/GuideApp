@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
   package="com.grsu.guideapp">
 
   <uses-permission android:name="android.permission.INTERNET"/>
@@ -10,30 +11,31 @@
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
   <application
-    android:allowBackup="true"
     android:icon="@mipmap/ic_launcher"
     android:label="@string/app_name"
+    android:name=".App"
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
-    android:theme="@style/AppTheme">
+    android:theme="@style/AppTheme"
+    tools:ignore="GoogleAppIndexingWarning">
 
     <activity
       android:label="@string/title_activity_home"
       android:name=".delegation.NavigationDrawerActivity"
       android:theme="@style/AppTheme.NoActionBar">
     </activity>
-    <activity android:name=".activities.details.DetailsActivity"/>
-    <activity android:name=".activities.route.RouteActivity"/>
+
+    <activity
+      android:configChanges="orientation|screenSize"
+      android:name=".activities.route.RouteActivity"/>
 
     <service
       android:name=".fragments.map.MyService"
-      android:process=":my_service2">
-    </service>
+      android:process=":my_service"/>
 
     <service
-      android:name=".activities.route.MyService"
-      android:process=":my_service">
-    </service>
+      android:name=".fragments.details.DetailsPlayerService"
+      android:process=":my_service2"/>
 
     <meta-data
       android:name="com.google.android.geo.API_KEY"
