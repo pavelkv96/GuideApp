@@ -61,24 +61,15 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter> implements D
         Bundle bundle = getArguments();
 
         if (bundle != null) {
-            String s = bundle.getString(Constants.KEY_ID_POINT);
+            String idPoint = bundle.getString(Constants.KEY_ID_POINT);
             intent = new Intent(getActivity(), DetailsPlayerService.class);
 
-            textView.setText(s);
+            textView.setText(idPoint);
 
-            mPresenter.getById(s);
+            mPresenter.getById(idPoint);
         } else {
             Toasts.makeS(getActivity(), "Error get data");
         }
-    }
-
-    public static DetailsFragment newInstance(String idPoint) {
-
-        Bundle args = new Bundle();
-        args.putString(Constants.KEY_ID_POINT, idPoint);
-        DetailsFragment fragment = new DetailsFragment();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -103,13 +94,12 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter> implements D
 
     @Override
     public void returnedIntent(File file) {
-        intent.putExtra("KEY", file);
+        intent.putExtra(Constants.KEY_NAME_RECORD, file);
     }
 
     @Override
-    public void hideButton(String message) {
+    public void hideButton() {
         button.setVisibility(View.GONE);
-        //Toasts.makeL(getActivity(), message);
     }
 
     @Override
@@ -122,9 +112,17 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter> implements D
         if (getActivity() != null) {
             getActivity().stopService(new Intent(getActivity(), DetailsPlayerService.class));
             getActivity().startService(intent
-                    .putExtra(Constants.KEY_RECORD, textView.getText().toString())
+                    .putExtra(Constants.KEY_NAME_PLACE_RECORD, textView.getText().toString())
                     .setAction(Constants.KEY_RECORD)
             );
         }
+    }
+
+    public static DetailsFragment newInstance(String idPoint) {
+        Bundle args = new Bundle();
+        args.putString(Constants.KEY_ID_POINT, idPoint);
+        DetailsFragment fragment = new DetailsFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 }

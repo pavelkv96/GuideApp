@@ -20,7 +20,7 @@ public interface DetailsContract extends OnSuccessListener, OnFinishedListener {
 
         void returnedIntent(File content);
 
-        void hideButton(String message);
+        void hideButton();
 
         void showButton();
     }

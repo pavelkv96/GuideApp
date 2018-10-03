@@ -20,6 +20,8 @@ public class Constants {
     public final static String KEY_GEO_POINT = "geo_point";
     public static final String KEY_ID_POINT = "id_point";
     public static final String KEY_RECORD = "record";
+    public static final String KEY_NAME_RECORD = "name_record";
+    public static final String KEY_NAME_PLACE_RECORD = "name_place_record";
 
     //Notification action keys and chanel
     public static final String NOTIFY_PREVIOUS = "NOTIFY_PREVIOUS";
@@ -30,4 +32,8 @@ public class Constants {
     public static final int NOTIFICATION_ID = 9;
 
     public static final String CHANNEL_ID = "exampleServiceChannel";
+
+    //Type content
+    public static final String JPG = ".jpg";
+    public static final String MP3 = ".mp3";
 }

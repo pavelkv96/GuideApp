@@ -1,6 +1,6 @@
 package com.grsu.guideapp.activities.splash;
 
-import android.content.Context;
+import android.content.res.AssetManager;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StorageUtils;
 import java.io.File;
@@ -9,10 +9,10 @@ import java.io.IOException;
 public class SplashInteractor implements SplashContract.SplashInteractor {
 
     private static final String TAG = SplashInteractor.class.getSimpleName();
-    private Context mContext;
+    private AssetManager manager;
 
-    public SplashInteractor(Context context) {
-        this.mContext = context;
+    public SplashInteractor(AssetManager manager) {
+        this.manager = manager;
     }
 
     @Override
@@ -22,8 +22,9 @@ public class SplashInteractor implements SplashContract.SplashInteractor {
             @Override
             public void run() {
                 if (!file.exists()) {
-                    Logs.e(TAG, "THIS " + file.mkdirs());
-                    StorageUtils.copyAssetsFolder(file.getName(), file, mContext);
+                    file.mkdirs();
+                    Logs.e(TAG, "THIS " + file.getAbsolutePath());
+                    StorageUtils.copyAssetsFolder(file.getName(), file, manager);
                 }
                 listener.onFinished();
             }

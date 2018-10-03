@@ -7,6 +7,7 @@ import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.base.listeners.OnSuccessListener;
 import com.grsu.guideapp.models.InfoAboutPoi;
+import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.io.File;
@@ -39,7 +40,7 @@ public class DetailsPresenter extends BasePresenterImpl<DetailsView> implements
 
     @Override
     public void getImageByName(String imageName) {
-        File content = new File(Settings.PHOTO_CONTENT, imageName + ".jpg");
+        File content = new File(Settings.PHOTO_CONTENT, imageName + Constants.JPG);
         detailsInteractor.getImageFromStorage(new OnSuccessListener<Bitmap>() {
             @Override
             public void onSuccess(Bitmap bitmap) {
@@ -65,7 +66,7 @@ public class DetailsPresenter extends BasePresenterImpl<DetailsView> implements
 
             @Override
             public void onFailure(Throwable throwable) {
-                detailsView.hideButton(throwable.getMessage());
+                detailsView.hideButton();
             }
         }, name);
     }

@@ -102,15 +102,14 @@ public class DetailsPlayerService extends Service implements OnPreparedListener,
         MediaPlayer mp = new MediaPlayer();
         try {
             mp.setDataSource(pathToRecord.getAbsolutePath());
+            mp.prepareAsync();
         } catch (IOException e) {
             Logs.e(TAG, "create: " + e.getMessage(), e);
         }
-        mp.prepareAsync();
         return mp;
     }
 
     private void delete() {
-        Toast.makeText(this, "NOTIFY_DELETE", Toast.LENGTH_SHORT).show();
         NotificationBuilder.deleteUpdate(this);
         release();
         stopForeground(true);
@@ -143,17 +142,16 @@ public class DetailsPlayerService extends Service implements OnPreparedListener,
     }
 
     private void createPlayer(Intent intent) {
-        String stringExtra = intent.getStringExtra(Constants.KEY_RECORD);
-        File stringExtr = (File) intent.getSerializableExtra("KEY");
-        if (stringExtr != null) {
-            Logs.e(TAG, "onStartCommand: " + stringExtr.getAbsolutePath());
+        String namePlace = intent.getStringExtra(Constants.KEY_NAME_PLACE_RECORD);
+        File pathToAudio = (File) intent.getSerializableExtra(Constants.KEY_NAME_RECORD);
+        if (pathToAudio != null) {
+            Logs.e(TAG, "onStartCommand: " + pathToAudio.getAbsolutePath());
 
-            player = DetailsPlayerService.create(/*this, R.raw.music*/stringExtr);
+            player = DetailsPlayerService.create(pathToAudio);
             player.setOnPreparedListener(this);
             player.setOnCompletionListener(this);
-            NotificationBuilder.nameUpdate(this, stringExtra);
+            NotificationBuilder.nameUpdate(this, namePlace);
         } else {
-            Logs.e(TAG, "onStartCommand: NULL");
             delete();
         }
     }

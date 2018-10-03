@@ -1,5 +1,6 @@
 package com.grsu.guideapp.activities.splash;
 
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -19,7 +20,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
     @NonNull
     @Override
     protected SplashPresenter getPresenterInstance() {
-        return new SplashPresenter(this, new SplashInteractor(this));
+        return new SplashPresenter(this, new SplashInteractor(getAssets()));
     }
 
     @Override
@@ -32,14 +33,15 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
     public void load(View view) {
         File file = new File(getFilesDir(), Settings.ZOOM_TABLE);
         File file1 = getDatabasePath(Settings.MAP_FILE);
+        AssetManager assetManager = getAssets();
 
         if (!file.exists()) {
-            StorageUtils.copyAssets(Settings.ZOOM_TABLE, file.getAbsolutePath(), this);
+            StorageUtils.copyAssets(Settings.ZOOM_TABLE, file.getAbsolutePath(), assetManager);
         }
 
         if (!file1.exists()) {
             String toFilePath = file1.getAbsolutePath();
-            StorageUtils.copyAssets(Settings.MAP_FILE, toFilePath, this);
+            StorageUtils.copyAssets(Settings.MAP_FILE, toFilePath, assetManager);
         }
 
         startActivity(NavigationDrawerActivity.newIntent(this));
