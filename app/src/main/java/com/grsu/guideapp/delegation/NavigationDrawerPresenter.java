@@ -2,7 +2,6 @@ package com.grsu.guideapp.delegation;
 
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.base.listeners.OnReplaceFragment;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
@@ -10,12 +9,16 @@ import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerVie
 public class NavigationDrawerPresenter extends BasePresenterImpl<NavigationDrawerView>
         implements NavigationDrawerContract.NavigationDrawerPresenter, OnReplaceFragment {
 
+    private NavigationDrawerView drawerView;
+
     private static final String TAG = NavigationDrawerPresenter.class.getSimpleName();
+
+    NavigationDrawerPresenter(NavigationDrawerView drawerView) {
+        this.drawerView = drawerView;
+    }
 
     @Override
     public void onReplace(Fragment fragment) {
-        Log.e(TAG, "onReplace: ");
-        getView().getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment).commit();
+        drawerView.replaceFragment(fragment);
     }
 }

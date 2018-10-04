@@ -46,6 +46,7 @@ public class NavigationDrawerDelegate
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_camera:
+                mPresenter.getView().openMapFragment();
                 break;
             case R.id.nav_gallery:
                 break;

@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import butterknife.BindView;
+import com.grsu.guideapp.fragments.MapFragment;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseDelegationActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
@@ -16,6 +19,8 @@ public class NavigationDrawerActivity extends BaseDelegationActivity<NavigationD
 
     @BindView(R.id.toolbar)
     protected Toolbar mToolbar;
+
+    private FragmentManager manager;
 
     public static Intent newIntent(Context context) {
         return new Intent(context, NavigationDrawerActivity.class);
@@ -29,7 +34,7 @@ public class NavigationDrawerActivity extends BaseDelegationActivity<NavigationD
     @NonNull
     @Override
     protected NavigationDrawerPresenter getPresenterInstance() {
-        return new NavigationDrawerPresenter();
+        return new NavigationDrawerPresenter(this);
     }
 
     @Override
@@ -37,6 +42,8 @@ public class NavigationDrawerActivity extends BaseDelegationActivity<NavigationD
         setContentView(R.layout.activity_home);
         setSupportActionBar(mToolbar);
         super.onCreate(savedInstanceState);
+
+        manager = getSupportFragmentManager();
     }
 
     @Override
@@ -44,6 +51,18 @@ public class NavigationDrawerActivity extends BaseDelegationActivity<NavigationD
         if (!mDelegate.closeDrawer()) {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void openMapFragment() {
+        mPresenter.onReplace(MapFragment.newInstance());
+    }
+
+    @Override
+    public void replaceFragment(Fragment fragment) {
+        manager.beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
     }
 
     @Override
