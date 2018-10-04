@@ -35,4 +35,4 @@
 #-dontwarn okhttp3.internal.platform.ConscryptPlatform
 #-dontwarn org.mapsforge.map.android.rotation.RotateView
 #-dontwarn org.mapsforge.map.android.rotation.SmoothCanvas
-#-keep class org.xmlpull.v1.** { *; }
+-keep class org.xmlpull.v1.** { *; }
