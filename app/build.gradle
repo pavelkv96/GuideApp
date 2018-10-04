@@ -1,20 +1,25 @@
 apply plugin: 'com.android.application'
-
 //apply plugin: 'kotlin-android'
-
 //apply plugin: 'kotlin-android-extensions'
+def versions = rootProject.ext.versions
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion versions.compileSdk
+
     defaultConfig {
         applicationId "com.grsu.guideapp"
-        minSdkVersion 15
-        targetSdkVersion 28
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -25,8 +30,26 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:28.0.0-alpha3'
+    implementation "com.android.support:appcompat-v7:${versions.support}"
+    implementation "com.android.support:design:${versions.support}"
+    implementation "com.android.support:support-v4:${versions.support}"
+    implementation "com.android.support:recyclerview-v7:$versions.support"
+    implementation "com.android.support:cardview-v7:$versions.support"
+    implementation "com.android.support:support-v4:$versions.support"
+
+    implementation "com.jakewharton:butterknife:${versions.butterknife}"
+    annotationProcessor "com.jakewharton:butterknife-compiler:${versions.butterknife}"
+
+    implementation "com.google.android.gms:play-services-maps:${versions.google_maps}"
+
+    implementation "org.mapsforge:mapsforge-map-android:${versions.mapsforge}"
+    implementation "org.mapsforge:mapsforge-map:${versions.mapsforge}"
+    implementation "org.mapsforge:mapsforge-themes:${versions.mapsforge}"
+
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
     testImplementation 'junit:junit:4.12'
+
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
