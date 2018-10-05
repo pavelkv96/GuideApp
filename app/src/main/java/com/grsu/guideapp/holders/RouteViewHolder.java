@@ -7,7 +7,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.models.Route;
-import com.squareup.picasso.Picasso;
+import com.grsu.guideapp.project_settings.Constants;
+import com.grsu.guideapp.project_settings.Settings;
+import com.grsu.guideapp.utils.StorageUtils;
+import java.io.File;
 
 public class RouteViewHolder extends ViewHolder {
 
@@ -33,11 +36,13 @@ public class RouteViewHolder extends ViewHolder {
         tv_item_routes_distance.setText(String.valueOf(route.getDistance()));
         tv_item_routes_name_route.setText(String.valueOf(route.getNameRoute()));
 
-        Picasso
-                .get()
-                .load(route.getReferencePhotoRoute())
-                .placeholder(R.drawable.ic_launcher_background)
-                .error(R.drawable.ic_launcher_foreground)
-                .into(iv_item_preview_photo_route);
+        File file = new File(Settings.PHOTO_CONTENT,
+                route.getReferencePhotoRoute() + Constants.JPG);
+
+        try {
+            iv_item_preview_photo_route.setImageBitmap(StorageUtils.getImageFromFile(file));
+        } catch (NullPointerException e) {
+            iv_item_preview_photo_route.setImageResource(R.drawable.ic_launcher_background);
+        }
     }
 }

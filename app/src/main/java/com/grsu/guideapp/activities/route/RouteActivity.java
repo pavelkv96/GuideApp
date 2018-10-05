@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.listeners.OnFragmentReplace;
-import com.grsu.guideapp.fragments.details.DetailsPlayerService;
 import com.grsu.guideapp.fragments.map.MapFragment;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 
@@ -37,14 +36,6 @@ public class RouteActivity extends AppCompatActivity implements OnFragmentReplac
         }
 
     }
-
-    @Override
-    protected void onDestroy() {
-        stopService(new Intent(this, DetailsPlayerService.class));
-        super.onDestroy();
-        Logs.e(TAG, "onDestroy: ");
-    }
-
 
     public static Intent newIntent(Context context, Integer id_route) {
         Intent intent = new Intent(context, RouteActivity.class);
