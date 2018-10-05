@@ -25,7 +25,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
 
     private ProgressDialog mProgressDialog = null;
 
-    private View rootView;
+    protected View rootView;
 
     protected P mPresenter;
 

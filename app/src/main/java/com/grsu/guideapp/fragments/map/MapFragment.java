@@ -16,47 +16,34 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.maps.model.Tile;
-import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.android.gms.maps.model.TileProvider;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
-import com.grsu.guideapp.base.BaseFragment;
-import com.grsu.guideapp.database.CacheDBHelper;
+import com.grsu.guideapp.base.BaseMapFragment;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
-import com.grsu.guideapp.mf.MapsForgeTileSource;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Tag;
 import com.grsu.guideapp.project_settings.Constants;
-import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CheckSelfPermission;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
-import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment;
 import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment.OnMultiChoiceListDialogFragment;
 import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment;
 import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment.OnChoiceItemListener;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
-public class MapFragment extends BaseFragment<MapPresenter> implements TileProvider, MapViews,
-        OnMarkerClickListener, OnChoiceItemListener, OnMultiChoiceListDialogFragment,
-        OnMapReadyCallback {
+public class MapFragment extends BaseMapFragment<MapPresenter> implements OnChoiceItemListener,
+        MapViews, OnMultiChoiceListDialogFragment {
 
     private static final String TAG = MapFragment.class.getSimpleName();
     private RouteActivity getActivity = null;
@@ -70,7 +57,6 @@ public class MapFragment extends BaseFragment<MapPresenter> implements TileProvi
     int i = 0;
     private BroadcastReceiver br;
 
-    private GoogleMap mMap;
     @BindView(R.id.tv_fragment_map_distance)
     TextView distanceTextView;
 
@@ -86,17 +72,18 @@ public class MapFragment extends BaseFragment<MapPresenter> implements TileProvi
     }
 
     @Override
+    protected int getFragment() {
+        return R.id.fragment_map_map;
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        SupportMapFragment mapFragment = ((SupportMapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.fragment_map_map));
 
         Integer route = getArguments().getInt(Constants.KEY_ID_ROUTE, -1);
 
         getActivity = (RouteActivity) getActivity();
-        if (mapFragment != null && route != -1) {
-            mapFragment.getMapAsync(this);
-
+        if (route != -1) {
             mPresenter.getId(route);
 
             mPresenter.setRadius("100");
@@ -110,43 +97,14 @@ public class MapFragment extends BaseFragment<MapPresenter> implements TileProvi
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        Logs.e(TAG, "onStart");
-
-        if (CheckSelfPermission.writeExternalStorageIsGranted(getContext())) {
-            getActivity.finish();
-        }
-
-        AndroidGraphicFactory.createInstance(getActivity.getApplication());
-        new CacheDBHelper(getContext());
-
-        File file = getActivity.getDatabasePath(Settings.MAP_FILE);
-
-        Toasts.makeL(getContext(), "Loaded map file " + file.exists());
-
-        if (file.exists()) {
-            MapsForgeTileSource.createFromFiles(new File[]{file}, null, Settings.CURRENT_PROVIDER);
-        }
-    }
-
-    @Override
     public void onMapReady(GoogleMap googleMap) {
         myMovement = getList();
-        mPresenter.onMapReady(googleMap);
-    }
-
-    @Override
-    public Tile getTile(int x, int y, int zoom) {
-        return mPresenter.getTile(x, y, zoom, Settings.CURRENT_PROVIDER);
+        super.onMapReady(googleMap);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        CacheDBHelper.refreshDb();
-        MapsForgeTileSource.dispose();
-        AndroidGraphicFactory.clearResourceMemoryCache();
         unregisterListeners();
         Logs.e(TAG, "onStop");
     }
@@ -154,22 +112,6 @@ public class MapFragment extends BaseFragment<MapPresenter> implements TileProvi
     //-------------------------------------------
     //	Summary: implements Contracts
     //-------------------------------------------
-
-    @Override
-    public void mapViewSettings(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
-        mMap.setMinZoomPreference(Settings.MIN_ZOOM_LEVEL);
-        mMap.setMaxZoomPreference(Settings.MAX_ZOOM_LEVEL);
-
-        LatLngBounds borders = new LatLngBounds(Settings.NORTH_WEST, Settings.SOUTH_EAST);
-        mMap.setLatLngBoundsForCameraTarget(borders);
-
-        mMap.setOnMarkerClickListener(this);
-
-        mMap.addTileOverlay(new TileOverlayOptions().tileProvider(this));
-    }
 
     @Override
     public void setPolyline(List<LatLng> geoPointList, int id) {
@@ -186,6 +128,7 @@ public class MapFragment extends BaseFragment<MapPresenter> implements TileProvi
             MarkerOptions markerOptions = new MarkerOptions().position(latLng);
             current = mMap.addMarker(markerOptions);
         }
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
         current.setPosition(latLng);
     }
 
@@ -307,7 +250,6 @@ public class MapFragment extends BaseFragment<MapPresenter> implements TileProvi
 
     @OnCheckedChanged(R.id.cb_fragment_map_get_all)
     public void isAllPoi(CompoundButton compoundButton, boolean isChecked) {
-        Toasts.makeS(getContext(), isChecked + "");
         mPresenter.setAllPoi(isChecked);
     }
 

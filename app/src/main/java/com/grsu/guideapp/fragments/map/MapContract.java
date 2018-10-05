@@ -2,10 +2,8 @@ package com.grsu.guideapp.fragments.map;
 
 import android.content.Context;
 import android.location.Location;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.Tile;
 import com.grsu.guideapp.base.BasePresenter;
 import com.grsu.guideapp.base.BaseView;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
@@ -17,8 +15,6 @@ import java.util.List;
 public interface MapContract extends OnFinishedListener, OnFinishedTileListener {
 
     interface MapViews extends BaseView {
-
-        void mapViewSettings(GoogleMap googleMap);
 
         void openDialogViews();
 
@@ -51,16 +47,10 @@ public interface MapContract extends OnFinishedListener, OnFinishedTileListener 
 
         void getPoi();
 
-        Tile getTile(int x, int y, int zoom, String provider);
-
-        void onMapReady(GoogleMap googleMap);
-
         void onMarkerClick(Context context, Marker marker);
     }
 
     interface MapInteractor {
-
-        Tile getTile(OnFinishedTileListener<Tile> listener, long index, String provider);
 
         void getRouteById(OnFinishedListener<List<Line>> listener, Integer id);
 

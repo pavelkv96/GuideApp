@@ -1,6 +1,5 @@
 package com.grsu.guideapp.fragments.map;
 
-import static com.google.android.gms.maps.model.TileProvider.NO_TILE;
 import static com.grsu.guideapp.utils.CryptoUtils.decodeL;
 import static com.grsu.guideapp.utils.CryptoUtils.decodeP;
 import static com.grsu.guideapp.utils.MapUtils.getDistanceBetween;
@@ -8,14 +7,11 @@ import static com.grsu.guideapp.utils.MapUtils.toLocation;
 
 import android.content.Context;
 import android.location.Location;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.Tile;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
-import com.grsu.guideapp.base.listeners.OnFinishedTileListener;
 import com.grsu.guideapp.fragments.details.DetailsFragment;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
 import com.grsu.guideapp.models.Line;
@@ -147,21 +143,6 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         if (currentLatLng != null) {
             getCurrentTurn(toLocation(currentLatLng));
         }
-    }
-
-    @Override
-    public Tile getTile(int x, int y, int zoom, String provider) {
-        return mapInteractor.getTile(new OnFinishedTileListener<Tile>() {
-            @Override
-            public Tile onFinished(byte[] tile) {
-                return tile != null ? new Tile(256, 256, tile) : NO_TILE;
-            }
-        }, MapUtils.getTileIndex(zoom, x, y), provider);
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mapViews.mapViewSettings(googleMap);
     }
 
     @Override
