@@ -1,20 +1,27 @@
 package com.grsu.guideapp.databases;
 
+import static com.grsu.guideapp.databases.TileConstants.COLUMN_EXPIRES;
 import static com.grsu.guideapp.databases.TileConstants.COLUMN_KEY;
 import static com.grsu.guideapp.databases.TileConstants.COLUMN_PROVIDER;
 import static com.grsu.guideapp.databases.TileConstants.COLUMN_TILE;
 import static com.grsu.guideapp.databases.TileConstants.CREATE_TABLE;
 import static com.grsu.guideapp.databases.TileConstants.TABLE;
+import static com.grsu.guideapp.utils.MapUtils.getIndex;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteFullException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.Nullable;
 import android.util.Log;
+import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.StorageUtils;
+import com.grsu.guideapp.utils.StreamUtils;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 
 public class CacheDBHelper extends SQLiteOpenHelper {
 
@@ -70,6 +77,47 @@ public class CacheDBHelper extends SQLiteOpenHelper {
                 mDb.close();
                 mDb = null;
             }
+        }
+    }
+
+    public static void saveFile(long pIndex, String pProvider, InputStream pStream, Long pTime) {
+
+        String message = "Unable to store cached tile from ";
+        String toString = MapUtils.toString(pIndex);
+
+        mDb = getDb();
+        if (mDb == null || !mDb.isOpen()) {
+            Log.e(TAG, message + toString + ", database not available.");
+            return;
+        }
+
+        ByteArrayOutputStream bos = null;
+        try {
+            ContentValues cv = new ContentValues();
+            final long index = getIndex(pIndex);
+            cv.put(COLUMN_PROVIDER, pProvider);
+
+            byte[] buffer = new byte[512];
+            int l;
+            bos = new ByteArrayOutputStream();
+            while ((l = pStream.read(buffer)) != -1) {
+                bos.write(buffer, 0, l);
+            }
+            byte[] bits = bos.toByteArray();
+
+            cv.put(COLUMN_KEY, index);
+            cv.put(COLUMN_TILE, bits);
+            cv.put(COLUMN_EXPIRES, pTime);
+            mDb.replace(TABLE, null, cv);
+
+
+        } catch (SQLiteFullException ex) {
+            catchException(ex);
+        } catch (Exception ex) {
+            Log.e(TAG, "Unable to store cached tile from " + toString + " ", ex);
+            catchException(ex);
+        } finally {
+            StreamUtils.closeStream(bos);
         }
     }
 
