@@ -27,6 +27,10 @@ public interface MapContract extends OnFinishedListener, OnFinishedTileListener 
         void setPoi(Poi poi);
 
         void removePoi();
+
+        void setStartMarker(LatLng startMarker);
+
+        void setEndMarker(LatLng endMarker);
     }
 
     interface MapPresenter extends BasePresenter<MapViews> {

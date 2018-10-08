@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CustomMultiChoiceItemsDialogFragment extends DialogFragment implements
         OnMultiChoiceClickListener, OnClickListener {
@@ -73,10 +74,10 @@ public class CustomMultiChoiceItemsDialogFragment extends DialogFragment impleme
         }
     }
 
-    public static CustomMultiChoiceItemsDialogFragment newInstance(ArrayList<Integer> IndexList) {
+    public static CustomMultiChoiceItemsDialogFragment newInstance(List<Integer> IndexList) {
 
         Bundle args = new Bundle();
-        args.putIntegerArrayList(KEY_SELECTED_ITEM, IndexList);
+        args.putIntegerArrayList(KEY_SELECTED_ITEM, (ArrayList<Integer>) IndexList);
 
         CustomMultiChoiceItemsDialogFragment fragment = new CustomMultiChoiceItemsDialogFragment();
         fragment.setArguments(args);
