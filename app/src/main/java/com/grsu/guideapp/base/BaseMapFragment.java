@@ -64,7 +64,9 @@ public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragm
     public void onStart() {
         super.onStart();
         if (CheckSelfPermission.writeExternalStorageIsGranted(getContext())) {
-            getActivity().finish();
+            if (getActivity() != null) {
+                getActivity().finish();
+            }
         }
 
         AndroidGraphicFactory.createInstance(getActivity().getApplication());

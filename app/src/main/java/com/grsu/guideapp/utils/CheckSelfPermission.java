@@ -9,7 +9,9 @@ public class CheckSelfPermission {
 
     public static boolean writeExternalStorageIsGranted(Context context) {
         return ContextCompat.checkSelfPermission(context, permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED;
+                != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(context, permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED;
     }
 
     public static boolean getAccessLocationIsGranted(Context context) {

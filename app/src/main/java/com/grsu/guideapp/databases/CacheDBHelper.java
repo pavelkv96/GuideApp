@@ -1,13 +1,5 @@
 package com.grsu.guideapp.databases;
 
-import static com.grsu.guideapp.databases.TileConstants.COLUMN_EXPIRES;
-import static com.grsu.guideapp.databases.TileConstants.COLUMN_KEY;
-import static com.grsu.guideapp.databases.TileConstants.COLUMN_PROVIDER;
-import static com.grsu.guideapp.databases.TileConstants.COLUMN_TILE;
-import static com.grsu.guideapp.databases.TileConstants.CREATE_TABLE;
-import static com.grsu.guideapp.databases.TileConstants.TABLE;
-import static com.grsu.guideapp.utils.MapUtils.getIndex;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -15,8 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteFullException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MapUtils;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StorageUtils;
 import com.grsu.guideapp.utils.StreamUtils;
 import java.io.ByteArrayOutputStream;
@@ -31,11 +24,11 @@ public class CacheDBHelper extends SQLiteOpenHelper {
     private static SQLiteDatabase mDb;
 
     private static final String primaryKey =
-            COLUMN_KEY + "=? and " + COLUMN_PROVIDER + "=? limit 1";
-    private static final String[] queryColumns = {COLUMN_TILE};
+            TileConstants.COLUMN_KEY + "=? and " + TileConstants.COLUMN_PROVIDER + "=? limit 1";
+    private static final String[] columns = {TileConstants.COLUMN_TILE};
 
     public CacheDBHelper(Context context) {
-        super(context, "cache.db", null, 1);
+        super(context, Settings.CACHE_DATABASE_NAME, null, Settings.CACHE_DATABASE_VERSION);
         mDb = getDb();
     }
 
@@ -54,15 +47,15 @@ public class CacheDBHelper extends SQLiteOpenHelper {
             return mDb;
         }
         synchronized (mLock) {
-            new File(StorageUtils.getStorage() + "/osmdroid/cache/").mkdir();
-            File db_file = new File(StorageUtils.getStorage() + "/osmdroid/cache/", "cache.db");
+            new File(Settings.CACHE).mkdir();
+            File dbFile = new File(Settings.CACHE, Settings.CACHE_DATABASE_NAME);
 
             if (mDb == null) {
                 try {
-                    mDb = SQLiteDatabase.openOrCreateDatabase(db_file, null);
-                    mDb.execSQL(CREATE_TABLE);
+                    mDb = SQLiteDatabase.openOrCreateDatabase(dbFile, null);
+                    mDb.execSQL(TileConstants.CREATE_TABLE);
                 } catch (Exception ex) {
-                    Log.e(TAG, "Unable to start the sqlite tile writer.", ex);
+                    Logs.e(TAG, "Unable to start the sqlite tile writer.", ex);
                     catchException(ex);
                     return null;
                 }
@@ -80,41 +73,38 @@ public class CacheDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public static void saveFile(long pIndex, String pProvider, InputStream pStream, Long pTime) {
+    public static void saveTile(long pIndex, String pProvider, InputStream pStream, Long pTime) {
 
         String message = "Unable to store cached tile from ";
         String toString = MapUtils.toString(pIndex);
 
         mDb = getDb();
         if (mDb == null || !mDb.isOpen()) {
-            Log.e(TAG, message + toString + ", database not available.");
+            Logs.e(TAG, message + toString + ", database not available.");
             return;
         }
 
         ByteArrayOutputStream bos = null;
         try {
-            ContentValues cv = new ContentValues();
-            final long index = getIndex(pIndex);
-            cv.put(COLUMN_PROVIDER, pProvider);
+            final long index = MapUtils.getIndex(pIndex);
 
-            byte[] buffer = new byte[512];
-            int l;
             bos = new ByteArrayOutputStream();
-            while ((l = pStream.read(buffer)) != -1) {
-                bos.write(buffer, 0, l);
-            }
+            StreamUtils.copyFile(pStream, bos, new byte[512]);
+
             byte[] bits = bos.toByteArray();
 
-            cv.put(COLUMN_KEY, index);
-            cv.put(COLUMN_TILE, bits);
-            cv.put(COLUMN_EXPIRES, pTime);
-            mDb.replace(TABLE, null, cv);
+            ContentValues cv = new ContentValues();
+            cv.put(TileConstants.COLUMN_KEY, index);
+            cv.put(TileConstants.COLUMN_PROVIDER, pProvider);
+            cv.put(TileConstants.COLUMN_TILE, bits);
+            cv.put(TileConstants.COLUMN_EXPIRES, pTime);
+            mDb.replace(TileConstants.TABLE, null, cv);
 
 
         } catch (SQLiteFullException ex) {
             catchException(ex);
         } catch (Exception ex) {
-            Log.e(TAG, "Unable to store cached tile from " + toString + " ", ex);
+            Logs.e(TAG, "Unable to store cached tile from " + toString + " ", ex);
             catchException(ex);
         } finally {
             StreamUtils.closeStream(bos);
@@ -123,25 +113,37 @@ public class CacheDBHelper extends SQLiteOpenHelper {
 
     public static byte[] getTile(long index, String tileProvider) {
 
-        Cursor cur = getTileCursor(getPrimaryKeyParameters(index, tileProvider), queryColumns);
+        Cursor cur = getTileCursor(getParameters(index, tileProvider));
         byte[] bits = null;
         try {
             if (cur.moveToFirst()) {
-                bits = cur.getBlob(cur.getColumnIndex(COLUMN_TILE));
+                bits = cur.getBlob(cur.getColumnIndex(TileConstants.COLUMN_TILE));
             }
+        } catch (NullPointerException e) {
+            Logs.e(TAG, e.getMessage(), e);
         } finally {
-            cur.close();
+            StreamUtils.closeStream(cur);
         }
 
         return bits;
     }
 
-    private static Cursor getTileCursor(String[] pPrimaryKeyParameters, String[] pColumns) {
-        mDb = getDb();
-        return mDb.query(TABLE, pColumns, primaryKey, pPrimaryKeyParameters, null, null, null);
+    public static void clearCache() {
+        if (mDb != null) {
+            refreshDb();
+        }
+
+        synchronized (mLock) {
+            StorageUtils.removeDir(Settings.CACHE);
+        }
     }
 
-    private static String[] getPrimaryKeyParameters(long pIndex, String pTileSourceInfo) {
+    private static Cursor getTileCursor(String[] pParameters) {
+        mDb = getDb();
+        return mDb.query(TileConstants.TABLE, columns, primaryKey, pParameters, null, null, null);
+    }
+
+    private static String[] getParameters(long pIndex, String pTileSourceInfo) {
         return new String[]{String.valueOf(pIndex), pTileSourceInfo};
     }
 

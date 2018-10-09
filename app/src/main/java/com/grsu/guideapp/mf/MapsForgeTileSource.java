@@ -9,8 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import com.grsu.guideapp.databases.CacheDBHelper;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StreamUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -87,7 +87,7 @@ public class MapsForgeTileSource {
                 return new BitmapDrawable(AndroidGraphicFactory.getBitmap(bmp));
             }
         } catch (Exception ex) {
-            Log.e(TAG, "Mapsforge tile generation failed", ex);
+            Logs.e(TAG, "Mapsforge tile generation failed", ex);
         }
         /*Bitmap bitmap = Bitmap.createBitmap(TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, RGB_565);
         bitmap.eraseColor(Color.GRAY);
@@ -98,7 +98,7 @@ public class MapsForgeTileSource {
     public static byte[] loadTile(final long pMapTileIndex) {
         byte[] bytes = CacheDBHelper.getTile(getIndex(pMapTileIndex), mProvider);
         if (bytes != null) {
-            Log.e(TAG, "load next tile " + getIndex(pMapTileIndex));
+            Logs.e(TAG, "load next tile " + getIndex(pMapTileIndex));
             return bytes;
         }
 
@@ -114,11 +114,11 @@ public class MapsForgeTileSource {
             ByteArrayInputStream bais = null;
             try {
                 bais = new ByteArrayInputStream(bitmapdata);
-                CacheDBHelper.saveFile(pMapTileIndex, mProvider, bais, null);
+                CacheDBHelper.saveTile(pMapTileIndex, mProvider, bais, null);
                 bytes = CacheDBHelper.getTile(getIndex(pMapTileIndex), mProvider);
-                Log.e(TAG, "Saved tile " + getIndex(pMapTileIndex));
+                Logs.e(TAG, "Saved tile " + getIndex(pMapTileIndex));
             } catch (Exception ex) {
-                Log.e(TAG, "forge error storing tile cache", ex);
+                Logs.e(TAG, "forge error storing tile cache", ex);
             } finally {
                 StreamUtils.closeStream(bais);
             }
