@@ -13,7 +13,6 @@ import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Tag;
 import com.grsu.guideapp.utils.MapUtils;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MapPresenter extends BasePresenterImpl<MapViews> implements MapContract.MapPresenter,
@@ -32,7 +31,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
     private static final Integer RADIUS = 100;
     private static final String TAG = MapPresenter.class.getSimpleName();
 
-    private List<Integer> types = new ArrayList<>();
+    private long[] types;
     private Integer checkedItem;
     private boolean flag;
     private Integer id;
@@ -81,17 +80,17 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
     }
 
     @Override
-    public void setRadius(String radius) {
-        checkedItem = Integer.valueOf(radius);
+    public void setRadius(Integer radius) {
+        checkedItem = radius;
     }
 
     @Override
-    public void setType(List<Integer> typesObjects) {
+    public void setType(long[] typesObjects) {
         types = typesObjects;
     }
 
     @Override
-    public List<Integer> getType() {
+    public long[] getType() {
         return types;
     }
 
@@ -103,7 +102,11 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     @Override
     public void getAllPoi() {
-        int size = getType().size();
+        if (getType() == null) {
+            return;
+        }
+
+        int size = getType().length;
         if (flag && size != 0) {
             mapInteractor.getListPoi(this, id, getType());
         } else {
@@ -139,12 +142,12 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
     }
 
     private void getCurrentTurn(Location currentLocation) {
-        if (flag) {
+        if (flag || getType() == null) {
             return;
         }
 
         LatLng shortestDistance = logic.getShortestDistance(logic.getTurnsList(), currentLocation);
-        int size = getType().size();
+        int size = getType().length;
 
         if (MapUtils.isMoreDistance(RADIUS, currentLocation, shortestDistance) && size != 0) {
 

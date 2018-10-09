@@ -39,11 +39,11 @@ public interface MapContract extends OnFinishedListener, OnFinishedTileListener 
 
         void getProjectionLocation(Location location);
 
-        void setRadius(String radius);
+        void setRadius(Integer radius);
 
-        void setType(List<Integer> typesObjects);
+        void setType(long[] typesObjects);
 
-        List<Integer> getType();
+        long[] getType();
 
         void setAllPoi(boolean getAll);
 
@@ -59,9 +59,8 @@ public interface MapContract extends OnFinishedListener, OnFinishedTileListener 
         void getRouteById(OnFinishedListener<List<Line>> listener, Integer id);
 
         void getListPoi(OnFinishedListener<List<Poi>> listener, double latitude, double longitude,
-                int radius, List<Integer> typesObjects);
+                int radius, long[] typesObjects);
 
-        void getListPoi(OnFinishedListener<List<Poi>> listener, Integer id,
-                List<Integer> typesObjects);
+        void getListPoi(OnFinishedListener<List<Poi>> listener, Integer id, long[] typesObjects);
     }
 }

@@ -55,6 +55,7 @@ public class MapFragment extends BaseMapFragment<MapPresenter> implements OnChoi
 
 
     private Marker marker;//deleting
+    private Integer choiceItem;
     private Marker current;
     int i = 0;
     private BroadcastReceiver br;
@@ -81,15 +82,20 @@ public class MapFragment extends BaseMapFragment<MapPresenter> implements OnChoi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        getActivity = (RouteActivity) getActivity();
 
         setHasOptionsMenu(true);
-        Integer route = getArguments().getInt(Constants.KEY_ID_ROUTE, -1);
+        Integer route = -1;
 
-        getActivity = (RouteActivity) getActivity();
+        if (getArguments() != null) {
+            route = getArguments().getInt(Constants.KEY_ID_ROUTE);
+        }
+
         if (route != -1) {
             mPresenter.getId(route);
-
-            mPresenter.setRadius("100");
+            choiceItem = 1000;
+            mPresenter.setRadius(choiceItem);
+            distanceTextView.setText(String.valueOf(choiceItem));
             //openDialogViews();
             br = new MyBroadcastReceiver();
         } else {
@@ -181,7 +187,7 @@ public class MapFragment extends BaseMapFragment<MapPresenter> implements OnChoi
 
     @Override
     public void openDialogViews() {
-        CustomSingleChoiceItemsDialogFragment.newInstance(distanceTextView.getText())
+        CustomSingleChoiceItemsDialogFragment.newInstance(choiceItem)
                 .show(getChildFragmentManager(), "CustomSingleChoiceItemsDialogFragment");
 
         CustomMultiChoiceItemsDialogFragment.newInstance(mPresenter.getType())
@@ -189,7 +195,7 @@ public class MapFragment extends BaseMapFragment<MapPresenter> implements OnChoi
     }
 
     @Override
-    public void onOk(ArrayList<Integer> arrayList) {
+    public void onOk(long[] arrayList) {
         mPresenter.setType(arrayList);
         mPresenter.getPoi();
         mPresenter.getAllPoi();
@@ -197,8 +203,9 @@ public class MapFragment extends BaseMapFragment<MapPresenter> implements OnChoi
 
     @Override
     public void choiceItem(String itemValue) {
+        choiceItem = Integer.valueOf(itemValue);
         distanceTextView.setText(itemValue);
-        mPresenter.setRadius(itemValue);
+        mPresenter.setRadius(choiceItem);
         mPresenter.getPoi();
         mPresenter.getAllPoi();
     }
@@ -268,7 +275,7 @@ public class MapFragment extends BaseMapFragment<MapPresenter> implements OnChoi
                         .show(getChildFragmentManager(), "CustomMultiChoiceItemsDialogFragment");
                 break;
             case R.id.menu_fragment_map_distance:
-                CustomSingleChoiceItemsDialogFragment.newInstance(distanceTextView.getText())
+                CustomSingleChoiceItemsDialogFragment.newInstance(choiceItem)
                         .show(getChildFragmentManager(), "CustomSingleChoiceItemsDialogFragment");
                 break;
             case R.id.menu_fragment_map_get_all:

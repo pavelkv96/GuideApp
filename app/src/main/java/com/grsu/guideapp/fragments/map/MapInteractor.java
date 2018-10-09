@@ -28,7 +28,7 @@ public class MapInteractor implements MapContract.MapInteractor {
 
     @Override
     public void getListPoi(final OnFinishedListener<List<Poi>> listener, final double latitude,
-            final double longitude, final int radius, final List<Integer> typesObjects) {
+            final double longitude, final int radius, final long[] typesObjects) {
         new Handler().post/*Delayed*/(new Runnable() {
             @Override
             public void run() {
@@ -39,7 +39,7 @@ public class MapInteractor implements MapContract.MapInteractor {
 
     @Override
     public void getListPoi(final OnFinishedListener<List<Poi>> listener, final Integer id,
-            final List<Integer> typesObjects) {
+            final long[] typesObjects) {
         new Handler().post/*Delayed*/(new Runnable() {
             @Override
             public void run() {

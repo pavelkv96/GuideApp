@@ -68,8 +68,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Poi> getListPoi(double cLat, double cLng, int radius,
-            List<Integer> typesObjects) {
+    public List<Poi> getListPoi(double cLat, double cLng, int radius, long[] typesObjects) {
 
         List<Poi> poiList = new ArrayList<>();
         openDatabase();
@@ -85,7 +84,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return poiList;
     }
 
-    public List<Poi> getListPoi(Integer id, List<Integer> typesObjects) {
+    public List<Poi> getListPoi(Integer id, long[] typesObjects) {
 
         List<Poi> poiList = new ArrayList<>();
         openDatabase();
@@ -137,7 +136,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @NonNull
     private String getPlaceWithRadius(double cLatitude, double cLongitude, int radius,
-            List<Integer> typesObjects) {
+            long[] typesObjects) {
         double lat = radius * Constants.ONE_METER_LAT;
         double lng = radius * Constants.ONE_METER_LNG;
 
@@ -169,10 +168,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @NonNull
-    private String getByTypes(List<Integer> typesObjects) {
+    private String getByTypes(long[] typesObjects) {
         StringBuilder stringBuilder = new StringBuilder();
-        for (Integer integer : typesObjects) {
-            stringBuilder.append(integer).append(",");
+        for (long l : typesObjects) {
+            stringBuilder.append(l).append(",");
         }
 
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
