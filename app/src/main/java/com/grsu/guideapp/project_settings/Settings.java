@@ -39,4 +39,10 @@ public class Settings {
     public static final float MAX_ZOOM_LEVEL = 19;
     public static final LatLng NORTH_WEST = new LatLng(53.5986, 23.7099);
     public static final LatLng SOUTH_EAST = new LatLng(53.7597, 23.9845);
+
+    //-------------------------------------------
+    //	Summary: tile theme settings
+    //-------------------------------------------
+    public static final String THEME_FILE = "osmarender.xml";
+    public static final String THEME_FOLDER = "renderthemes/";
 }

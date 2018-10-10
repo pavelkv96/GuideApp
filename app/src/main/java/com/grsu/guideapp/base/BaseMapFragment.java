@@ -1,5 +1,6 @@
 package com.grsu.guideapp.base;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -21,8 +22,11 @@ import com.grsu.guideapp.mf.MapsForgeTileSource;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CheckSelfPermission;
 import com.grsu.guideapp.utils.MapUtils;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.io.File;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.android.rendertheme.AssetsRenderTheme;
+import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
 public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragment<P> implements
         OnMapReadyCallback, TileProvider, OnMarkerClickListener {
@@ -70,11 +74,20 @@ public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragm
         }
 
         AndroidGraphicFactory.createInstance(getActivity().getApplication());
-        new CacheDBHelper(getContext());
+        CacheDBHelper.getInstance();
         File file = getActivity().getDatabasePath(Settings.MAP_FILE);
         Toast.makeText(getContext(), "Loaded map file " + file.exists(), Toast.LENGTH_LONG).show();
         if (file.exists()) {
-            MapsForgeTileSource.createFromFiles(new File[]{file}, null, Settings.CURRENT_PROVIDER);
+            XmlRenderTheme theme = null;
+            try {
+                Context context = getActivity().getApplicationContext();
+                theme = new AssetsRenderTheme(context, Settings.THEME_FOLDER, Settings.THEME_FILE);
+            } catch (Exception ex) {
+                Logs.e("TAG", ex.getMessage(), ex);
+            }
+            MapsForgeTileSource.createFromFiles(file, theme, Settings.CURRENT_PROVIDER);
+        } else {
+            getActivity().finish();
         }
     }
 

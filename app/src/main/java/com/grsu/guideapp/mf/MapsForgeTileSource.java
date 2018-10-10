@@ -41,12 +41,10 @@ public class MapsForgeTileSource {
 
     private static MultiMapDataStore mapDatabase;
 
-    public static void createFromFiles(File[] file, XmlRenderTheme renderTheme, String provider) {
+    public static void createFromFiles(File file, XmlRenderTheme renderTheme, String provider) {
         mProvider = provider;
         mapDatabase = new MultiMapDataStore(DataPolicy.RETURN_ALL);
-        for (File aFile : file) {
-            mapDatabase.addMapDataStore(new MapFile(aFile), false, false);
-        }
+        mapDatabase.addMapDataStore(new MapFile(file), false, false);
 
         if (AndroidGraphicFactory.INSTANCE == null) {
             throw new RuntimeException(
