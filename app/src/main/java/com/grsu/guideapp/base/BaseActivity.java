@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.grsu.guideapp.R;
 
 public abstract class BaseActivity<P extends BasePresenter>
         extends AppCompatActivity

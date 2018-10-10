@@ -1,8 +1,5 @@
 package com.grsu.guideapp.fragments.map;
 
-import static android.location.LocationManager.GPS_PROVIDER;
-import static com.grsu.guideapp.project_settings.Constants.KEY_GEO_POINT;
-
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
@@ -10,12 +7,13 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 
 public class MyService extends Service implements LocationListener {
 
     private static final String TAG = MyService.class.getSimpleName();
-    private LocationManager mLocationManager = null;
+    private LocationManager mManager = null;
     private static final int INTERVAL = 1500;
     private static final float DISTANCE = -1f;
 
@@ -25,10 +23,10 @@ public class MyService extends Service implements LocationListener {
         initializeLocationManager();
 
         try {
-            mLocationManager.requestLocationUpdates(GPS_PROVIDER, INTERVAL, DISTANCE, this);
+            mManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, INTERVAL, DISTANCE, this);
         } catch (SecurityException ex) {
             Logs.e(TAG, "fail to request location update, ignore", ex);
-            onDestroy();
+            stopSelf();
         } catch (IllegalArgumentException ex) {
             Logs.e(TAG, "gps provider does not exist " + ex.getMessage());
         }
@@ -36,8 +34,8 @@ public class MyService extends Service implements LocationListener {
 
     private void initializeLocationManager() {
         Logs.e(TAG, "initializeLocationManager");
-        if (mLocationManager == null) {
-            mLocationManager = (LocationManager) getApplication().getSystemService(LOCATION_SERVICE);
+        if (mManager == null) {
+            mManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         }
     }
 
@@ -56,11 +54,8 @@ public class MyService extends Service implements LocationListener {
     @Override
     public void onDestroy() {
         Logs.e(TAG, "onDestroy");
-        if (mLocationManager != null) {
-            try {
-                mLocationManager.removeUpdates(this);
-            } catch (Exception ignore) {
-            }
+        if (mManager != null) {
+            mManager.removeUpdates(this);
         }
         super.onDestroy();
     }
@@ -68,7 +63,7 @@ public class MyService extends Service implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         Intent intent = new Intent(MapFragment.BR_ACTION);
-        intent.putExtra(KEY_GEO_POINT, location);
+        intent.putExtra(Constants.KEY_GEO_POINT, location);
         sendBroadcast(intent);
     }
 

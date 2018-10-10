@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.grsu.guideapp.R;
 
 public abstract class BaseFragment<P extends BasePresenter> extends Fragment implements BaseView {
 

@@ -7,12 +7,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.grsu.guideapp.base.BasePresenter;
 import com.grsu.guideapp.base.BaseView;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
-import com.grsu.guideapp.base.listeners.OnFinishedTileListener;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import java.util.List;
 
-public interface MapContract extends OnFinishedListener, OnFinishedTileListener {
+public interface MapContract extends OnFinishedListener {
 
     interface MapViews extends BaseView {
 

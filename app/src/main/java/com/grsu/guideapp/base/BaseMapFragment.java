@@ -11,7 +11,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Tile;
 import com.google.android.gms.maps.model.TileOverlayOptions;
@@ -21,10 +20,11 @@ import com.grsu.guideapp.mf.MapsForgeTileSource;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CheckSelfPermission;
 import com.grsu.guideapp.utils.MapUtils;
-import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import java.io.File;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.android.rendertheme.AssetsRenderTheme;
+import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
 public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragment<P>
         implements OnMapReadyCallback, TileProvider, OnMarkerClickListener {
@@ -67,7 +67,9 @@ public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragm
     public void onStart() {
         super.onStart();
         if (CheckSelfPermission.writeExternalStorageIsGranted(getContext())) {
-            getActivity().finish();
+            if (getActivity() != null) {
+                getActivity().finish();
+            }
         }
 
         AndroidGraphicFactory.createInstance(getActivity().getApplication());
@@ -78,7 +80,13 @@ public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragm
         Toasts.makeL(getContext(), "Loaded map file " + file.exists());
 
         if (file.exists()) {
-            MapsForgeTileSource.createFromFiles(new File[]{file}, null, Settings.CURRENT_PROVIDER);
+            XmlRenderTheme theme = null;
+            try {
+                theme = new AssetsRenderTheme(getActivity().getApplicationContext(), "renderthemes/", "osmarender.xml");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            MapsForgeTileSource.createFromFiles(file, theme, Settings.CURRENT_PROVIDER);
         }
     }
 
