@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -69,7 +70,7 @@ public class MessageViewer {
             abstractSnackbar(view, s, null, getListener(activity));
         }
 
-        public static <T extends Activity> void makeL(View view, @StringRes int s,
+        public static <T extends FragmentActivity> void makeL(View view, @StringRes int s,
                 final T activity) {
             abstractSnackbar(view, null, s, getListener(activity));
         }
@@ -97,7 +98,7 @@ public class MessageViewer {
                     .show();
         }
 
-        private static <T extends Activity> OnClickListener getListener(final T activity) {
+        private static <T extends FragmentActivity> OnClickListener getListener(final T activity) {
             return new OnClickListener() {
                 @Override
                 public void onClick(View view) {

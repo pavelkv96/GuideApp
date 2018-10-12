@@ -10,10 +10,12 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -27,6 +29,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.base.BaseMapFragment;
+import com.grsu.guideapp.database.CacheDBHelper;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
 import com.grsu.guideapp.models.Poi;
@@ -37,6 +40,7 @@ import com.grsu.guideapp.utils.DataUtils;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
+import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment;
 import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment.OnMultiChoiceListDialogFragment;
 import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment;
@@ -44,11 +48,11 @@ import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment.OnC
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapFragment extends BaseMapFragment<MapPresenter> implements OnChoiceItemListener,
-        MapViews, OnMultiChoiceListDialogFragment {
+public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
+        implements OnChoiceItemListener, MapViews, OnMultiChoiceListDialogFragment {
 
     private static final String TAG = MapFragment.class.getSimpleName();
-    private RouteActivity getActivity = null;
+    //private RouteActivity getActivity = null;
     private List<Marker> nearPoi = new ArrayList<>();
     private List<LatLng> myMovement;//deleting
     public static final String BR_ACTION = MapFragment.class.getName();
@@ -80,9 +84,9 @@ public class MapFragment extends BaseMapFragment<MapPresenter> implements OnChoi
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        getActivity = (RouteActivity) getActivity();
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
 
         setHasOptionsMenu(true);
         Integer route = -1;
@@ -100,9 +104,12 @@ public class MapFragment extends BaseMapFragment<MapPresenter> implements OnChoi
             br = new MyBroadcastReceiver();
         } else {
             if (getActivity != null) {
+                Toasts.makeL(getActivity, "Empty data, please refresh your database");
+                getActivity.getSupportFragmentManager().popBackStack();
                 getActivity.finish();
             }
         }
+        return rootView;
     }
 
     @Override
@@ -283,6 +290,16 @@ public class MapFragment extends BaseMapFragment<MapPresenter> implements OnChoi
                 item.setChecked(checked);
                 mPresenter.setAllPoi(checked);
                 break;
+            case R.id.menu_fragment_map_update_tiles:
+                overlay.clearTileCache();
+                break;
+            case R.id.menu_fragment_map_clear_cache:
+                CacheDBHelper.clearCache();
+                overlay.clearTileCache();
+                break;
+            case R.id.menu_fragment_map_clear:
+                CacheDBHelper.clearCache();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -291,7 +308,7 @@ public class MapFragment extends BaseMapFragment<MapPresenter> implements OnChoi
     @Override
     public boolean onMarkerClick(Marker marker) {
         mPresenter.onMarkerClick(getActivity, marker);
-        return false;
+        return super.onMarkerClick(marker);
     }
 
     private class MyBroadcastReceiver extends BroadcastReceiver {

@@ -15,6 +15,7 @@ import android.widget.VideoView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.grsu.guideapp.R;
+import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.details.DetailsContract.DetailsView;
@@ -23,7 +24,8 @@ import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import java.io.File;
 
-public class DetailsFragment extends BaseFragment<DetailsPresenter> implements DetailsView {
+public class DetailsFragment extends BaseFragment<DetailsPresenter, RouteActivity>
+        implements DetailsView {
 
     private Intent intent;
 
@@ -67,21 +69,21 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter> implements D
 
         if (bundle != null) {
             String idPoint = bundle.getString(Constants.KEY_ID_POINT);
-            intent = new Intent(getActivity(), DetailsPlayerService.class);
+            intent = new Intent(getActivity, DetailsPlayerService.class);
 
             textView.setText(idPoint);
 
             mPresenter.getById(idPoint);
 
             String myPackage = Constants.PACKAGE_NAME;
-            MediaController controller = new MediaController(getActivity());
+            MediaController controller = new MediaController(getActivity);
             videoView.setVideoPath("android.resource://" + myPackage + "/" + R.raw.video);
             controller.setAnchorView(videoView);
             videoView.setMediaController(controller);
 
 
         } else {
-            Toasts.makeS(getActivity(), "Error get data");
+            Toasts.makeS(getActivity, "Error get data");
         }
     }
 
@@ -122,9 +124,9 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter> implements D
 
     @OnClick(R.id.btn_fragment_details_start)
     public void startService(View view) {
-        if (getActivity() != null) {
-            getActivity().stopService(new Intent(getActivity(), DetailsPlayerService.class));
-            getActivity().startService(intent
+        if (getActivity != null) {
+            getActivity.stopService(new Intent(getActivity, DetailsPlayerService.class));
+            getActivity.startService(intent
                     .putExtra(Constants.KEY_NAME_PLACE_RECORD, textView.getText().toString())
                     .setAction(Constants.KEY_RECORD)
             );
@@ -141,7 +143,7 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter> implements D
 
     @Override
     public void onDestroyView() {
-        getActivity().stopService(new Intent(getActivity(), DetailsPlayerService.class));
+        getActivity.stopService(new Intent(getActivity, DetailsPlayerService.class));
         super.onDestroyView();
     }
 }

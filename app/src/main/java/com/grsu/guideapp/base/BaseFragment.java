@@ -6,15 +6,19 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public abstract class BaseFragment<P extends BasePresenter> extends Fragment implements BaseView {
+public abstract class BaseFragment<P extends BasePresenter, A extends FragmentActivity>
+        extends Fragment implements BaseView {
 
     private Unbinder mUnBinder;
+
+    protected A getActivity;
 
     protected abstract @NonNull
     P getPresenterInstance();
@@ -33,6 +37,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(getLayout(), container, false);
+        getActivity = (A) getActivity();
         mPresenter = getPresenterInstance();
         mPresenter.attachView(this);
 

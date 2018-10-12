@@ -7,12 +7,13 @@ import butterknife.OnClick;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.database.CacheDBHelper;
+import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.utils.StorageUtils;
 import java.io.File;
 
-public class SettingsFragment extends BaseFragment<SettingPresenter> {
+public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationDrawerActivity> {
 
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
@@ -45,9 +46,9 @@ public class SettingsFragment extends BaseFragment<SettingPresenter> {
         File file = new File(Settings.CACHE, Settings.CACHE_DATABASE_NAME);
         if (file.exists()) {
             CacheDBHelper.clearCache();
-            Toasts.makeS(getActivity(), "Database deleted");
+            Toasts.makeS(getActivity, "Database deleted");
         } else {
-            Toasts.makeS(getActivity(), "Database not found");
+            Toasts.makeS(getActivity, "Database not found");
         }
     }
 }

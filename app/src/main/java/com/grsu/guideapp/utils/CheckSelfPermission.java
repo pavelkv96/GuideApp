@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build.VERSION;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import com.grsu.guideapp.project_settings.Constants;
 
@@ -59,7 +60,7 @@ public class CheckSelfPermission {
         return VERSION.SDK_INT >= version;
     }
 
-    public static <T extends Activity> void settingsIntent(T activity) {
+    public static <T extends FragmentActivity> void settingsIntent(T activity) {
         Intent intent = new Intent();
         intent.setAction(Constants.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(Uri.fromParts(Constants.PACKAGE, Constants.PACKAGE_NAME, null));

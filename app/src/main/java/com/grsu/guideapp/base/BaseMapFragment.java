@@ -1,9 +1,11 @@
 package com.grsu.guideapp.base;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +14,9 @@ import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Tile;
+import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
 import com.grsu.guideapp.database.CacheDBHelper;
@@ -26,10 +30,12 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.rendertheme.AssetsRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
-public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragment<P>
+public abstract class BaseMapFragment<P extends BasePresenter, A extends FragmentActivity>
+        extends BaseFragment<P, A>
         implements OnMapReadyCallback, TileProvider, OnMarkerClickListener {
 
     protected GoogleMap mMap;
+    protected TileOverlay overlay;
 
     protected abstract @IdRes
     int getFragment();
@@ -60,31 +66,29 @@ public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragm
 
         mMap.setOnMarkerClickListener(this);
 
-        mMap.addTileOverlay(new TileOverlayOptions().tileProvider(this));
+        overlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(this));
     }
 
     @Override
     public void onStart() {
         super.onStart();
         if (CheckSelfPermission.writeExternalStorageIsGranted(getContext())) {
-            if (getActivity() != null) {
-                getActivity().finish();
-            }
+            getActivity.finish();
         }
 
-        AndroidGraphicFactory.createInstance(getActivity().getApplication());
+        AndroidGraphicFactory.createInstance(getActivity.getApplication());
         new CacheDBHelper(getContext());
 
-        File file = getActivity().getDatabasePath(Settings.MAP_FILE);
+        File file = getActivity.getDatabasePath(Settings.MAP_FILE);
 
         Toasts.makeL(getContext(), "Loaded map file " + file.exists());
 
         if (file.exists()) {
             XmlRenderTheme theme = null;
             try {
-                theme = new AssetsRenderTheme(getActivity().getApplicationContext(), "renderthemes/", "osmarender.xml");
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                Context context = getActivity.getApplicationContext();
+                theme = new AssetsRenderTheme(context, Settings.THEME_FOLDR, Settings.THEME_FILE);
+            } catch (Exception ignore) {
             }
             MapsForgeTileSource.createFromFiles(file, theme, Settings.CURRENT_PROVIDER);
         }
@@ -93,9 +97,15 @@ public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragm
     @Override
     public void onStop() {
         super.onStop();
+        overlay.clearTileCache();
         CacheDBHelper.refreshDb();
         MapsForgeTileSource.dispose();
         AndroidGraphicFactory.clearResourceMemoryCache();
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return false;
     }
 
     @Override
@@ -104,5 +114,13 @@ public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragm
         byte[] tile = MapsForgeTileSource.loadTile(tileIndex);
 
         return tile != null ? new Tile(256, 256, tile) : NO_TILE;
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (overlay != null) {
+            overlay.remove();
+        }
+        super.onDestroyView();
     }
 }

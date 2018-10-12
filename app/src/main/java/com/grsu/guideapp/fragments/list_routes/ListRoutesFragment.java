@@ -11,14 +11,15 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.adapters.RoutesListAdapter;
 import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.fragments.list_routes.ListRoutesContract.ListRoutesViews;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import java.util.List;
 
-public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter> implements
-        ListRoutesViews {
+public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, NavigationDrawerActivity>
+        implements ListRoutesViews {
 
     private static final String TAG = ListRoutesFragment.class.getSimpleName();
 
@@ -56,7 +57,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter> implem
 
     @Override
     public void setData(final List<Route> routes) {
-        rw_fragment_list_routes.setAdapter(new RoutesListAdapter(getActivity(), routes));
+        rw_fragment_list_routes.setAdapter(new RoutesListAdapter(getActivity, routes));
     }
 
     @Override

@@ -15,6 +15,7 @@ import com.grsu.guideapp.utils.StreamUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.concurrent.Executors;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.graphics.AndroidTileBitmap;
@@ -67,13 +68,13 @@ public class MapsForgeTileSource {
             renderTheme = InternalRenderTheme.OSMARENDER;
         }
         theme = new RenderThemeFuture(AndroidGraphicFactory.INSTANCE, renderTheme, model);
-        new Thread(theme).start();
+        Executors.newFixedThreadPool(4).execute(theme);
     }
 
     @Nullable
     private static synchronized Drawable renderTile(final long pMapTileIndex) {
 
-        Tile tile = new Tile(getX(pMapTileIndex), getY(pMapTileIndex), getZoom(pMapTileIndex), 256);
+        Tile tile = new Tile(getX(pMapTileIndex), getY(pMapTileIndex), getZoom(pMapTileIndex), 600);
 
         if (mapDatabase == null) {
             return null;
@@ -103,7 +104,7 @@ public class MapsForgeTileSource {
 
         Drawable image = renderTile(pMapTileIndex);
 
-        if (image != null && image instanceof BitmapDrawable) {
+        if (image instanceof BitmapDrawable) {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             ((BitmapDrawable) image).getBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream);
             byte[] bitmapdata = stream.toByteArray();
