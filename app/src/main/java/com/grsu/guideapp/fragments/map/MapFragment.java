@@ -56,6 +56,7 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
     private List<Marker> nearPoi = new ArrayList<>();
     private List<LatLng> myMovement;//deleting
     public static final String BR_ACTION = MapFragment.class.getName();
+    private Menu menu;
 
 
     private Marker marker;//deleting
@@ -203,6 +204,14 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
 
     @Override
     public void onOk(long[] arrayList) {
+        if (arrayList.length != 0) {
+            menu.findItem(R.id.menu_fragment_map_get_all).setEnabled(true);
+        } else {
+            menu.findItem(R.id.menu_fragment_map_get_all).setEnabled(false);
+            menu.findItem(R.id.menu_fragment_map_get_all).setChecked(false);
+            removePoi();
+        }
+
         mPresenter.setType(arrayList);
         mPresenter.getPoi();
         mPresenter.getAllPoi();
@@ -271,6 +280,7 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+        this.menu = menu;
         getActivity.getMenuInflater().inflate(R.menu.menu_fragment_map, menu);
     }
 

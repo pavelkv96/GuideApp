@@ -18,23 +18,24 @@
     android:orderInCategory="100"
     android:title="Showing all poi"
     app:showAsAction="never"
+    android:enabled="false"
     />
 
   <item
     android:id="@+id/menu_fragment_map_update_tiles"
     android:icon="@drawable/ic_action_play"
     android:title="Update tiles"
-    app:showAsAction="ifRoom|always"/>
+    app:showAsAction="ifRoom"/>
 
   <item
     android:id="@+id/menu_fragment_map_clear_cache"
     android:icon="@drawable/ic_action_remove"
     android:title="Clear cache"
-    app:showAsAction="ifRoom|always"/>
+    app:showAsAction="ifRoom"/>
 
   <item
     android:id="@+id/menu_fragment_map_clear"
     android:icon="@drawable/ic_action_pause"
     android:title="Clear"
-    app:showAsAction="ifRoom|always"/>
+    app:showAsAction="ifRoom"/>
 </menu>
