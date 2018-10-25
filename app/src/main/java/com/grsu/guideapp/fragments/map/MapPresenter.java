@@ -9,8 +9,10 @@ import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.fragments.details.DetailsFragment;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
+import com.grsu.guideapp.models.DecodeLine;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
+import com.grsu.guideapp.models.Point;
 import com.grsu.guideapp.models.Tag;
 import com.grsu.guideapp.utils.MapUtils;
 import java.util.List;
@@ -44,22 +46,25 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
             public void onFinished(List<Line> encodePolylines) {
                 logic.initialData(encodePolylines);
 
-                int size = logic.getTurnsList().size();
+                List<Point> turnsList = logic.getTurnsList();
+                int size = turnsList.size();
 
                 for (int i = 0; i < size; i++) {
                     if (i == 0) {
-                        mapViews.setStartMarker(logic.getTurnsList().get(i));
+                        mapViews.setStartMarker(turnsList.get(i).getPosition());
                     } else {
                         if (i == size - 1) {
-                            mapViews.setEndMarker(logic.getTurnsList().get(i));
+                            mapViews.setEndMarker(turnsList.get(i).getPosition());
                         } else {
-                            mapViews.setPointsTurn(logic.getTurnsList().get(i));
+                            mapViews.setPointsTurn(turnsList.get(i).getPosition());
                         }
                     }
 
                 }
 
-                mapViews.setPolyline(logic.getAllLatLngs(), 0);
+                for (DecodeLine line : logic.getDecodeLines()) {
+                    mapViews.setPolyline(line.getPolyline(), line.getIdLine());
+                }
                 mView.hideProgress();
             }
         }, id);
@@ -68,15 +73,11 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     @Override
     public void getProjectionLocation(Location currentLocation) {
-        LatLng point = logic.findNearestPointInPolyline(currentLocation);
+        Point point = logic.findNearestPointInPolyline(currentLocation);
 
-        mapViews.setCurrentPoint(point);
+        mapViews.setCurrentPoint(point.getPosition());
 
-        logic.setCurrentIndex(point);
-
-        logic.detach(logic.getLatLngs(point));
-
-        getCurrentTurn(MapUtils.toLocation(logic.getCurrentLatLng()));
+        getCurrentTurn(MapUtils.toLocation(logic.getCurrentPosition().getPosition()));
     }
 
     @Override
@@ -116,8 +117,8 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     @Override
     public void getPoi() {
-        if (logic.getCurrentLatLng() != null) {
-            getCurrentTurn(MapUtils.toLocation(logic.getCurrentLatLng()));
+        if (logic.getCurrentPosition().getPosition() != null) {
+            getCurrentTurn(MapUtils.toLocation(logic.getCurrentPosition().getPosition()));
         }
     }
 
@@ -146,7 +147,8 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
             return;
         }
 
-        LatLng shortestDistance = logic.getShortestDistance(logic.getTurnsList(), currentLocation);
+        LatLng shortestDistance = logic.getShortestDistance(logic.getTurnsList(), currentLocation)
+                .getPosition();
         int size = getType().length;
 
         if (MapUtils.isMoreDistance(RADIUS, currentLocation, shortestDistance) && size != 0) {
@@ -165,6 +167,6 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
     @Override
     public void detachView() {
         super.detachView();
-        Logic.detachLogic();
+        logic.detachLogic();
     }
 }

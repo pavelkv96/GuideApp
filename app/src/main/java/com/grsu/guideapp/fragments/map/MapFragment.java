@@ -145,7 +145,7 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
             MarkerOptions markerOptions = new MarkerOptions().position(latLng);
             current = mMap.addMarker(markerOptions);
         }
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
         current.setPosition(latLng);
     }
 
