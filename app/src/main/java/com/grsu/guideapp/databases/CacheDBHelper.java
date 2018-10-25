@@ -19,16 +19,12 @@ public class CacheDBHelper implements TileConstants {
     private static final String TAG = CacheDBHelper.class.getSimpleName();
     private static SQLiteDatabase mDb;
 
-    public static void getInstance() {
-        mDb = getDb();
-    }
-
     private static SQLiteDatabase getDb() {
         if (mDb != null) {
             return mDb;
         }
         synchronized (TAG) {
-            new File(Settings.CACHE).mkdir();
+            new File(Settings.CACHE).mkdirs();
             File dbFile = new File(Settings.CACHE, Settings.CACHE_DATABASE_NAME);
 
             if (mDb == null) {
@@ -45,7 +41,7 @@ public class CacheDBHelper implements TileConstants {
         return mDb;
     }
 
-    public static void refreshDb() {
+    public static void disconnectDB() {
         synchronized (TAG) {
             if (mDb != null) {
                 mDb.close();
@@ -88,6 +84,7 @@ public class CacheDBHelper implements TileConstants {
             Logs.e(TAG, message + toString + " ", ex);
             catchException(ex);
         } finally {
+            StreamUtils.closeStream(pStream);
             StreamUtils.closeStream(bos);
         }
     }
@@ -111,7 +108,7 @@ public class CacheDBHelper implements TileConstants {
 
     public static void clearCache() {
         if (mDb != null) {
-            refreshDb();
+            disconnectDB();
         }
 
         synchronized (TAG) {
@@ -159,7 +156,7 @@ public class CacheDBHelper implements TileConstants {
     private static void catchException(final Exception pException) {
         if (pException instanceof SQLiteException) {
             if (!isFunctionalException((SQLiteException) pException)) {
-                refreshDb();
+                disconnectDB();
             }
         }
     }

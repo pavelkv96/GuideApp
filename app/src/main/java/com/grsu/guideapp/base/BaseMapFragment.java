@@ -1,36 +1,33 @@
 package com.grsu.guideapp.base;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Tile;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
-import com.grsu.guideapp.databases.CacheDBHelper;
 import com.grsu.guideapp.mf.MapsForgeTileSource;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CheckSelfPermission;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.io.File;
-import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-import org.mapsforge.map.android.rendertheme.AssetsRenderTheme;
-import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
-public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragment<P> implements
-        OnMapReadyCallback, TileProvider, OnMarkerClickListener {
+public abstract class BaseMapFragment<P extends BasePresenter, A extends FragmentActivity>
+        extends BaseFragment<P, A>
+        implements OnMapReadyCallback, TileProvider, OnMarkerClickListener {
 
+    private MapView mapView;
     protected GoogleMap mMap;
 
     protected abstract @IdRes
@@ -41,12 +38,43 @@ public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragm
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-
-        SupportMapFragment mapFragment = ((SupportMapFragment) getChildFragmentManager()
-                .findFragmentById(getFragment()));
-        mapFragment.getMapAsync(this);
+        if (CheckSelfPermission.writeExternalStorageIsGranted(getActivity)) {
+            mapView = rootView.findViewById(getFragment());
+            mapView.onCreate(savedInstanceState);
+            mapView.getMapAsync(this);
+        }
 
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        File file = getActivity.getDatabasePath(Settings.MAP_FILE);
+        Logs.e(getTags(), "Loaded map file " + file.exists());
+        if (CheckSelfPermission.writeExternalStorageIsGranted(getActivity) && file.exists()) {
+            mapView.onStart();
+            MapsForgeTileSource.createFromFiles(file, getActivity);
+        } else {
+            popBackStack();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        if (mapView != null) {
+            mapView.onStop();
+        }
+        MapsForgeTileSource.dispose();
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mapView != null) {
+            mapView.onDestroy();
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -65,45 +93,26 @@ public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragm
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (CheckSelfPermission.writeExternalStorageIsGranted(getContext())) {
-            if (getActivity() != null) {
-                getActivity().finish();
-            }
-        }
-
-        AndroidGraphicFactory.createInstance(getActivity().getApplication());
-        CacheDBHelper.getInstance();
-        File file = getActivity().getDatabasePath(Settings.MAP_FILE);
-        Toast.makeText(getContext(), "Loaded map file " + file.exists(), Toast.LENGTH_LONG).show();
-        if (file.exists()) {
-            XmlRenderTheme theme = null;
-            try {
-                Context context = getActivity().getApplicationContext();
-                theme = new AssetsRenderTheme(context, Settings.THEME_FOLDER, Settings.THEME_FILE);
-            } catch (Exception ex) {
-                Logs.e("TAG", ex.getMessage(), ex);
-            }
-            MapsForgeTileSource.createFromFiles(file, theme, Settings.CURRENT_PROVIDER);
-        } else {
-            getActivity().finish();
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        CacheDBHelper.refreshDb();
-        MapsForgeTileSource.dispose();
-        AndroidGraphicFactory.clearResourceMemoryCache();
-    }
-
-    @Override
     public Tile getTile(int x, int y, int zoom) {
         long tileIndex = MapUtils.getTileIndex(zoom, x, y);
         byte[] tile = MapsForgeTileSource.loadTile(tileIndex);
 
         return tile != null ? new Tile(256, 256, tile) : NO_TILE;
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        if (mapView != null) {
+            mapView.onLowMemory();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mapView != null) {
+            mapView.onSaveInstanceState(outState);
+        }
     }
 }

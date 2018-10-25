@@ -62,6 +62,7 @@ public class NavigationDrawerActivity extends BaseDelegationActivity<NavigationD
     public void replaceFragment(Fragment fragment) {
         manager.beginTransaction()
                 .replace(R.id.container, fragment)
+                .addToBackStack(fragment.getClass().getSimpleName())
                 .commit();
     }
 

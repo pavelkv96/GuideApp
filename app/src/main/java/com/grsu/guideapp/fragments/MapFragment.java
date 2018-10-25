@@ -16,6 +16,11 @@ public class MapFragment extends BaseMapFragment implements OnMapReadyCallback, 
         return R.id.fragment_map_map;
     }
 
+    @Override
+    protected String getTags() {
+        return this.getClass().getSimpleName();
+    }
+
     @NonNull
     @Override
     protected BasePresenter getPresenterInstance() {
