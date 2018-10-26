@@ -8,7 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import butterknife.BindView;
-import com.grsu.guideapp.fragments.MapFragment;
+import com.grsu.guideapp.fragments.map.MapFragment;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseDelegationActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;

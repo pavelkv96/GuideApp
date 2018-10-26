@@ -51,14 +51,14 @@ public class MapUtils {
         return new LatLng(location.getLatitude(), location.getLongitude());
     }
 
-    private static Location toLocation(LatLng position) {
+    public static Location toLocation(LatLng position) {
         Location location = new Location("");
         location.setLatitude(position.latitude);
         location.setLongitude(position.longitude);
         return location;
     }
 
-    private static float getDistanceBetween(Location startLocation, Location endLocation) {
+    public static float getDistanceBetween(Location startLocation, Location endLocation) {
         return startLocation.distanceTo(endLocation);
     }
 

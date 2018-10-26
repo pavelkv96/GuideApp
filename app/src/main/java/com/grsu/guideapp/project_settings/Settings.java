@@ -18,6 +18,13 @@ public class Settings {
     public static final String CACHE = DEFAULT_PATH + APP_FOLDER + CACHE_FOLDER;
 
     //-------------------------------------------
+    //	Summary: settings content database
+    //-------------------------------------------
+
+    public static final Integer DATABASE_INFORMATION_VERSION = 1;
+    public static final String DATABASE_INFORMATION_NAME = "GuideApp_v5.db";
+
+    //-------------------------------------------
     //	Summary: settings tile provider
     //-------------------------------------------
 
