@@ -2,11 +2,13 @@ package com.grsu.guideapp.fragments.map;
 
 import android.location.Location;
 import com.google.android.gms.maps.model.LatLng;
+import com.grsu.guideapp.base.listeners.OnChangePolyline;
 import com.grsu.guideapp.models.DecodeLine;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Point;
 import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.MapUtils;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,16 +19,19 @@ class Logic {
     private List<Point> latLngs;
     private Point currentPosition;
     private ArrayList<DecodeLine> decodeLines;
+    private static OnChangePolyline onChangePolyline;
 
-    static Logic getInstance() {
+    static Logic getInstance(MapPresenter mapPresenter) {
         if (logic == null) {
             logic = new Logic();
+            onChangePolyline = mapPresenter;
         }
         return logic;
     }
 
     void detachLogic() {
         logic = null;
+        onChangePolyline = null;
     }
 
     void initialData(List<Line> encodePolylines) {
@@ -40,21 +45,30 @@ class Logic {
     Point findNearestPointInPolyline(Location currentLocation) {
         Point shortestDistance = getShortestDistance(latLngs, currentLocation);
 
-        if (MapUtils.getDistanceBetween(currentLocation,
-                MapUtils.toLocation(shortestDistance.getPosition())) > 60) {
+        Location endLocation = MapUtils.toLocation(shortestDistance.getPosition());
+        if (MapUtils.getDistanceBetween(currentLocation, endLocation) > 25) {
             List<Point> shortestPointsEveryPolyline = new ArrayList<>();
             for (DecodeLine decodeLine : decodeLines) {
-                Point shortest = getShortestDistance(DecodeLine.toPointList(decodeLine),
-                        currentLocation);
+                List<Point> latLngList = DecodeLine.toPointList(decodeLine);
+                Point shortest = getShortestDistance(latLngList, currentLocation);
                 shortestPointsEveryPolyline.add(shortest);
             }
 
-            Point shortestPoint = Point.getShortestPoint(shortestPointsEveryPolyline);
-            currentPosition = shortestPoint;
-            latLngs = getNewList(shortestPoint);
-        } else if (latLngs.indexOf(shortestDistance) != latLngs.indexOf(currentPosition)) {
-            currentPosition = shortestDistance;
-            latLngs = getNewList(shortestDistance);
+            shortestDistance = Point.getShortestPoint(shortestPointsEveryPolyline);
+
+            if (shortestDistance.getDistance() <= 25) {
+                setChange(shortestDistance.getNumber());
+                currentPosition = shortestDistance;
+                latLngs = getNewList(shortestDistance);
+            } else {
+                Logs.e("LOGIC", "ERROR: NOT FOUND POSITION " + shortestDistance.getDistance());
+            }
+        } else {
+            if (latLngs.indexOf(shortestDistance) != latLngs.indexOf(currentPosition)) {
+                setChange(shortestDistance.getNumber());
+                currentPosition = shortestDistance;
+                latLngs = getNewList(shortestDistance);
+            }
         }
         return currentPosition;
     }
@@ -112,7 +126,8 @@ class Logic {
                     line.getIdLine(),
                     CryptoUtils.decodeP(line.getStartPoint()),
                     CryptoUtils.decodeP(line.getEndPoint()),
-                    CryptoUtils.decodeL(line.getPolyline()))
+                    CryptoUtils.decodeL(line.getPolyline()),
+                    line.getAudioReference())
             );
         }
 
@@ -165,5 +180,14 @@ class Logic {
         polyline.remove(polyline.size() - 1);
         polyline.remove(polyline.size() - 1);
         return decodeLineList;
+    }
+
+    private void setChange(Integer shortestDistance) {
+        if (currentPosition.getNumber() > shortestDistance) {
+            onChangePolyline.onChange(shortestDistance, currentPosition.getNumber());
+        }
+        if (currentPosition.getNumber() < shortestDistance) {
+            onChangePolyline.onChange(currentPosition.getNumber(), shortestDistance);
+        }
     }
 }

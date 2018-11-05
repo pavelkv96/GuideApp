@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.base.BasePresenterImpl;
+import com.grsu.guideapp.base.listeners.OnChangePolyline;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.fragments.details.DetailsFragment;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
@@ -15,10 +16,11 @@ import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Point;
 import com.grsu.guideapp.models.Tag;
 import com.grsu.guideapp.utils.MapUtils;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.List;
 
 public class MapPresenter extends BasePresenterImpl<MapViews> implements MapContract.MapPresenter,
-        OnFinishedListener<List<Poi>> {
+        OnFinishedListener<List<Poi>>, OnChangePolyline {
 
     private MapViews mapViews;
     private MapInteractor mapInteractor;
@@ -27,7 +29,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
     public MapPresenter(MapViews mapViews, MapInteractor mapInteractor) {
         this.mapViews = mapViews;
         this.mapInteractor = mapInteractor;
-        this.logic = Logic.getInstance();
+        this.logic = Logic.getInstance(this);
     }
 
     private static final Integer RADIUS = 100;
@@ -168,5 +170,10 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
     public void detachView() {
         super.detachView();
         logic.detachLogic();
+    }
+
+    @Override
+    public void onChange(Integer previous, Integer current) {
+        Logs.e(TAG, "Previous: " + previous + "; Current " + current);
     }
 }
