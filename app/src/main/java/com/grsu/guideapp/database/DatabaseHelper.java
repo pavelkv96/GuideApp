@@ -105,7 +105,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Line> linesList = new ArrayList<>();
         openDatabase();
         Cursor cursor = mDatabase.rawQuery(
-                "select c2.sequence, c1.start_point, c1.end_point, c1.polyline from lines c1, list_lines c2 where c1.id_line=c2.id_line and c2.id_route = ? order by sequence",
+                "select c2.sequence, c1.start_point, c1.end_point, c1.polyline, c1.audio_reference from lines c1, list_lines c2 where c1.id_line=c2.id_line and c2.id_route = ? order by sequence",
                 new String[]{String.valueOf(id_route)});
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {

@@ -32,7 +32,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
     @OnClick(R.id.btn_activity_splash_load_and_start)
     public void load(View view) {
         File file = new File(getFilesDir(), Settings.ZOOM_TABLE);
-        File file1 = getDatabasePath(Settings.MAP_FILE);
+        File file1 = new File(StorageUtils.getDatabasePath(this), Settings.MAP_FILE);
         AssetManager assetManager = getAssets();
 
         if (!file.exists()) {

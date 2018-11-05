@@ -29,7 +29,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.base.BaseMapFragment;
-import com.grsu.guideapp.database.CacheDBHelper;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
 import com.grsu.guideapp.models.Poi;
@@ -52,7 +51,6 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
         implements OnChoiceItemListener, MapViews, OnMultiChoiceListDialogFragment {
 
     private static final String TAG = MapFragment.class.getSimpleName();
-    //private RouteActivity getActivity = null;
     private List<Marker> nearPoi = new ArrayList<>();
     private List<LatLng> myMovement;//deleting
     public static final String BR_ACTION = MapFragment.class.getName();
@@ -299,16 +297,6 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
                 boolean checked = !item.isChecked();
                 item.setChecked(checked);
                 mPresenter.setAllPoi(checked);
-                break;
-            case R.id.menu_fragment_map_update_tiles:
-                overlay.clearTileCache();
-                break;
-            case R.id.menu_fragment_map_clear_cache:
-                CacheDBHelper.clearCache();
-                overlay.clearTileCache();
-                break;
-            case R.id.menu_fragment_map_clear:
-                CacheDBHelper.clearCache();
                 break;
         }
 

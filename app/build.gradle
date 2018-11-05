@@ -10,8 +10,8 @@ android {
         applicationId "com.grsu.guideapp"
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
-        versionCode 1
-        versionName "1.0"
+        versionCode Integer.parseInt(version_code)
+        versionName version_name
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

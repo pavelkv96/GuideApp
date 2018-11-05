@@ -32,6 +32,7 @@ public class Constants {
     public static final int NOTIFICATION_ID = 9;
 
     public static final String CHANNEL_ID = "exampleServiceChannel";
+    public static final String DATABASES = "databases";
 
     //Type content
     public static final String JPG = ".jpg";

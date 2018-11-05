@@ -23,7 +23,7 @@ public class Settings {
     //-------------------------------------------
 
     public static final Integer DATABASE_INFORMATION_VERSION = 1;
-    public static final String DATABASE_INFORMATION_NAME = "GuideApp_v5.db";
+    public static final String DATABASE_INFORMATION_NAME = "GuideApp_v6.db";
 
 
     //-------------------------------------------

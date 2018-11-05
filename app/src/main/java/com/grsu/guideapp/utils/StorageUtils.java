@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.io.BufferedInputStream;
@@ -26,6 +27,14 @@ public class StorageUtils {
 
     public static File getStorage() {
         return Environment.getExternalStorageDirectory();
+    }
+
+    public static File getDatabasePath(Context context) {
+        File file = new File(context.getApplicationInfo().dataDir, Constants.DATABASES);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        return file;
     }
 
     public static void removeDir(String path) {
@@ -99,8 +108,7 @@ public class StorageUtils {
 
         try {
             inputStream = context.getAssets().open(dbName);
-            String outFileName = context.getDatabasePath(dbName).getPath();
-            outputStream = new FileOutputStream(outFileName);
+            outputStream = new FileOutputStream(context.getDatabasePath(dbName));
 
             StreamUtils.copyFile(inputStream, outputStream);
 

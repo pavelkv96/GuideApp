@@ -11,13 +11,15 @@ public class DecodeLine implements Serializable, Cloneable {
     private LatLng startPoint;
     private LatLng endPoint;
     private List<LatLng> polyline;
+    private String audioReference;
     private final static long serialVersionUID = 1137436432272859181L;
 
-    public DecodeLine(Integer idLine, LatLng startPoint, LatLng endPoint, List<LatLng> polyline) {
+    public DecodeLine(Integer idLine, LatLng startPoint, LatLng endPoint, List<LatLng> polyline, String audioReference) {
         this.idLine = idLine;
         this.startPoint = startPoint;
         this.endPoint = endPoint;
         this.polyline = polyline;
+        this.audioReference = audioReference;
     }
 
     public Integer getIdLine() {
@@ -34,6 +36,10 @@ public class DecodeLine implements Serializable, Cloneable {
 
     public List<LatLng> getPolyline() {
         return polyline;
+    }
+
+    public String getAudioReference() {
+        return audioReference;
     }
 
     public static List<Point> toPointList(DecodeLine decodeLine) {
@@ -53,7 +59,7 @@ public class DecodeLine implements Serializable, Cloneable {
             line.startPoint = new LatLng(this.startPoint.latitude, this.startPoint.longitude);
             line.endPoint = new LatLng(this.endPoint.latitude, this.endPoint.longitude);
             line.polyline = new ArrayList<>(this.polyline);
-
+            line.audioReference = this.audioReference;
             return line;
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
