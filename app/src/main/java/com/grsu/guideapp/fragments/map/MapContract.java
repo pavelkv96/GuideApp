@@ -30,6 +30,10 @@ public interface MapContract extends OnFinishedListener {
         void setStartMarker(LatLng startMarker);
 
         void setEndMarker(LatLng endMarker);
+
+        void show();
+
+        void hide();
     }
 
     interface MapPresenter extends BasePresenter<MapViews> {

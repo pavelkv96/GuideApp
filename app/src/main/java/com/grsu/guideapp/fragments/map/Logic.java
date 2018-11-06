@@ -3,12 +3,12 @@ package com.grsu.guideapp.fragments.map;
 import android.location.Location;
 import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.base.listeners.OnChangePolyline;
+import com.grsu.guideapp.base.listeners.OnNotFound;
 import com.grsu.guideapp.models.DecodeLine;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Point;
 import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.MapUtils;
-import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,11 +20,13 @@ class Logic {
     private Point currentPosition;
     private ArrayList<DecodeLine> decodeLines;
     private static OnChangePolyline onChangePolyline;
+    private static OnNotFound onNotFound;
 
     static Logic getInstance(MapPresenter mapPresenter) {
         if (logic == null) {
             logic = new Logic();
             onChangePolyline = mapPresenter;
+            onNotFound = mapPresenter;
         }
         return logic;
     }
@@ -32,6 +34,10 @@ class Logic {
     void detachLogic() {
         logic = null;
         onChangePolyline = null;
+        onNotFound = null;
+        latLngs = null;
+        currentPosition = null;
+        decodeLines = null;
     }
 
     void initialData(List<Line> encodePolylines) {
@@ -60,14 +66,16 @@ class Logic {
                 setChange(shortestDistance.getNumber());
                 currentPosition = shortestDistance;
                 latLngs = getNewList(shortestDistance);
+                onNotFound.onNotFound(null);
             } else {
-                Logs.e("LOGIC", "ERROR: NOT FOUND POSITION " + shortestDistance.getDistance());
+                onNotFound.onNotFound(shortestDistance.getDistance());
             }
         } else {
             if (latLngs.indexOf(shortestDistance) != latLngs.indexOf(currentPosition)) {
                 setChange(shortestDistance.getNumber());
                 currentPosition = shortestDistance;
                 latLngs = getNewList(shortestDistance);
+                onNotFound.onNotFound(null);
             }
         }
         return currentPosition;

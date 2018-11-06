@@ -14,6 +14,7 @@
   <string name="error_do_not_have_permission" translatable="false">Don`t have permission</string>
   <string name="error_snackbar_do_not_have_permission_write_on_the_storage" translatable="false">Don`t have permission write on the storage</string>
   <string name="error_copy_data_error" translatable="false">Copy data error</string>
+  <string name="error_please_refresh_your_database" translatable="false">"Empty data, please refresh your database"</string>
 
   <!--SUCCESS MESSAGES-->
   <string name="success_copy_database_success">Copy database success</string>

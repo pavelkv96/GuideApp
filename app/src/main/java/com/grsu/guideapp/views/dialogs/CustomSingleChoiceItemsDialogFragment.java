@@ -66,4 +66,8 @@ public class CustomSingleChoiceItemsDialogFragment extends DialogFragment
         fragment.setArguments(bundle);
         return fragment;
     }
+
+    public static String getTags(){
+        return CustomSingleChoiceItemsDialogFragment.class.getSimpleName();
+    }
 }

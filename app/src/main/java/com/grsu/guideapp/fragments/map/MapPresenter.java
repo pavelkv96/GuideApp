@@ -8,6 +8,7 @@ import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.base.listeners.OnChangePolyline;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
+import com.grsu.guideapp.base.listeners.OnNotFound;
 import com.grsu.guideapp.fragments.details.DetailsFragment;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
 import com.grsu.guideapp.models.DecodeLine;
@@ -20,7 +21,7 @@ import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.List;
 
 public class MapPresenter extends BasePresenterImpl<MapViews> implements MapContract.MapPresenter,
-        OnFinishedListener<List<Poi>>, OnChangePolyline {
+        OnFinishedListener<List<Poi>>, OnChangePolyline, OnNotFound {
 
     private MapViews mapViews;
     private MapInteractor mapInteractor;
@@ -175,5 +176,14 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
     @Override
     public void onChange(Integer previous, Integer current) {
         Logs.e(TAG, "Previous: " + previous + "; Current " + current);
+    }
+
+    @Override
+    public void onNotFound(Float distance) {
+        if (distance != null) {
+            mapViews.show();
+        } else {
+            mapViews.hide();
+        }
     }
 }

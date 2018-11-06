@@ -24,7 +24,6 @@ import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StorageUtils;
 import com.grsu.guideapp.utils.StreamUtils;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -51,31 +50,19 @@ public class Tracker extends Fragment implements LocationListener {
         initializeLocationManager();
 
         File file = new File(StorageUtils.getStorage() + "/tracker.txt");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            file.delete();
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
         try {
+            if (file.exists()) {
+                file.delete();
+            }
+            file.createNewFile();
             stream = new FileOutputStream(file);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
         try {
             mLocationManager.requestLocationUpdates(GPS_PROVIDER, INTERVAL, DISTANCE, Tracker.this);
-        } catch (SecurityException ignored) {
-        } catch (IllegalArgumentException ignored) {
+        } catch (SecurityException | IllegalArgumentException ignored) {
         }
     }
 
@@ -104,9 +91,8 @@ public class Tracker extends Fragment implements LocationListener {
         LatLng latLng = MapUtils.toLatLng(location);
         data.setText(latLng.toString());
         try {
-            stream.write(
-                    String.valueOf("latLngList.add(new LatLng(" + latLng + "));\n").getBytes()
-            );
+            stream.write(String.valueOf("latLngList.add(new LatLng(" + latLng.latitude + ", "
+                    + latLng.longitude + "));\n").getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }

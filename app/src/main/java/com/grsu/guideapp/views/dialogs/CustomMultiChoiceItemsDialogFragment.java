@@ -99,4 +99,8 @@ public class CustomMultiChoiceItemsDialogFragment extends DialogFragment impleme
         fragment.setArguments(args);
         return fragment;
     }
+
+    public static String getTags(){
+        return CustomMultiChoiceItemsDialogFragment.class.getSimpleName();
+    }
 }

@@ -10,12 +10,14 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -66,6 +68,9 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
     @BindView(R.id.tv_fragment_map_distance)
     TextView distanceTextView;
 
+    @BindView(R.id.fragment_map_indicator)
+    ImageView found;
+
     @NonNull
     @Override
     protected MapPresenter getPresenterInstance() {
@@ -103,7 +108,7 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
             br = new MyBroadcastReceiver();
         } else {
             if (getActivity != null) {
-                Toasts.makeL(getActivity, "Empty data, please refresh your database");
+                Toasts.makeL(getActivity, getString(R.string.error_please_refresh_your_database));
                 getActivity.getSupportFragmentManager().popBackStack();
                 getActivity.finish();
             }
@@ -192,12 +197,23 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
     }
 
     @Override
+    public void show() {
+        found.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hide() {
+        found.setVisibility(View.GONE);
+    }
+
+    @Override
     public void openDialogViews() {
+        FragmentManager manager = getChildFragmentManager();
         CustomSingleChoiceItemsDialogFragment.newInstance(choiceItem)
-                .show(getChildFragmentManager(), "CustomSingleChoiceItemsDialogFragment");
+                .show(manager, CustomSingleChoiceItemsDialogFragment.getTags());
 
         CustomMultiChoiceItemsDialogFragment.newInstance(mPresenter.getType())
-                .show(getChildFragmentManager(), "CustomMultiChoiceItemsDialogFragment");
+                .show(manager, CustomMultiChoiceItemsDialogFragment.getTags());
     }
 
     @Override
@@ -284,14 +300,16 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        FragmentManager manager = getChildFragmentManager();
+
         switch (item.getItemId()) {
             case R.id.menu_fragment_map_settings:
                 CustomMultiChoiceItemsDialogFragment.newInstance(mPresenter.getType())
-                        .show(getChildFragmentManager(), "CustomMultiChoiceItemsDialogFragment");
+                        .show(manager, CustomMultiChoiceItemsDialogFragment.getTags());
                 break;
             case R.id.menu_fragment_map_distance:
                 CustomSingleChoiceItemsDialogFragment.newInstance(choiceItem)
-                        .show(getChildFragmentManager(), "CustomSingleChoiceItemsDialogFragment");
+                        .show(manager, CustomSingleChoiceItemsDialogFragment.getTags());
                 break;
             case R.id.menu_fragment_map_get_all:
                 boolean checked = !item.isChecked();
