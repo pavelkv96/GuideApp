@@ -52,7 +52,7 @@ public abstract class BaseActivity<P extends BasePresenter>
                 mProgressDialog.setTitle(title);
             }
             mProgressDialog.setMessage(message);
-            mProgressDialog.setCancelable(true);
+            mProgressDialog.setCancelable(false);
             mProgressDialog.show();
         }
 

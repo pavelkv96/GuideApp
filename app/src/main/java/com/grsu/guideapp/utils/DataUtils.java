@@ -234,6 +234,11 @@ public class DataUtils {
         latLngList.add(new LatLng(53.689105000000005, 23.839556666666667));
         latLngList.add(new LatLng(53.68914499999999, 23.839386666666663));
         latLngList.add(new LatLng(53.68916666666667, 23.83921666666667));
+        latLngList.add(new LatLng(53.689146666666666, 23.839063333333335));
+        latLngList.add(new LatLng(53.68915833333334, 23.83889166666667));
+        latLngList.add(new LatLng(53.68912666666667, 23.838716666666663));
+        latLngList.add(new LatLng(53.689093333333325, 23.838563333333333));
+        latLngList.add(new LatLng(53.68909999999999, 23.838393333333336));
 
         latLngList.add(new LatLng(53.68914499999999, 23.839386666666663));
         latLngList.add(new LatLng(53.689105000000005, 23.839556666666667));
@@ -242,12 +247,12 @@ public class DataUtils {
         latLngList.add(new LatLng(53.688813333333336, 23.839703333333333));
         latLngList.add(new LatLng(53.68871166666666, 23.839735000000005));
 
-        latLngList.add(new LatLng(53.689146666666666, 23.839063333333335));
+        /*latLngList.add(new LatLng(53.689146666666666, 23.839063333333335));
         latLngList.add(new LatLng(53.68915833333334, 23.83889166666667));
         latLngList.add(new LatLng(53.68912666666667, 23.838716666666663));
         latLngList.add(new LatLng(53.689093333333325, 23.838563333333333));
         latLngList.add(new LatLng(53.68909999999999, 23.838393333333336));
-        latLngList.add(new LatLng(53.689135, 23.838251666666665));
+        latLngList.add(new LatLng(53.689135, 23.838251666666665));*/
 
         latLngList.add(new LatLng(53.687886666666664, 23.83560333333333));
         latLngList.add(new LatLng(53.68781166666666, 23.835496666666668));

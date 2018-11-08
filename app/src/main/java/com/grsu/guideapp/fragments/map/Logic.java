@@ -50,6 +50,7 @@ class Logic {
 
     Point findNearestPointInPolyline(Location currentLocation) {
         Point shortestDistance = getShortestDistance(latLngs, currentLocation);
+        onNotFound.onNotFound(null);
 
         Location endLocation = MapUtils.toLocation(shortestDistance.getPosition());
         if (MapUtils.getDistanceBetween(currentLocation, endLocation) > 25) {
@@ -66,7 +67,6 @@ class Logic {
                 setChange(shortestDistance.getNumber());
                 currentPosition = shortestDistance;
                 latLngs = getNewList(shortestDistance);
-                onNotFound.onNotFound(null);
             } else {
                 onNotFound.onNotFound(shortestDistance.getDistance());
             }
@@ -75,7 +75,6 @@ class Logic {
                 setChange(shortestDistance.getNumber());
                 currentPosition = shortestDistance;
                 latLngs = getNewList(shortestDistance);
-                onNotFound.onNotFound(null);
             }
         }
         return currentPosition;
@@ -192,7 +191,7 @@ class Logic {
 
     private void setChange(Integer shortestDistance) {
         if (currentPosition.getNumber() > shortestDistance) {
-            onChangePolyline.onChange(shortestDistance, currentPosition.getNumber());
+            onChangePolyline.onChange(currentPosition.getNumber(), shortestDistance);
         }
         if (currentPosition.getNumber() < shortestDistance) {
             onChangePolyline.onChange(currentPosition.getNumber(), shortestDistance);
