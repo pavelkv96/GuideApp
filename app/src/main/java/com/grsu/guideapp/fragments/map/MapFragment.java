@@ -153,10 +153,10 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
     }
 
     @Override
-    public void setPointsTurn(LatLng latLng) {
+    public void setPointsTurn(LatLng latLng, int icon) {
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(latLng)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.a_marker));
+                .icon(BitmapDescriptorFactory.fromResource(icon));
         mMap.addMarker(markerOptions);
     }
 
@@ -178,22 +178,6 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
             marker.remove();
         }
         nearPoi.clear();
-    }
-
-    @Override
-    public void setStartMarker(LatLng startMarker) {
-        MarkerOptions markerOptions = new MarkerOptions()
-                .position(startMarker)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_play));
-        mMap.addMarker(markerOptions);
-    }
-
-    @Override
-    public void setEndMarker(LatLng endMarker) {
-        MarkerOptions markerOptions = new MarkerOptions()
-                .position(endMarker)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_pause));
-        mMap.addMarker(markerOptions);
     }
 
     @Override
@@ -286,8 +270,8 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
             mPresenter.getProjectionLocation(MapUtils.toLocation(position));
             i++;
         } else {
-            mPresenter.getProjectionLocation(
-                    MapUtils.toLocation(myMovement.get(myMovement.size() - 1)));
+            Location currentLocation = MapUtils.toLocation(myMovement.get(myMovement.size() - 1));
+            mPresenter.getProjectionLocation(currentLocation);
         }
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Location;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.base.listeners.OnChangePolyline;
@@ -50,20 +51,13 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
                 logic.initialData(encodePolylines);
 
                 List<Point> turnsList = logic.getTurnsList();
-                int size = turnsList.size();
+                int s = turnsList.size() - 1;
 
-                for (int i = 0; i < size; i++) {
-                    if (i == 0) {
-                        mapViews.setStartMarker(turnsList.get(i).getPosition());
-                    } else {
-                        if (i == size - 1) {
-                            mapViews.setEndMarker(turnsList.get(i).getPosition());
-                        } else {
-                            mapViews.setPointsTurn(turnsList.get(i).getPosition());
-                        }
-                    }
-
+                mapViews.setPointsTurn(turnsList.get(0).getPosition(), R.drawable.ic_action_play);
+                for (int i = 1; i < s; i++) {
+                    mapViews.setPointsTurn(turnsList.get(i).getPosition(), R.drawable.a_marker);
                 }
+                mapViews.setPointsTurn(turnsList.get(s).getPosition(), R.drawable.ic_action_pause);
 
                 for (DecodeLine line : logic.getDecodeLines()) {
                     mapViews.setPolyline(line.getPolyline(), line.getIdLine());

@@ -2,6 +2,7 @@ package com.grsu.guideapp.fragments.map;
 
 import android.content.Context;
 import android.location.Location;
+import android.support.annotation.DrawableRes;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.grsu.guideapp.base.BasePresenter;
@@ -21,15 +22,11 @@ public interface MapContract extends OnFinishedListener {
 
         void setCurrentPoint(LatLng geoPointList);
 
-        void setPointsTurn(LatLng geoPoint);
+        void setPointsTurn(LatLng geoPoint, @DrawableRes int icon);
 
         void setPoi(Poi poi);
 
         void removePoi();
-
-        void setStartMarker(LatLng startMarker);
-
-        void setEndMarker(LatLng endMarker);
 
         void show();
 
