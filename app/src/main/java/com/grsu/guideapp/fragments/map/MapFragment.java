@@ -5,16 +5,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -23,18 +18,13 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.activities.route.RouteActivity;
-import com.grsu.guideapp.base.BaseMapFragment;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
-import com.grsu.guideapp.models.Poi;
-import com.grsu.guideapp.models.Tag;
+import com.grsu.guideapp.fragments.map_preview.MapPreviewFragment;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.CheckSelfPermission;
 import com.grsu.guideapp.utils.DataUtils;
@@ -42,25 +32,15 @@ import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
-import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment;
-import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment.OnMultiChoiceListDialogFragment;
-import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment;
-import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment.OnChoiceItemListener;
-import java.util.ArrayList;
 import java.util.List;
 
-public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
-        implements OnChoiceItemListener, MapViews, OnMultiChoiceListDialogFragment {
+public class MapFragment extends MapPreviewFragment<MapPresenter> implements MapViews {
 
     private static final String TAG = MapFragment.class.getSimpleName();
-    private List<Marker> nearPoi = new ArrayList<>();
     private List<LatLng> myMovement;//deleting
     public static final String BR_ACTION = MapFragment.class.getName();
-    private Menu menu;
-
 
     private Marker marker;//deleting
-    private Integer choiceItem;
     private Marker current;
     int i = 0;
     private BroadcastReceiver br;
@@ -78,47 +58,29 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
     }
 
     @Override
-    protected int getLayout() {
-        return R.layout.fragment_map;
-    }
-
-    @Override
-    protected int getFragment() {
-        return R.id.fragment_map_map;
+    protected int getIdRoute() {
+        return 4;
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-
-        setHasOptionsMenu(true);
         Integer route = -1;
 
         if (getArguments() != null) {
             route = getArguments().getInt(Constants.KEY_ID_ROUTE);
         }
 
+        super.onCreateView(inflater, container, savedInstanceState);
         if (route != -1) {
-            mPresenter.getId(route);
-            choiceItem = 1000;
-            mPresenter.setRadius(choiceItem);
-            distanceTextView.setText(String.valueOf(choiceItem));
-            //openDialogViews();
             br = new MyBroadcastReceiver();
-        } else {
-            if (getActivity != null) {
-                Toasts.makeL(getActivity, getString(R.string.error_please_refresh_your_database));
-                getActivity.getSupportFragmentManager().popBackStack();
-                getActivity.finish();
-            }
         }
         return rootView;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        myMovement = DataUtils.getList();
+        myMovement = DataUtils.getList2();
         super.onMapReady(googleMap);
     }
 
@@ -134,15 +96,6 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
     //-------------------------------------------
 
     @Override
-    public void setPolyline(List<LatLng> geoPointList, int id) {
-        PolylineOptions polylineOptions = new PolylineOptions()
-                .color(Color.BLACK)
-                .zIndex(1)
-                .addAll(geoPointList);
-        mMap.addPolyline(polylineOptions).setTag(id);
-    }
-
-    @Override
     public void setCurrentPoint(LatLng latLng) {
         if (current == null) {
             MarkerOptions markerOptions = new MarkerOptions().position(latLng);
@@ -150,34 +103,6 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
         current.setPosition(latLng);
-    }
-
-    @Override
-    public void setPointsTurn(LatLng latLng, int icon) {
-        MarkerOptions markerOptions = new MarkerOptions()
-                .position(latLng)
-                .icon(BitmapDescriptorFactory.fromResource(icon));
-        mMap.addMarker(markerOptions);
-    }
-
-    @Override
-    public void setPoi(Poi poi) {
-        int icon = MapUtils.getIconByType(poi.getType());
-        MarkerOptions markerOptions = new MarkerOptions()
-                .position(new LatLng(poi.getLatitude(), poi.getLongitude()))
-                .icon(BitmapDescriptorFactory.fromResource(icon))
-                .draggable(true);
-        Marker e = mMap.addMarker(markerOptions);
-        e.setTag(new Tag(true, poi.getId()));
-        nearPoi.add(e);
-    }
-
-    @Override
-    public void removePoi() {
-        for (Marker marker : nearPoi) {
-            marker.remove();
-        }
-        nearPoi.clear();
     }
 
     @Override
@@ -192,36 +117,12 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
 
     @Override
     public void openDialogViews() {
-        FragmentManager manager = getChildFragmentManager();
+        /*FragmentManager manager = getChildFragmentManager();
         CustomSingleChoiceItemsDialogFragment.newInstance(choiceItem)
                 .show(manager, CustomSingleChoiceItemsDialogFragment.getTags());
 
-        CustomMultiChoiceItemsDialogFragment.newInstance(mPresenter.getType())
-                .show(manager, CustomMultiChoiceItemsDialogFragment.getTags());
-    }
-
-    @Override
-    public void onOk(long[] arrayList) {
-        if (arrayList.length != 0) {
-            menu.findItem(R.id.menu_fragment_map_get_all).setEnabled(true);
-        } else {
-            menu.findItem(R.id.menu_fragment_map_get_all).setEnabled(false);
-            menu.findItem(R.id.menu_fragment_map_get_all).setChecked(false);
-            removePoi();
-        }
-
-        mPresenter.setType(arrayList);
-        mPresenter.getPoi();
-        mPresenter.getAllPoi();
-    }
-
-    @Override
-    public void choiceItem(String itemValue) {
-        choiceItem = Integer.valueOf(itemValue);
-        distanceTextView.setText(itemValue);
-        mPresenter.setRadius(choiceItem);
-        mPresenter.getPoi();
-        mPresenter.getAllPoi();
+        CustomMultiChoiceItemsDialogFragment.newInstance(read("Key", long[].class))
+                .show(manager, CustomMultiChoiceItemsDialogFragment.getTags());*/
     }
 
     private void unregisterListeners() {
@@ -276,39 +177,16 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        this.menu = menu;
-        getActivity.getMenuInflater().inflate(R.menu.menu_fragment_map, menu);
+    public void onOk(long[] arrayList) {
+        super.onOk(arrayList);
+
+        mPresenter.getPoi();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        FragmentManager manager = getChildFragmentManager();
-
-        switch (item.getItemId()) {
-            case R.id.menu_fragment_map_settings:
-                CustomMultiChoiceItemsDialogFragment.newInstance(mPresenter.getType())
-                        .show(manager, CustomMultiChoiceItemsDialogFragment.getTags());
-                break;
-            case R.id.menu_fragment_map_distance:
-                CustomSingleChoiceItemsDialogFragment.newInstance(choiceItem)
-                        .show(manager, CustomSingleChoiceItemsDialogFragment.getTags());
-                break;
-            case R.id.menu_fragment_map_get_all:
-                boolean checked = !item.isChecked();
-                item.setChecked(checked);
-                mPresenter.setAllPoi(checked);
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        mPresenter.onMarkerClick(getActivity, marker);
-        return super.onMarkerClick(marker);
+    public void choiceItem(String itemValue) {
+        super.choiceItem(itemValue);
+        mPresenter.getPoi();
     }
 
     private class MyBroadcastReceiver extends BroadcastReceiver {
@@ -320,6 +198,10 @@ public class MapFragment extends BaseMapFragment<MapPresenter, RouteActivity>
 
             mPresenter.getProjectionLocation(location);
         }
+    }
+
+    public void showT(String s) {
+        Toasts.makeS(getActivity, s);
     }
 
     public static MapFragment newInstance(Integer id_route) {

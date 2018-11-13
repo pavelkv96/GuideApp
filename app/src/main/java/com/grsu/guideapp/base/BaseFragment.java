@@ -73,11 +73,15 @@ public abstract class BaseFragment<P extends BasePresenter, A extends FragmentAc
         if (data instanceof long[]) {
             preferences.edit().putString(key, Arrays.toString((long[]) data)).apply();
         }
+
+        if (data instanceof Integer) {
+            preferences.edit().putInt(key, (Integer) data).apply();
+        }
     }
 
     protected <T> T read(String key, Class<T> clazz) {
 
-        if (clazz.isAssignableFrom(Long[].class)) {
+        if (clazz.isAssignableFrom(long[].class)) {
             String s = preferences.getString(key, null);
             if (s != null) {
                 String[] split = s.substring(1, s.length() - 1).split(", ");
@@ -87,6 +91,10 @@ public abstract class BaseFragment<P extends BasePresenter, A extends FragmentAc
                 }
                 return (T) array;
             }
+        }
+
+        if (clazz.isAssignableFrom(Integer.class)) {
+            return (T) (Integer) preferences.getInt(key, 1000);
         }
 
         return null;

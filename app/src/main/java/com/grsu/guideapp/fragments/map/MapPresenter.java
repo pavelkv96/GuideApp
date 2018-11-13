@@ -1,34 +1,27 @@
 package com.grsu.guideapp.fragments.map;
 
-import android.content.Context;
 import android.location.Location;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.grsu.guideapp.R;
-import com.grsu.guideapp.activities.route.RouteActivity;
-import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.base.listeners.OnChangePolyline;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.base.listeners.OnNotFound;
-import com.grsu.guideapp.fragments.details.DetailsFragment;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
-import com.grsu.guideapp.models.DecodeLine;
+import com.grsu.guideapp.fragments.map_preview.MapPreviewPresenter;
 import com.grsu.guideapp.models.Line;
-import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Point;
-import com.grsu.guideapp.models.Tag;
 import com.grsu.guideapp.utils.MapUtils;
-import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.List;
 
-public class MapPresenter extends BasePresenterImpl<MapViews> implements MapContract.MapPresenter,
-        OnFinishedListener<List<Poi>>, OnChangePolyline, OnNotFound {
+public class MapPresenter extends MapPreviewPresenter implements MapContract.MapPresenter,
+        OnChangePolyline, OnNotFound {
 
     private MapViews mapViews;
     private MapInteractor mapInteractor;
     private Logic logic;
+    private boolean flag;
 
     public MapPresenter(MapViews mapViews, MapInteractor mapInteractor) {
+        super(mapViews, mapInteractor);
         this.mapViews = mapViews;
         this.mapInteractor = mapInteractor;
         this.logic = Logic.getInstance(this);
@@ -37,35 +30,15 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
     private static final Integer RADIUS = 100;
     private static final String TAG = MapPresenter.class.getSimpleName();
 
-    private long[] types;
-    private Integer checkedItem;
-    private boolean flag;
-    private Integer id;
-
     @Override
     public void getId(Integer id) {
-        mView.showProgress(null, "Loading...");
+        super.getId(id);
         mapInteractor.getRouteById(new OnFinishedListener<List<Line>>() {
             @Override
-            public void onFinished(List<Line> encodePolylines) {
-                logic.initialData(encodePolylines);
-
-                List<Point> turnsList = logic.getTurnsList();
-                int s = turnsList.size() - 1;
-
-                mapViews.setPointsTurn(turnsList.get(0).getPosition(), R.drawable.ic_action_play);
-                for (int i = 1; i < s; i++) {
-                    mapViews.setPointsTurn(turnsList.get(i).getPosition(), R.drawable.a_marker);
-                }
-                mapViews.setPointsTurn(turnsList.get(s).getPosition(), R.drawable.ic_action_pause);
-
-                for (DecodeLine line : logic.getDecodeLines()) {
-                    mapViews.setPolyline(line.getPolyline(), line.getIdLine());
-                }
-                mView.hideProgress();
+            public void onFinished(List<Line> lines) {
+                logic.initialData(lines);
             }
         }, id);
-        this.id = id;
     }
 
     @Override
@@ -74,40 +47,14 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
         mapViews.setCurrentPoint(point.getPosition());
 
-        getCurrentTurn(MapUtils.toLocation(logic.getCurrentPosition().getPosition()));
+        getCurrentTurn(MapUtils.toLocation(logic.getCurrentPosition().getPosition())/*, true*/);
     }
 
     @Override
-    public void setRadius(Integer radius) {
-        checkedItem = radius;
-    }
-
-    @Override
-    public void setType(long[] typesObjects) {
-        types = typesObjects;
-    }
-
-    @Override
-    public long[] getType() {
-        return types;
-    }
-
-    @Override
-    public void setAllPoi(boolean getAll) {
+    public void getAllPoi(boolean getAll) {
+        super.getAllPoi(getAll);
         flag = getAll;
-        getAllPoi();
-    }
-
-    @Override
-    public void getAllPoi() {
-        if (getType() == null) {
-            return;
-        }
-
-        int size = getType().length;
-        if (flag && size != 0) {
-            mapInteractor.getListPoi(this, id, getType());
-        } else {
+        if (!flag) {
             getPoi();
         }
     }
@@ -119,34 +66,15 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
         }
     }
 
-    @Override
-    public void onMarkerClick(Context context, Marker marker) {
-        Tag tag = (Tag) marker.getTag();
-        if (tag == null) {
-            return;
-        }
-
-        if (tag.isPoi()) {
-            ((RouteActivity) context).onReplace(DetailsFragment.newInstance(tag.getId()));
-        }
-    }
-
-    @Override
-    public void onFinished(List<Poi> poiList) {
-        mapViews.removePoi();
-        for (Poi poi : poiList) {
-            mapViews.setPoi(poi);
-        }
-    }
-
     private void getCurrentTurn(Location currentLocation) {
-        if (flag || getType() == null) {
+        if (flag || types == null) {
             return;
         }
 
         LatLng shortestDistance = logic.getShortestDistance(logic.getTurnsList(), currentLocation)
                 .getPosition();
-        int size = getType().length;
+        int size = types.length;
+
 
         if (MapUtils.isMoreDistance(RADIUS, currentLocation, shortestDistance) && size != 0) {
 
@@ -155,7 +83,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
                     shortestDistance.latitude,
                     shortestDistance.longitude,
                     checkedItem,
-                    getType());
+                    types);
         } else {
             mapViews.removePoi();
         }
@@ -169,7 +97,7 @@ public class MapPresenter extends BasePresenterImpl<MapViews> implements MapCont
 
     @Override
     public void onChange(Integer previous, Integer current) {
-        Logs.e(TAG, "Previous: " + previous + "; Current " + current);
+        mapViews.showT("Previous polyline: " + previous + ";\nCurrent: " + current);
     }
 
     @Override

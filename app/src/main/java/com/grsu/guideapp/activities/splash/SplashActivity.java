@@ -1,7 +1,10 @@
 package com.grsu.guideapp.activities.splash;
 
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.view.View;
 import butterknife.OnClick;
@@ -43,6 +46,13 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
             String toFilePath = file1.getAbsolutePath();
             StorageUtils.copyAssets(Settings.MAP_FILE, toFilePath, assetManager);
         }
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Editor editor = preferences.edit();
+        if (!preferences.contains("Key1")) {
+            editor.putInt("Key1", 100);
+        }
+        editor.apply();
 
         startActivity(NavigationDrawerActivity.newIntent(this));
     }

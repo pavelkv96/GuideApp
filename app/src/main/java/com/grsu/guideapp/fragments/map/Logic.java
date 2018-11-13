@@ -174,7 +174,7 @@ class Logic {
         return currentPosition;
     }
 
-    List<DecodeLine> getDecodeLines() {
+    /*List<DecodeLine> getDecodeLines() {
         ArrayList<DecodeLine> decodeLineList = new ArrayList<>();
 
         for (DecodeLine line : decodeLines) {
@@ -187,7 +187,7 @@ class Logic {
         polyline.remove(polyline.size() - 1);
         polyline.remove(polyline.size() - 1);
         return decodeLineList;
-    }
+    }*/
 
     private void setChange(Integer shortestDistance) {
         if (currentPosition.getNumber() > shortestDistance) {
