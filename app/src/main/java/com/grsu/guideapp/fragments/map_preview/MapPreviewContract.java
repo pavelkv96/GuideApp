@@ -1,7 +1,6 @@
 package com.grsu.guideapp.fragments.map_preview;
 
 import android.content.Context;
-import android.location.Location;
 import android.support.annotation.DrawableRes;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -42,6 +41,6 @@ public interface MapPreviewContract extends OnFinishedListener {
 
         void getRouteById(OnFinishedListener<List<Line>> listener, Integer id);
 
-        void getListPoi(OnFinishedListener<List<Poi>> listener, Integer id, long[] typesObjects);
+        void getListPoi(OnFinishedListener<List<Poi>> listener, int id, int radius, long[] typesObjects);
     }
 }

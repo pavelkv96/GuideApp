@@ -27,12 +27,12 @@ public class MapPreviewInteractor implements MapPreviewContract.MapPreviewIntera
     }
 
     @Override
-    public void getListPoi(final OnFinishedListener<List<Poi>> listener, final Integer id,
+    public void getListPoi(final OnFinishedListener<List<Poi>> listener, final int id, final int radius,
             final long[] typesObjects) {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                listener.onFinished(helper.getListPoi(id, typesObjects));
+                listener.onFinished(helper.getListPoi(id, radius, typesObjects));
             }
         });
     }

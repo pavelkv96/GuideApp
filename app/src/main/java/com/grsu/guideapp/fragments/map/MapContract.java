@@ -33,7 +33,7 @@ public interface MapContract extends OnFinishedListener {
 
     interface MapInteractor extends MapPreviewInteractor {
 
-        void getListPoi(OnFinishedListener<List<Poi>> listener, double latitude, double longitude,
-                int radius, long[] typesObjects);
+        void getListPoi(OnFinishedListener<List<Poi>> listener, String position, int radius,
+                long[] typesObjects);
     }
 }

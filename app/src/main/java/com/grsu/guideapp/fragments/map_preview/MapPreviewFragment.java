@@ -39,6 +39,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends 
     private static final String TAG = MapPreviewFragment.class.getSimpleName();
     private List<Marker> nearPoi = new ArrayList<>();
 
+    protected int route = -1;
     Menu menu;
 
     @BindView(R.id.tv_fragment_map_distance)
@@ -61,15 +62,12 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends 
         return R.id.fragment_map_map;
     }
 
-    protected abstract int getIdRoute();
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         setHasOptionsMenu(true);
-        Integer route = getIdRoute();
 
         if (route != -1) {
             mPresenter.getId(route);

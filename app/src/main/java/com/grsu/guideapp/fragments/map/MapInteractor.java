@@ -15,12 +15,12 @@ public class MapInteractor extends MapPreviewInteractor implements MapContract.M
     }
 
     @Override
-    public void getListPoi(final OnFinishedListener<List<Poi>> listener, final double latitude,
-            final double longitude, final int radius, final long[] typesObjects) {
+    public void getListPoi(final OnFinishedListener<List<Poi>> listener, final String position,
+            final int radius, final long[] typesObjects) {
         new Handler().post/*Delayed*/(new Runnable() {
             @Override
             public void run() {
-                listener.onFinished(helper.getListPoi(latitude, longitude, radius, typesObjects));
+                listener.onFinished(helper.getListPoi(position, radius, typesObjects));
             }
         }/*, 3000*/);
     }

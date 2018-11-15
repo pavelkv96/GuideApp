@@ -58,17 +58,11 @@ public class MapFragment extends MapPreviewFragment<MapPresenter> implements Map
     }
 
     @Override
-    protected int getIdRoute() {
-        return 4;
-    }
-
-    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        Integer route = -1;
 
         if (getArguments() != null) {
-            route = getArguments().getInt(Constants.KEY_ID_ROUTE);
+            route = getArguments().getInt(Constants.KEY_ID_ROUTE, -1);
         }
 
         super.onCreateView(inflater, container, savedInstanceState);

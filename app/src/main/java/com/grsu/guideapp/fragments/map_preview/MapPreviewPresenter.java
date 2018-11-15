@@ -29,8 +29,8 @@ public class MapPreviewPresenter extends BasePresenterImpl<MapPreviewViews> impl
 
     private static final String TAG = MapPreviewPresenter.class.getSimpleName();
 
-    protected Integer id;
-    protected Integer checkedItem;
+    protected int id;
+    protected int radius;
     protected long[] types;
 
     @Override
@@ -60,7 +60,7 @@ public class MapPreviewPresenter extends BasePresenterImpl<MapPreviewViews> impl
 
     @Override
     public void setRadius(Integer radius) {
-        checkedItem = radius;
+        this.radius = radius;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class MapPreviewPresenter extends BasePresenterImpl<MapPreviewViews> impl
 
         mapViews.removePoi();
         if (getAll && types.length != 0) {
-            mapInteractor.getListPoi(this, id, types);
+            mapInteractor.getListPoi(this, id, radius, types);
         }
     }
 
@@ -91,6 +91,7 @@ public class MapPreviewPresenter extends BasePresenterImpl<MapPreviewViews> impl
 
     @Override
     public void onFinished(List<Poi> poiList) {
+        mapViews.removePoi();
         for (Poi poi : poiList) {
             mapViews.setPoi(poi);
         }
