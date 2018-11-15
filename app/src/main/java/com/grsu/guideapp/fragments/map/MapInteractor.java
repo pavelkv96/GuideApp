@@ -4,46 +4,23 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.database.DatabaseHelper;
-import com.grsu.guideapp.models.Line;
+import com.grsu.guideapp.fragments.map_preview.MapPreviewInteractor;
 import com.grsu.guideapp.models.Poi;
 import java.util.List;
 
-public class MapInteractor implements MapContract.MapInteractor {
-
-    private DatabaseHelper helper;
+public class MapInteractor extends MapPreviewInteractor implements MapContract.MapInteractor {
 
     public MapInteractor(@NonNull DatabaseHelper pDbHelper) {
-        helper = pDbHelper;
+        super(pDbHelper);
     }
 
     @Override
-    public void getRouteById(final OnFinishedListener<List<Line>> listener, final Integer routeId) {
+    public void getListPoi(final OnFinishedListener<List<Poi>> listener, final String position,
+            final int radius, final long[] typesObjects) {
         new Handler().post/*Delayed*/(new Runnable() {
             @Override
             public void run() {
-                listener.onFinished(helper.getRouteById(routeId));
-            }
-        }/*, 3000*/);
-    }
-
-    @Override
-    public void getListPoi(final OnFinishedListener<List<Poi>> listener, final double latitude,
-            final double longitude, final int radius, final long[] typesObjects) {
-        new Handler().post/*Delayed*/(new Runnable() {
-            @Override
-            public void run() {
-                listener.onFinished(helper.getListPoi(latitude, longitude, radius, typesObjects));
-            }
-        }/*, 3000*/);
-    }
-
-    @Override
-    public void getListPoi(final OnFinishedListener<List<Poi>> listener, final Integer id,
-            final long[] typesObjects) {
-        new Handler().post/*Delayed*/(new Runnable() {
-            @Override
-            public void run() {
-                listener.onFinished(helper.getListPoi(id, typesObjects));
+                listener.onFinished(helper.getListPoi(position, radius, typesObjects));
             }
         }/*, 3000*/);
     }

@@ -1,7 +1,10 @@
 package com.grsu.guideapp.base;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,11 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import java.util.Arrays;
 
 public abstract class BaseFragment<P extends BasePresenter, A extends FragmentActivity>
         extends Fragment implements BaseView {
 
     private Unbinder mUnBinder;
+    private SharedPreferences preferences;
 
     protected A getActivity;
 
@@ -31,6 +36,12 @@ public abstract class BaseFragment<P extends BasePresenter, A extends FragmentAc
     protected View rootView;
 
     protected P mPresenter;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+    }
 
     @Nullable
     @Override
@@ -50,6 +61,47 @@ public abstract class BaseFragment<P extends BasePresenter, A extends FragmentAc
         mPresenter.detachView();
         mUnBinder.unbind();
         super.onDestroyView();
+    }
+
+    @Override
+    public void onDetach() {
+        preferences = null;
+        super.onDetach();
+    }
+
+    protected <T> void save(String key, T data) {
+        if (data instanceof long[]) {
+            preferences.edit().putString(key, Arrays.toString((long[]) data)).apply();
+        }
+
+        if (data instanceof Integer) {
+            preferences.edit().putInt(key, (Integer) data).apply();
+        }
+    }
+
+    protected <T> T read(String key, Class<T> clazz) {
+
+        if (clazz.isAssignableFrom(long[].class)) {
+            String s = preferences.getString(key, null);
+            if (s != null) {
+                String[] split = s.substring(1, s.length() - 1).split(", ");
+                long[] array = new long[split.length];
+                for (int i = 0; i < split.length; i++) {
+                    array[i] = Long.parseLong(split[i]);
+                }
+                return (T) array;
+            }
+        }
+
+        if (clazz.isAssignableFrom(Integer.class)) {
+            return (T) (Integer) preferences.getInt(key, 1000);
+        }
+
+        return null;
+    }
+
+    protected void remove(String key) {
+        preferences.edit().remove(key).apply();
     }
 
     //BaseView
