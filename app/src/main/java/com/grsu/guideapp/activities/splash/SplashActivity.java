@@ -12,6 +12,7 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.activities.splash.SplashContract.SplashView;
+import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.StorageUtils;
 import java.io.File;
@@ -49,8 +50,8 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         Editor editor = preferences.edit();
-        if (!preferences.contains("Key1")) {
-            editor.putInt("Key1", 100);
+        if (!preferences.contains(Constants.KEY_SINGLE_CHOICE_ITEM)) {
+            editor.putInt(Constants.KEY_SINGLE_CHOICE_ITEM, 100);
         }
         editor.apply();
 

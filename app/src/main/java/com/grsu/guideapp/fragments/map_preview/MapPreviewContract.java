@@ -22,6 +22,10 @@ public interface MapPreviewContract extends OnFinishedListener {
         void setPoi(Poi poi);
 
         void removePoi();
+
+        void moveToStart(LatLng startPosition);
+
+        void showTurn(boolean visibility);
     }
 
     interface MapPreviewPresenter extends BasePresenter<MapPreviewViews> {
@@ -35,6 +39,8 @@ public interface MapPreviewContract extends OnFinishedListener {
         void getAllPoi(boolean getAll);
 
         void onMarkerClick(Context context, Marker marker);
+
+        void hideTurn(boolean visibility);
     }
 
     interface MapPreviewInteractor {

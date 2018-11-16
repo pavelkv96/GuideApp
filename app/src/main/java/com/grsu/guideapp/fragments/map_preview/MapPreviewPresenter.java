@@ -44,7 +44,9 @@ public class MapPreviewPresenter extends BasePresenterImpl<MapPreviewViews> impl
                 List<Point> turnsList = getTurnsList(encodePolylines);
                 int s = turnsList.size() - 1;
 
-                mapViews.setPointsTurn(turnsList.get(0).getPosition(), R.drawable.ic_action_play);
+                LatLng startPosition = turnsList.get(0).getPosition();
+                mapViews.setPointsTurn(startPosition, R.drawable.ic_action_play);
+                mapViews.moveToStart(startPosition);
                 for (int i = 1; i < s; i++) {
                     mapViews.setPointsTurn(turnsList.get(i).getPosition(), R.drawable.a_marker);
                 }
@@ -87,6 +89,11 @@ public class MapPreviewPresenter extends BasePresenterImpl<MapPreviewViews> impl
             String idPoint = CryptoUtils.encodeP(marker.getPosition());
             ((RouteActivity) context).onReplace(DetailsFragment.newInstance(idPoint));
         }
+    }
+
+    @Override
+    public void hideTurn(boolean visibility) {
+        mapViews.showTurn(visibility);
     }
 
     @Override

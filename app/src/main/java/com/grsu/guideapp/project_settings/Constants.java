@@ -4,9 +4,6 @@ import com.grsu.guideapp.BuildConfig;
 
 public class Constants {
 
-    public static final Double ONE_METER_LAT = 0.000009;//1m ~ 0.000009
-    public static final Double ONE_METER_LNG = 0.000015;//1m ~ 0.000015
-
     public static final String EMPTY_STRING = "";
     public static final String PACKAGE = "package";
     public static final String PACKAGE_NAME = BuildConfig.APPLICATION_ID;
@@ -22,6 +19,8 @@ public class Constants {
     public static final String KEY_RECORD = "record";
     public static final String KEY_NAME_RECORD = "name_record";
     public static final String KEY_NAME_PLACE_RECORD = "name_place_record";
+    public static final String KEY_MULTI_CHOICE_ITEMS = "multi_choice_items";
+    public static final String KEY_SINGLE_CHOICE_ITEM = "single_choice_item";
 
     //Notification action keys and chanel
     public static final String NOTIFY_PREVIOUS = "NOTIFY_PREVIOUS";

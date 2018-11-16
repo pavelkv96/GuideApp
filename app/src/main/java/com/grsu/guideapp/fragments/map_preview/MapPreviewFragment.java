@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import butterknife.BindView;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -24,6 +25,7 @@ import com.grsu.guideapp.base.BaseMapFragment;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.map_preview.MapPreviewContract.MapPreviewViews;
 import com.grsu.guideapp.models.Poi;
+import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.views.dialogs.CustomMultiChoiceItemsDialogFragment;
@@ -33,11 +35,13 @@ import com.grsu.guideapp.views.dialogs.CustomSingleChoiceItemsDialogFragment.OnC
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends BaseMapFragment<P, RouteActivity>
+public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
+        BaseMapFragment<P, RouteActivity>
         implements OnChoiceItemListener, MapPreviewViews, OnMultiChoiceListDialogFragment {
 
     private static final String TAG = MapPreviewFragment.class.getSimpleName();
     private List<Marker> nearPoi = new ArrayList<>();
+    private List<Marker> turnPoint = new ArrayList<>();
 
     protected int route = -1;
     Menu menu;
@@ -71,8 +75,8 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends 
 
         if (route != -1) {
             mPresenter.getId(route);
-            Integer choiceItem = read("Key1", Integer.class);
-            mPresenter.setType(read("Key", long[].class));
+            Integer choiceItem = read(Constants.KEY_SINGLE_CHOICE_ITEM, Integer.class);
+            mPresenter.setType(read(Constants.KEY_MULTI_CHOICE_ITEMS, long[].class));
             mPresenter.setRadius(choiceItem);
             distanceTextView.setText(String.valueOf(choiceItem));
         } else {
@@ -103,7 +107,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends 
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(latLng)
                 .icon(BitmapDescriptorFactory.fromResource(icon));
-        mMap.addMarker(markerOptions);
+        turnPoint.add(mMap.addMarker(markerOptions));
     }
 
     @Override
@@ -130,10 +134,10 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends 
         mPresenter.setType(arrayList);
 
         if (arrayList.length != 0) {
-            save("Key", arrayList);
+            save(Constants.KEY_MULTI_CHOICE_ITEMS, arrayList);
             mPresenter.getAllPoi(menu.findItem(R.id.menu_fragment_map_get_all).isChecked());
         } else {
-            remove("Key");
+            remove(Constants.KEY_MULTI_CHOICE_ITEMS);
             removePoi();
         }
     }
@@ -141,7 +145,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends 
     @Override
     public void choiceItem(String itemValue) {
         Integer choiceItem = Integer.valueOf(itemValue);
-        save("Key1", choiceItem);
+        save(Constants.KEY_SINGLE_CHOICE_ITEM, choiceItem);
         distanceTextView.setText(itemValue);
         mPresenter.setRadius(choiceItem);
         mPresenter.getAllPoi(menu.findItem(R.id.menu_fragment_map_get_all).isChecked());
@@ -159,7 +163,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends 
         super.onPrepareOptionsMenu(menu);
 
         MenuItem item = menu.findItem(R.id.menu_fragment_map_get_all);
-        long[] longs = read("Key", long[].class);
+        long[] longs = read(Constants.KEY_MULTI_CHOICE_ITEMS, long[].class);
         if (longs != null && longs.length != 0) {
             item.setEnabled(true);
         } else {
@@ -174,17 +178,22 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends 
 
         switch (item.getItemId()) {
             case R.id.menu_fragment_map_settings:
-                CustomMultiChoiceItemsDialogFragment.newInstance(read("Key", long[].class))
+                CustomMultiChoiceItemsDialogFragment.newInstance(read(Constants.KEY_MULTI_CHOICE_ITEMS, long[].class))
                         .show(manager, CustomMultiChoiceItemsDialogFragment.getTags());
                 break;
             case R.id.menu_fragment_map_distance:
-                CustomSingleChoiceItemsDialogFragment.newInstance(read("Key1", Integer.class))
+                CustomSingleChoiceItemsDialogFragment.newInstance(read(Constants.KEY_SINGLE_CHOICE_ITEM, Integer.class))
                         .show(manager, CustomSingleChoiceItemsDialogFragment.getTags());
                 break;
             case R.id.menu_fragment_map_get_all:
                 boolean checked = !item.isChecked();
                 item.setChecked(checked);
                 mPresenter.getAllPoi(checked);
+                break;
+            case R.id.menu_fragment_map_hide_turn_point:
+                boolean checkedTurn = !item.isChecked();
+                item.setChecked(checkedTurn);
+                mPresenter.hideTurn(checkedTurn);
                 break;
         }
 
@@ -197,11 +206,15 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends 
         return super.onMarkerClick(marker);
     }
 
-    /*public static MapPreviewFragment newInstance(Integer id_route) {
-        Bundle args = new Bundle();
-        args.putInt(Constants.KEY_ID_ROUTE, id_route);
-        MapPreviewFragment fragment = new MapPreviewFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }*/
+    @Override
+    public void moveToStart(LatLng latLng) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+    }
+
+    @Override
+    public void showTurn(boolean visibility){
+        for (Marker marker : turnPoint) {
+            marker.setVisible(visibility);
+        }
+    }
 }

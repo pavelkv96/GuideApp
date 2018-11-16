@@ -20,5 +20,13 @@
     android:title="Showing all poi"
     app:showAsAction="never"
     />
+  <item
+    android:id="@+id/menu_fragment_map_hide_turn_point"
+    android:checkable="true"
+    android:checked="true"
+    android:orderInCategory="100"
+    android:title="Showing all turn"
+    app:showAsAction="never"
+    />
 
 </menu>
