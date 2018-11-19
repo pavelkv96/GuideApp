@@ -48,6 +48,10 @@ public class MapsForgeTileSource {
         mapDatabase = new MultiMapDataStore(DataPolicy.RETURN_ALL);
         mapDatabase.addMapDataStore(new MapFile(file), false, false);
 
+        /*if (mapDatabase == null) {
+            throw new RuntimeException("Map instance is null!");
+        }*/
+
         if (AndroidGraphicFactory.INSTANCE == null) {
             throw new RuntimeException(
                     "Must call MapsForgeTileSource.createInstance(context.getApplication()); once before MapsForgeTileSource.createFromFiles().");
@@ -137,4 +141,16 @@ public class MapsForgeTileSource {
         }
         mapDatabase = null;
     }
+
+    /*public static LatLngBounds getMapInstance(File file) {
+        if (mapDatabase == null) {
+            mapDatabase = new MultiMapDataStore(DataPolicy.RETURN_ALL);
+            mapDatabase.addMapDataStore(new MapFile(file), false, false);
+        }
+
+        BoundingBox box = mapDatabase.boundingBox();
+        LatLng nw = new LatLng(box.minLatitude, box.minLongitude);
+        LatLng se = new LatLng(box.maxLatitude, box.maxLongitude);
+        return new LatLngBounds(nw, se);
+    }*/
 }

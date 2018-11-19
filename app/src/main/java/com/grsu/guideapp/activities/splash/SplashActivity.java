@@ -14,12 +14,19 @@ import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.activities.splash.SplashContract.SplashView;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
+import com.grsu.guideapp.utils.CheckSelfPermission;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
+import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.utils.StorageUtils;
+import com.grsu.guideapp.views.custom.CustomProgressBar;
 import java.io.File;
 
 public class SplashActivity extends BaseActivity<SplashPresenter> implements SplashView {
 
     private static final String TAG = SplashActivity.class.getSimpleName();
+    private SharedPreferences preferences;
+    private int progress = 0;
+    private CustomProgressBar progress_view;
 
     @NonNull
     @Override
@@ -31,10 +38,51 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        if (CheckSelfPermission.writeExternalStorageIsGranted(this)) {
+            Logs.e(TAG, "true");
+            String[] storage = CheckSelfPermission.groupExternalStorage;
+            CheckSelfPermission.requestPermissions(this, storage, 1);
+        } else {
+            Logs.e(TAG, "false");
+            start();
+        }
     }
 
-    @OnClick(R.id.btn_activity_splash_load_and_start)
-    public void load(View view) {
+    @Override
+    public void showMessage(final String message) {
+        otherContent();
+        updateViewProgress(2);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toasts.makeL(SplashActivity.this, message);
+            }
+        });
+    }
+
+    @Override
+    public void writeInSharedPreference(boolean flag) {
+        Editor editor = preferences.edit();
+        editor.putBoolean("content", flag);
+        editor.apply();
+    }
+
+    @Override
+    public void updateViewProgress(final int newProgress) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (TAG) {
+                    progress += newProgress;
+                    progress_view.setProgress(progress);
+                }
+            }
+        });
+    }
+
+    public void otherContent() {
         File file = new File(getFilesDir(), Settings.ZOOM_TABLE);
         File file1 = new File(StorageUtils.getDatabasePath(this), Settings.MAP_FILE);
         AssetManager assetManager = getAssets();
@@ -48,7 +96,6 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
             StorageUtils.copyAssets(Settings.MAP_FILE, toFilePath, assetManager);
         }
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         Editor editor = preferences.edit();
         if (!preferences.contains(Constants.KEY_SINGLE_CHOICE_ITEM)) {
             editor.putInt(Constants.KEY_SINGLE_CHOICE_ITEM, 100);
@@ -58,18 +105,32 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
         startActivity(NavigationDrawerActivity.newIntent(this));
     }
 
-    @OnClick(R.id.btn_activity_splash_loading)
-    public void loading(View view) {
-        mPresenter.getProgress();
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (CheckSelfPermission.isAllGranted(grantResults) && requestCode == 1) {
+            start();
+        } else {
+            finish();
+        }
     }
 
-    @OnClick(R.id.btn_activity_splash_delete)
-    public void delete(View view) {
-        mPresenter.delProgress();
-    }
+    private void start() {
+        progress_view = findViewById(R.id.current_progress);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-    @OnClick(R.id.btn_activity_splash_un_zip)
-    public void unZip(View view) {
-        mPresenter.unZipProgress();
+        if (!preferences.contains("content")) {
+            Editor editor = preferences.edit();
+            editor.putBoolean("content", false);
+            editor.apply();
+        }
+
+        if (!preferences.getBoolean("content", false)) {
+            mPresenter.delNewProgress();
+        } else {
+            otherContent();
+        }
     }
 }

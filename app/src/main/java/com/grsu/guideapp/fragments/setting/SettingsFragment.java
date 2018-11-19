@@ -1,6 +1,8 @@
 package com.grsu.guideapp.fragments.setting;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.view.View;
 import butterknife.OnClick;
@@ -29,7 +31,7 @@ public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationD
     }
 
     @OnClick(R.id.btn_fragment_settings_clear_content)
-    public void buttonClick(View view) {
+    public void deleteContentCache(View view) {
         Context context = getContext();
 
         if (context != null) {
@@ -42,7 +44,7 @@ public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationD
     }
 
     @OnClick(R.id.btn_fragment_settings_clear_map_cache)
-    public void clear(View view) {
+    public void deleteMapCache(View view) {
         File file = new File(Settings.CACHE, Settings.CACHE_DATABASE_NAME);
         if (file.exists()) {
             CacheDBHelper.clearCache();
@@ -50,5 +52,20 @@ public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationD
         } else {
             Toasts.makeS(getActivity, "Database not found");
         }
+    }
+
+    @OnClick(R.id.btn_fragment_settings_delete_content)
+    public void deleteContent(View view) {
+        final File file = new File(Settings.CONTENT);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                StorageUtils.deleteRecursive(file);
+            }
+        }).start();
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity);
+        preferences.edit().putBoolean("content", false).apply();
+        Toasts.makeS(getActivity, "Deleted content folder");
     }
 }
