@@ -56,13 +56,9 @@ public class Tracker extends Fragment implements LocationListener {
             }
             file.createNewFile();
             stream = new FileOutputStream(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
             mLocationManager.requestLocationUpdates(GPS_PROVIDER, INTERVAL, DISTANCE, Tracker.this);
-        } catch (SecurityException | IllegalArgumentException ignored) {
+        } catch (SecurityException | IllegalArgumentException | IOException e) {
+            e.printStackTrace();
         }
     }
 

@@ -174,21 +174,6 @@ class Logic {
         return currentPosition;
     }
 
-    /*List<DecodeLine> getDecodeLines() {
-        ArrayList<DecodeLine> decodeLineList = new ArrayList<>();
-
-        for (DecodeLine line : decodeLines) {
-            decodeLineList.add(line.clone());
-        }
-
-        decodeLineList.get(0).getPolyline().remove(0);
-        decodeLineList.get(0).getPolyline().remove(0);
-        List<LatLng> polyline = decodeLineList.get(decodeLineList.size() - 1).getPolyline();
-        polyline.remove(polyline.size() - 1);
-        polyline.remove(polyline.size() - 1);
-        return decodeLineList;
-    }*/
-
     private void setChange(Integer shortestDistance) {
         if (currentPosition.getNumber() > shortestDistance) {
             onChangePolyline.onChange(currentPosition.getNumber(), shortestDistance);

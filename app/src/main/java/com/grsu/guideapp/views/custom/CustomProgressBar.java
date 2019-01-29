@@ -89,8 +89,8 @@ public class CustomProgressBar extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         rect.set(20, 20, getWidth() - 20, getHeight() - 20);
-        canvas.drawArc(rect, 270, 360, false, mArcPaintBackground);
-        canvas.drawArc(rect, 270, /*-*/(3.6f * mProgress), false, mArcPaintPrimary);
+        canvas.drawArc(rect, 270, -3.6f * (100 - mProgress), false, mArcPaintBackground);
+        canvas.drawArc(rect, 270, 3.6f * mProgress, false, mArcPaintPrimary);
         drawTextCentred(canvas);
     }
 

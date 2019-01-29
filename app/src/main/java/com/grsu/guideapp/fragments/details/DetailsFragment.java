@@ -77,7 +77,7 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter, RouteActivit
 
             String myPackage = Constants.PACKAGE_NAME;
             MediaController controller = new MediaController(getActivity);
-            videoView.setVideoPath("android.resource://" + myPackage + "/" + R.raw.video);
+            videoView.setVideoPath("android.resource://" + myPackage /*+ "/" + R.raw.video*/);
             controller.setAnchorView(videoView);
             videoView.setMediaController(controller);
 
