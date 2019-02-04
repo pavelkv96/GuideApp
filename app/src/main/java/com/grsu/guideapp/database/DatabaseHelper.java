@@ -138,13 +138,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @NonNull
     private String getPlace(Integer id) {
-        return "select c2.* from `list_poi` c1, `poi` c2, (" + getPointByIdRoute(id) + ") z1 " +
-                "where c1.id_poi=c2.id_poi" + " AND (c1.id_point = z1.end_point)";
+        return "select c2.id_poi, c3.name, c3.icon_type from `list_poi` c1, `poi` c2, `types` c3, (" + getPointByIdRoute(id) + ") z1 " +
+                "where c1.id_poi=c2.id_poi AND c2.type=c3.id_type" + " AND (c1.id_point = z1.end_point)";
     }
 
     @NonNull
     private String getPlace() {
-        return "select c2.* from `list_poi` c1, `poi` c2 where c1.id_poi=c2.id_poi";
+        return "select c2.id_poi, c3.name, c3.icon_type from `list_poi` c1, `poi` c2, `types` c3 where c1.id_poi=c2.id_poi AND c2.type=c3.id_type";
     }
 
     @NonNull

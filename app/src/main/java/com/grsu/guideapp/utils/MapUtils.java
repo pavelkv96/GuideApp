@@ -1,9 +1,8 @@
 package com.grsu.guideapp.utils;
 
 import android.location.Location;
-import android.support.annotation.DrawableRes;
 import com.google.android.gms.maps.model.LatLng;
-import com.grsu.guideapp.R;
+import org.mapsforge.core.model.Tile;
 
 public class MapUtils {
 
@@ -11,6 +10,10 @@ public class MapUtils {
 
     private static int mMaxZoomLevel = 29;
     private static int mModulo = 1 << mMaxZoomLevel;
+
+    public static Tile getTile(long pMapTileIndex, int tileSize){
+        return new Tile(getX(pMapTileIndex), getY(pMapTileIndex), getZoom(pMapTileIndex), tileSize);
+    }
 
     public static long getTileIndex(final int pZoom, final int pX, final int pY) {
         return (((long) pZoom) << (mMaxZoomLevel * 2)) + (((long) pX) << mMaxZoomLevel) + (long) pY;
@@ -61,27 +64,6 @@ public class MapUtils {
 
     public static boolean isMoreDistance(float distance, Location currentLocation, LatLng latLng) {
         return distance > MapUtils.getDistanceBetween(currentLocation, MapUtils.toLocation(latLng));
-    }
-
-    public static @DrawableRes
-    int getIconByType(Integer type) {
-        @DrawableRes int i = 0;
-        switch (type) {
-            case 1:
-                i = R.drawable.a_marker;
-                break;
-            case 2:
-                i = R.drawable.b_marker;
-                break;
-            case 3:
-                i = R.drawable.c_marker;
-                break;
-            case 4:
-                i = R.drawable.d_marker;
-                break;
-        }
-
-        return i;
     }
 
 }

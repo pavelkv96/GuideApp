@@ -1,23 +1,23 @@
 package com.grsu.guideapp.models;
 
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import java.io.Serializable;
 
 public class Poi implements Serializable {
 
     private String id;
-    private Float latitude;
-    private Float longitude;
-    private Integer type;
+    private String name;
+    private Bitmap icon;
 
     public Poi() {
     }
 
-    public Poi(String id, Float latitude, Float longitude, Integer type) {
+    public Poi(String id, String name, Bitmap icon) {
         this.id = id;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.type = type;
+        this.name = name;
+        this.icon = icon;
     }
 
     public String getId() {
@@ -28,32 +28,26 @@ public class Poi implements Serializable {
         this.id = id;
     }
 
-    public Float getLatitude() {
-        return latitude;
+    public String getName() {
+        return name;
     }
 
-    public void setLatitude(Float latitude) {
-        this.latitude = latitude;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Float getLongitude() {
-        return longitude;
+    public Bitmap getIcon() {
+        return icon;
     }
 
-    public void setLongitude(Float longitude) {
-        this.longitude = longitude;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
+    public void setIcon(Bitmap icon) {
+        this.icon = icon;
     }
 
     public static Poi fromCursor(Cursor cursor) {
-        return new Poi(cursor.getString(0), cursor.getFloat(1),
-                cursor.getFloat(2), cursor.getInt(3));
+        byte[] blob = cursor.getBlob(2);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(blob, 0, blob.length);
+
+        return new Poi(cursor.getString(0), cursor.getString(1), bitmap);
     }
 }

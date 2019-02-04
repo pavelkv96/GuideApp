@@ -1,21 +1,18 @@
 package com.grsu.guideapp.mf;
 
-import static com.grsu.guideapp.utils.MapUtils.getIndex;
-import static com.grsu.guideapp.utils.MapUtils.getX;
-import static com.grsu.guideapp.utils.MapUtils.getY;
-import static com.grsu.guideapp.utils.MapUtils.getZoom;
-
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.grsu.guideapp.database.CacheDBHelper;
+import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StreamUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.concurrent.Executors;
+import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.graphics.AndroidTileBitmap;
@@ -34,7 +31,6 @@ import org.mapsforge.map.rendertheme.rule.RenderThemeFuture;
 public class MapsForgeTileSource {
 
     private static final String TAG = MapsForgeTileSource.class.getSimpleName();
-    private final static int TILE_SIZE_PIXELS = 256;
     private static final DisplayModel model = new DisplayModel();
     private static final float scale = DisplayModel.getDefaultUserScaleFactor();
     private static RenderThemeFuture theme;
@@ -45,12 +41,11 @@ public class MapsForgeTileSource {
 
     public static void createFromFiles(File file, XmlRenderTheme renderTheme, String provider) {
         mProvider = provider;
-        mapDatabase = new MultiMapDataStore(DataPolicy.RETURN_ALL);
-        mapDatabase.addMapDataStore(new MapFile(file), false, false);
 
-        /*if (mapDatabase == null) {
-            throw new RuntimeException("Map instance is null!");
-        }*/
+        if (mapDatabase == null) {
+            mapDatabase = new MultiMapDataStore(DataPolicy.RETURN_ALL);
+            mapDatabase.addMapDataStore(new MapFile(file), false, false);
+        }
 
         if (AndroidGraphicFactory.INSTANCE == null) {
             throw new RuntimeException(
@@ -72,59 +67,57 @@ public class MapsForgeTileSource {
             renderTheme = InternalRenderTheme.OSMARENDER;
         }
         theme = new RenderThemeFuture(AndroidGraphicFactory.INSTANCE, renderTheme, model);
-        Executors.newFixedThreadPool(4).execute(theme);
+        Executors.newFixedThreadPool(3).execute(theme);
     }
 
     @Nullable
-    private static synchronized Drawable renderTile(final long pMapTileIndex) {
+    private static synchronized Bitmap renderTile(final long pMapTileIndex) {
 
-        Tile tile = new Tile(getX(pMapTileIndex), getY(pMapTileIndex), getZoom(pMapTileIndex), 600);
+        Tile tile = MapUtils.getTile(pMapTileIndex, 600);
 
         if (mapDatabase == null) {
             return null;
         }
         try {
-            RendererJob mapGeneratorJob = new RendererJob(tile, mapDatabase, theme, model, scale,
-                    false, false);
-            AndroidTileBitmap bmp = (AndroidTileBitmap) renderer.executeJob(mapGeneratorJob);
+            RendererJob job = new RendererJob(tile, mapDatabase, theme, model, scale, false, false);
+            AndroidTileBitmap bmp = (AndroidTileBitmap) renderer.executeJob(job);
             if (bmp != null) {
-                return new BitmapDrawable(AndroidGraphicFactory.getBitmap(bmp));
+                return AndroidGraphicFactory.getBitmap(bmp);
             }
         } catch (Exception ex) {
             Logs.e(TAG, "Mapsforge tile generation failed", ex);
         }
-        /*Bitmap bitmap = Bitmap.createBitmap(TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, RGB_565);
-        bitmap.eraseColor(Color.GRAY);
-        return new BitmapDrawable(bitmap);*/
+
         return null;
     }
 
     public static byte[] loadTile(final long pMapTileIndex) {
-        byte[] bytes = CacheDBHelper.getTile(getIndex(pMapTileIndex), mProvider);
+        byte[] bytes = CacheDBHelper.getTile(MapUtils.getIndex(pMapTileIndex), mProvider);
         if (bytes != null) {
-            Logs.e(TAG, "load next tile " + getIndex(pMapTileIndex));
+            Logs.e(TAG, "load next tile " + MapUtils.getIndex(pMapTileIndex));
             return bytes;
         }
 
-        Drawable image = renderTile(pMapTileIndex);
+        Bitmap image = renderTile(pMapTileIndex);
 
-        if (image instanceof BitmapDrawable) {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            ((BitmapDrawable) image).getBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] bitmapdata = stream.toByteArray();
-            StreamUtils.closeStream(stream);
-
-            //Set image in database
+        if (image != null) {
+            ByteArrayOutputStream stream = null;
             ByteArrayInputStream bais = null;
             try {
+                stream = new ByteArrayOutputStream();
+                image.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] bitmapdata = stream.toByteArray();
+
+                //Set image in database
                 bais = new ByteArrayInputStream(bitmapdata);
                 CacheDBHelper.saveFile(pMapTileIndex, mProvider, bais, null);
-                bytes = CacheDBHelper.getTile(getIndex(pMapTileIndex), mProvider);
-                Logs.e(TAG, "Saved tile " + getIndex(pMapTileIndex));
+                bytes = CacheDBHelper.getTile(MapUtils.getIndex(pMapTileIndex), mProvider);
+                Logs.e(TAG, "Saved tile " + MapUtils.getIndex(pMapTileIndex));
             } catch (Exception ex) {
                 Logs.e(TAG, "forge error storing tile cache", ex);
             } finally {
                 StreamUtils.closeStream(bais);
+                StreamUtils.closeStream(stream);
             }
         }
         return bytes;
@@ -142,7 +135,7 @@ public class MapsForgeTileSource {
         mapDatabase = null;
     }
 
-    /*public static LatLngBounds getMapInstance(File file) {
+    public static LatLngBounds getBoundingBox(File file) {
         if (mapDatabase == null) {
             mapDatabase = new MultiMapDataStore(DataPolicy.RETURN_ALL);
             mapDatabase.addMapDataStore(new MapFile(file), false, false);
@@ -152,5 +145,5 @@ public class MapsForgeTileSource {
         LatLng nw = new LatLng(box.minLatitude, box.minLongitude);
         LatLng se = new LatLng(box.maxLatitude, box.maxLongitude);
         return new LatLngBounds(nw, se);
-    }*/
+    }
 }

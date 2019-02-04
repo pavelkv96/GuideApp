@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +39,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
     protected TileOverlay overlay;
 
     protected abstract @IdRes
-    int getFragment();
+    int getMap();
 
     @Nullable
     @Override
@@ -46,9 +47,8 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
             @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        SupportMapFragment mapFragment = ((SupportMapFragment) getChildFragmentManager()
-                .findFragmentById(getFragment()));
-        mapFragment.getMapAsync(this);
+        Fragment mapFragment = getChildFragmentManager().findFragmentById(getMap());
+        ((SupportMapFragment) mapFragment).getMapAsync(this);
 
         return rootView;
     }
@@ -61,7 +61,8 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
         mMap.setMinZoomPreference(Settings.MIN_ZOOM_LEVEL);
         mMap.setMaxZoomPreference(Settings.MAX_ZOOM_LEVEL);
 
-        LatLngBounds borders = new LatLngBounds(Settings.NORTH_WEST, Settings.SOUTH_EAST);
+        File file = getActivity.getDatabasePath(Settings.MAP_FILE);
+        LatLngBounds borders = MapsForgeTileSource.getBoundingBox(file);
         mMap.setLatLngBoundsForCameraTarget(borders);
 
         mMap.setOnMarkerClickListener(this);
