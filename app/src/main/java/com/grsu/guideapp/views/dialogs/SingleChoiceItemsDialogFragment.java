@@ -13,10 +13,9 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.project_settings.Constants;
 import java.util.Arrays;
 
-public class CustomSingleChoiceItemsDialogFragment extends DialogFragment
-        implements OnClickListener {
+public class SingleChoiceItemsDialogFragment extends DialogFragment implements OnClickListener {
 
-    private OnChoiceItemListener onChoiceItemListener;
+    private OnChoiceItemListener listener;
 
     public interface OnChoiceItemListener {
 
@@ -27,9 +26,9 @@ public class CustomSingleChoiceItemsDialogFragment extends DialogFragment
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            onChoiceItemListener = (OnChoiceItemListener) getActivity();
+            listener = (OnChoiceItemListener) getActivity();
         } catch (ClassCastException ignored) {
-            onChoiceItemListener = (OnChoiceItemListener) getParentFragment();
+            listener = (OnChoiceItemListener) getParentFragment();
         }
     }
 
@@ -56,11 +55,11 @@ public class CustomSingleChoiceItemsDialogFragment extends DialogFragment
     public void onClick(DialogInterface dialogs, int i) {
         Integer pos = ((AlertDialog) dialogs).getListView().getCheckedItemPosition();
         String value = getResources().getStringArray(R.array.single_items)[pos];
-        onChoiceItemListener.choiceItem(value);
+        listener.choiceItem(value);
     }
 
-    public static CustomSingleChoiceItemsDialogFragment newInstance(int checkedItem) {
-        CustomSingleChoiceItemsDialogFragment fragment = new CustomSingleChoiceItemsDialogFragment();
+    public static SingleChoiceItemsDialogFragment newInstance(int checkedItem) {
+        SingleChoiceItemsDialogFragment fragment = new SingleChoiceItemsDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(Constants.KEY_CHECKED_ITEM, checkedItem);
         fragment.setArguments(bundle);
@@ -68,6 +67,6 @@ public class CustomSingleChoiceItemsDialogFragment extends DialogFragment
     }
 
     public static String getTags(){
-        return CustomSingleChoiceItemsDialogFragment.class.getSimpleName();
+        return SingleChoiceItemsDialogFragment.class.getSimpleName();
     }
 }

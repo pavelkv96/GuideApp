@@ -112,11 +112,11 @@ public class MapFragment extends MapPreviewFragment<MapPresenter> implements Map
     @Override
     public void openDialogViews() {
         /*FragmentManager manager = getChildFragmentManager();
-        CustomSingleChoiceItemsDialogFragment.newInstance(choiceItem)
-                .show(manager, CustomSingleChoiceItemsDialogFragment.getTags());
+        SingleChoiceItemsDialogFragment.newInstance(choiceItem)
+                .show(manager, SingleChoiceItemsDialogFragment.getTags());
 
-        CustomMultiChoiceItemsDialogFragment.newInstance(read("Key", long[].class))
-                .show(manager, CustomMultiChoiceItemsDialogFragment.getTags());*/
+        MultiChoiceItemsDialogFragment.newInstance(read("Key", long[].class))
+                .show(manager, MultiChoiceItemsDialogFragment.getTags());*/
     }
 
     private void unregisterListeners() {
@@ -171,9 +171,8 @@ public class MapFragment extends MapPreviewFragment<MapPresenter> implements Map
     }
 
     @Override
-    public void onOk(long[] arrayList) {
-        super.onOk(arrayList);
-
+    public void onOk() {
+        super.onOk();
         mPresenter.getPoi();
     }
 

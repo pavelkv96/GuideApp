@@ -24,7 +24,10 @@ public class App extends Application {
                     NotificationManager.IMPORTANCE_LOW
             );
 
-            getSystemService(NotificationManager.class).createNotificationChannel(serviceChannel);
+            NotificationManager service = getSystemService(NotificationManager.class);
+            if (service != null) {
+                service.createNotificationChannel(serviceChannel);
+            }
         }
     }
 }

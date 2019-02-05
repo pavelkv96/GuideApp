@@ -6,8 +6,6 @@ import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.fragments.map_preview.MapPreviewContract.MapPreviewInteractor;
 import com.grsu.guideapp.fragments.map_preview.MapPreviewContract.MapPreviewPresenter;
 import com.grsu.guideapp.fragments.map_preview.MapPreviewContract.MapPreviewViews;
-import com.grsu.guideapp.models.Poi;
-import java.util.List;
 
 public interface MapContract extends OnFinishedListener {
 
@@ -33,7 +31,5 @@ public interface MapContract extends OnFinishedListener {
 
     interface MapInteractor extends MapPreviewInteractor {
 
-        void getListPoi(OnFinishedListener<List<Poi>> listener, String position, int radius,
-                long[] typesObjects);
     }
 }

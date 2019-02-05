@@ -66,26 +66,26 @@ public class MapPresenter extends MapPreviewPresenter implements MapContract.Map
         }
     }
 
-    private void getCurrentTurn(Location currentLocation) {
-        if (flag || types == null) {
+    private void getCurrentTurn(final Location currentLocation) {
+        if (flag) {
             return;
         }
-
         Point point = logic.getShortestDistance(logic.getTurnsList(), currentLocation);
-        LatLng shortestDistance = point.getPosition();
-        int size = types.length;
+        final LatLng shortestDistance = point.getPosition();
+        mapInteractor.getCountCheckedTypes(new OnFinishedListener<Integer>() {
+            @Override
+            public void onFinished(Integer count) {
+                if (MapUtils.isMoreDistance(RADIUS, currentLocation, shortestDistance)
+                        && count != 0) {
+                    String point = CryptoUtils.encodeP(shortestDistance);
+                    mapInteractor.getListPoi(MapPresenter.this, null, point, radius);
+                } else {
+                    mapViews.removePoi();
+                }
+            }
+        });
 
 
-        if (MapUtils.isMoreDistance(RADIUS, currentLocation, shortestDistance) && size != 0) {
-
-            mapInteractor.getListPoi(
-                    this,
-                    CryptoUtils.encodeP(shortestDistance),
-                    radius,
-                    types);
-        } else {
-            mapViews.removePoi();
-        }
     }
 
     @Override

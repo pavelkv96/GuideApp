@@ -12,7 +12,7 @@ public class MapPreviewInteractor implements MapPreviewContract.MapPreviewIntera
 
     protected DatabaseHelper helper;
 
-    public MapPreviewInteractor(@NonNull DatabaseHelper pDbHelper) {
+    public MapPreviewInteractor(DatabaseHelper pDbHelper) {
         helper = pDbHelper;
     }
 
@@ -27,12 +27,22 @@ public class MapPreviewInteractor implements MapPreviewContract.MapPreviewIntera
     }
 
     @Override
-    public void getListPoi(final OnFinishedListener<List<Poi>> listener, final int id, final int radius,
-            final long[] typesObjects) {
+    public void getListPoi(final OnFinishedListener<List<Poi>> listener, final Integer id,
+            final String point, final int radius) {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                listener.onFinished(helper.getListPoi(id, radius, typesObjects));
+                listener.onFinished(helper.getListPoi(id, point, radius));
+            }
+        });
+    }
+
+    @Override
+    public void getCountCheckedTypes(final OnFinishedListener<Integer> listener) {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                listener.onFinished(helper.getCountCheckedTypes());
             }
         });
     }

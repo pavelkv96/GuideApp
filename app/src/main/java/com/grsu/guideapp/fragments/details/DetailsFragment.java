@@ -9,9 +9,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.TextView;
-import android.widget.VideoView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.grsu.guideapp.R;
@@ -45,9 +43,6 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter, RouteActivit
     @BindView(R.id.iv_fragment_details_content)
     ImageView iv_fragment_details_content;
 
-    @BindView(R.id.vv_fragment_details_content)
-    VideoView videoView;
-
     @BindView(R.id.btn_fragment_details_start)
     Button button;
 
@@ -74,13 +69,6 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter, RouteActivit
             textView.setText(idPoint);
 
             mPresenter.getById(idPoint);
-
-            String myPackage = Constants.PACKAGE_NAME;
-            MediaController controller = new MediaController(getActivity);
-            videoView.setVideoPath("android.resource://" + myPackage /*+ "/" + R.raw.video*/);
-            controller.setAnchorView(videoView);
-            videoView.setMediaController(controller);
-
 
         } else {
             Toasts.makeS(getActivity, "Error get data");

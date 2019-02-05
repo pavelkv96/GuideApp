@@ -1,5 +1,6 @@
 package com.grsu.guideapp.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -53,8 +54,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Route> getListRoutes() {
         List<Route> routesList = new ArrayList<>();
         openDatabase();
-        String query = String.format("select c1.id_route, c2.%s, c1.id_author, c1.duration, c1.distance, c1.short_description, c1.reference_photo_route\n"
-                + "from routes c1, name_by_language c2 where c1.name_route=c2.id_name", "name_ru");
+        String query = String
+                .format("select c1.id_route, c2.%s, c1.id_author, c1.duration, c1.distance, c1.short_description, c1.reference_photo_route\n"
+                                + "from routes c1, name_by_language c2 where c1.name_route=c2.id_name",
+                        "name_ru");
         Cursor cursor = mDatabase.rawQuery(query, null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
@@ -82,32 +85,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return linesList;
     }
 
-    public List<Poi> getListPoi(String position, int radius, long[] typesObjects) {
+    public List<Poi> getListPoi(Integer id, String position, int radius) {
 
         List<Poi> poiList = new ArrayList<>();
         openDatabase();
-        String placeWithRadiusQuery = getPlaceWithRadius(position, radius, typesObjects);
+        String placeWithRadiusQuery = getPlaceWithRadius(id, position, radius);
         Cursor cursor = mDatabase.rawQuery(placeWithRadiusQuery, null);
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            poiList.add(Poi.fromCursor(cursor));
-            cursor.moveToNext();
-        }
-        cursor.close();
-        closeDatabase();
-        return poiList;
-    }
-
-    public List<Poi> getListPoi(Integer id, int radius, long[] typesObjects) {
-
-        List<Poi> poiList = new ArrayList<>();
-        openDatabase();
-        String placeWithRadiusQuery = getPlace(id) + getByRadius(radius) + getByTypes(typesObjects);
-        Cursor cursor = mDatabase.rawQuery(placeWithRadiusQuery, null);
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            poiList.add(Poi.fromCursor(cursor));
-            cursor.moveToNext();
+        if (cursor.moveToFirst()) {
+            do {
+                poiList.add(Poi.fromCursor(cursor));
+            }
+            while (cursor.moveToNext());
         }
         cursor.close();
         closeDatabase();
@@ -131,20 +119,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return poi;
     }
 
-    @NonNull
-    private String getPlaceWithRadius(String position, int radius, long[] typesObjects) {
-        return getPlace() + getByRadius(radius) + getByTypes(typesObjects) + getByIdPoint(position);
+    public Cursor getAllTypes() {
+        openDatabase();
+        /*Cursor cur = mDatabase.rawQuery("SELECT id_type as _id, is_checked, name FROM types", null);
+        MatrixCursor extras = new MatrixCursor(cur.getColumnNames());
+        String[] newRow = {"0", "0", "Get all types"};
+        extras.addRow(newRow);
+        return new MergeCursor(new Cursor[]{extras, cur});*/
+        //closeDatabase();
+        return mDatabase.rawQuery("SELECT id_type as _id, is_checked, name FROM types", null);
     }
 
-    @NonNull
-    private String getPlace(Integer id) {
-        return "select c2.id_poi, c3.name, c3.icon_type from `list_poi` c1, `poi` c2, `types` c3, (" + getPointByIdRoute(id) + ") z1 " +
-                "where c1.id_poi=c2.id_poi AND c2.type=c3.id_type" + " AND (c1.id_point = z1.end_point)";
+    public void changeRec(int pos, boolean isChecked) {
+        ContentValues cv = new ContentValues();
+        cv.put("is_checked", (isChecked) ? 1 : 0);
+        if (pos == 0) {
+            getWritableDatabase().update("types", cv, null, null);
+            return;
+        }
+        getWritableDatabase().update("types", cv, "id_type" + " = " + (pos), null);
     }
 
+    public int getCountCheckedTypes() {
+        int count = 0;
+        openDatabase();
+        Cursor cur = mDatabase.rawQuery(getByTypes(), null);
+        if (cur != null) {
+            count = cur.getCount();
+            cur.close();
+        }
+        closeDatabase();
+        return count;
+    }
+
+
     @NonNull
-    private String getPlace() {
-        return "select c2.id_poi, c3.name, c3.icon_type from `list_poi` c1, `poi` c2, `types` c3 where c1.id_poi=c2.id_poi AND c2.type=c3.id_type";
+    private String getPlaceWithRadius(Integer id, String point, int radius) {
+        String idRoute = id != null ? getPointByIdRoute(id) : "";
+        String join = point != null ? getByIdPoint(point) : " AND (c1.id_point = z2.end_point)";
+
+        String selectOne = "select c2.id_poi, z1.name, z1.icon_type from `list_poi` c1, `poi` c2, (";
+        String selectTwo = getByTypes() + ") z1 " + idRoute;
+        String where = "where c1.id_poi=c2.id_poi AND c2.type=z1.id_type" + join;
+
+        return String.format("%s%s%s%s", selectOne, selectTwo, where, getByRadius(radius));
     }
 
     @NonNull
@@ -153,25 +171,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @NonNull
-    private String getByTypes(long[] typesObjects) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (long l : typesObjects) {
-            stringBuilder.append(l).append(",");
-        }
-
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-
-        return " AND type IN(" + stringBuilder + ")";
+    private String getByTypes() {
+        return "SELECT id_type, name, icon_type FROM types WHERE is_checked = 1";
     }
 
     @NonNull
-    private String getByIdPoint(String position) {
-        return " AND (c1.id_point = '" + position + "')";
+    private String getByIdPoint(String point) {
+        return " AND (c1.id_point = '" + point + "')";
     }
 
     @NonNull
     private String getPointByIdRoute(Integer id) {
-        return "SELECT c2.end_point FROM list_lines c1, lines c2 WHERE c1.id_line=c2.id_line"
-                + " AND c1.id_route = " + id;
+        String query = ", (SELECT c2.end_point FROM list_lines c1, lines c2 WHERE c1.id_line=c2.id_line AND c1.id_route =";
+        return String.format("%s %s) z2 ", query, id);
     }
 }

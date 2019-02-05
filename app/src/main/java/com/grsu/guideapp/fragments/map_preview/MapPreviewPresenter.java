@@ -1,6 +1,7 @@
 package com.grsu.guideapp.fragments.map_preview;
 
 import android.content.Context;
+import android.view.MenuItem;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.grsu.guideapp.R;
@@ -31,7 +32,6 @@ public class MapPreviewPresenter extends BasePresenterImpl<MapPreviewViews> impl
 
     protected int id;
     protected int radius;
-    protected long[] types;
 
     @Override
     public void getId(Integer id) {
@@ -66,25 +66,22 @@ public class MapPreviewPresenter extends BasePresenterImpl<MapPreviewViews> impl
     }
 
     @Override
-    public void setType(long[] typesObjects) {
-        types = typesObjects;
-    }
+    public void getAllPoi(final boolean getAll) {
+        mapInteractor.getCountCheckedTypes(new OnFinishedListener<Integer>() {
+            @Override
+            public void onFinished(Integer count) {
+                mapViews.removePoi();
+                if (getAll && count != 0) {
+                    mapInteractor.getListPoi(MapPreviewPresenter.this, id, null, radius);
+                }
+            }
+        });
 
-    @Override
-    public void getAllPoi(boolean getAll) {
-        if (types == null) {
-            return;
-        }
-
-        mapViews.removePoi();
-        if (getAll && types.length != 0) {
-            mapInteractor.getListPoi(this, id, radius, types);
-        }
     }
 
     @Override
     public void onMarkerClick(Context context, Marker marker) {
-        Boolean isPoi = marker.getTag() != null ? (Boolean) marker.getTag() : false;
+        boolean isPoi = marker.getTag() != null ? (Boolean) marker.getTag() : false;
         if (isPoi) {
             String idPoint = CryptoUtils.encodeP(marker.getPosition());
             ((RouteActivity) context).onReplace(DetailsFragment.newInstance(idPoint));
@@ -94,6 +91,35 @@ public class MapPreviewPresenter extends BasePresenterImpl<MapPreviewViews> impl
     @Override
     public void hideTurn(boolean visibility) {
         mapViews.showTurn(visibility);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(final MenuItem item) {
+        mapInteractor.getCountCheckedTypes(new OnFinishedListener<Integer>() {
+            @Override
+            public void onFinished(Integer count) {
+                if (count != 0) {
+                    item.setEnabled(true);
+                } else {
+                    item.setEnabled(false);
+                    item.setChecked(false);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onOk(final MenuItem item) {
+        mapInteractor.getCountCheckedTypes(new OnFinishedListener<Integer>() {
+            @Override
+            public void onFinished(Integer count) {
+                if (count != 0) {
+                    getAllPoi(item.isChecked());
+                } else {
+                    mapViews.removePoi();
+                }
+            }
+        });
     }
 
     @Override

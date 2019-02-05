@@ -2,6 +2,7 @@ package com.grsu.guideapp.fragments.map_preview;
 
 import android.content.Context;
 import android.support.annotation.DrawableRes;
+import android.view.MenuItem;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.grsu.guideapp.base.BasePresenter;
@@ -34,19 +35,23 @@ public interface MapPreviewContract extends OnFinishedListener {
 
         void setRadius(Integer radius);
 
-        void setType(long[] typesObjects);
-
         void getAllPoi(boolean getAll);
 
         void onMarkerClick(Context context, Marker marker);
 
         void hideTurn(boolean visibility);
+
+        void onPrepareOptionsMenu(MenuItem item);
+
+        void onOk(MenuItem item);
     }
 
     interface MapPreviewInteractor {
 
         void getRouteById(OnFinishedListener<List<Line>> listener, Integer id);
 
-        void getListPoi(OnFinishedListener<List<Poi>> listener, int id, int radius, long[] typesObjects);
+        void getListPoi(OnFinishedListener<List<Poi>> listener, Integer id, String point, int radius);
+
+        void getCountCheckedTypes(OnFinishedListener<Integer> listener);
     }
 }
