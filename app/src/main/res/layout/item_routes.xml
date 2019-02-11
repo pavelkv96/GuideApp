@@ -24,7 +24,8 @@
         android:layout_width="match_parent"
         android:layout_height="140dp"
         android:contentDescription="@null"
-        android:scaleType="fitXY"/>
+        android:scaleType="fitXY"
+        tools:src="@color/cardview_dark_background"/>
 
       <TextView
         android:id="@+id/tv_item_routes_id_author"

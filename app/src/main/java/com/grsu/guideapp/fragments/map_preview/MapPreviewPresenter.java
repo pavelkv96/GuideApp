@@ -45,12 +45,12 @@ public class MapPreviewPresenter extends BasePresenterImpl<MapPreviewViews> impl
                 int s = turnsList.size() - 1;
 
                 LatLng startPosition = turnsList.get(0).getPosition();
-                mapViews.setPointsTurn(startPosition, R.drawable.ic_action_play);
+                mapViews.setPointsTurn(startPosition, R.drawable.a_marker);
                 mapViews.moveToStart(startPosition);
                 for (int i = 1; i < s; i++) {
-                    mapViews.setPointsTurn(turnsList.get(i).getPosition(), R.drawable.a_marker);
+                    mapViews.setPointsTurn(turnsList.get(i).getPosition(), -1);
                 }
-                mapViews.setPointsTurn(turnsList.get(s).getPosition(), R.drawable.ic_action_pause);
+                mapViews.setPointsTurn(turnsList.get(s).getPosition(), R.drawable.b_marker);
 
                 for (Line line : encodePolylines) {
                     mapViews.setPolyline(CryptoUtils.decodeL(line.getPolyline()), line.getIdLine());

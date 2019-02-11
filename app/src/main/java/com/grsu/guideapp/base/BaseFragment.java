@@ -31,6 +31,8 @@ public abstract class BaseFragment<P extends BasePresenter, A extends FragmentAc
     protected abstract @LayoutRes
     int getLayout();
 
+    protected abstract String getTitle();
+
     private ProgressDialog mProgressDialog = null;
 
     protected View rootView;

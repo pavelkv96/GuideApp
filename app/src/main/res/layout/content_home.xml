@@ -9,6 +9,4 @@
   android:orientation="vertical"
   app:layout_behavior="@string/appbar_scrolling_view_behavior"
   tools:context=".delegation.NavigationDrawerActivity"
-  tools:showIn="@layout/app_bar_home">
-
-</LinearLayout>
+  tools:showIn="@layout/app_bar_home"/>

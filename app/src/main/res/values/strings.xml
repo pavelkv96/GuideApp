@@ -3,10 +3,16 @@
   <string name="title_activity_home">HomeActivity</string>
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
-  <string name="nav_header_title">Android Studio</string>
-  <string name="nav_header_subtitle">android.studio@android.com</string>
+  <string name="nav_header_title">Official site GrSU</string>
+  <string name="nav_header_subtitle">grsu.by</string>
   <string name="nav_header_desc">Navigation header</string>
   <string name="action_settings">Settings</string>
+
+  <!--SCREEN NAME TITLE-->
+  <string name="map_fragment">Map</string>
+  <string name="details_fragment">Details</string>
+  <string name="settings_fragment">Settings</string>
+  <string name="list_routes_fragment">List routes</string>
 
 
   <!--ERRORS MESSAGES-->
@@ -22,14 +28,6 @@
   <string name="ok">OK</string>
   <string name="dialog_types_objects">Types objects</string>
   <string name="dialog_radius_in_meters">Radius (in meters)</string>
-
-  <string-array name="multi_items">
-    <item>Select all</item>
-    <item>Type A</item>
-    <item>Type B</item>
-    <item>Type C</item>
-    <item>Type D</item>
-  </string-array>
 
   <string-array name="single_items">
     <item>1000</item>

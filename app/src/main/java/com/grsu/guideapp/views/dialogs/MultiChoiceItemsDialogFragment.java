@@ -56,7 +56,7 @@ public class MultiChoiceItemsDialogFragment extends DialogFragment implements On
 
     @Override
     public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-        helper.changeRec(which + 1, isChecked);
+        helper.changeRec(which, isChecked);
         cur.requery();
         /*ListView list = ((AlertDialog) dialog).getListView();
 

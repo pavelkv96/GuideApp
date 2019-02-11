@@ -164,11 +164,24 @@ public class StorageUtils {
     }
 
     @Nullable
-    public static Bitmap getImageFromFile(File pathToImage) throws NullPointerException {
-        if (pathToImage.exists()) {
-            return BitmapFactory.decodeFile(pathToImage.getAbsolutePath());
+    public static Bitmap getImageFromFile(String name) throws NullPointerException {
+        String child = String.format("%s.%s", name, Constants.JPG);
+        File file = new File(Settings.PHOTO_CONTENT, child);
+        if (file.exists()) {
+            return BitmapFactory.decodeFile(file.getAbsolutePath());
         }
 
-        throw new NullPointerException("Image not found by path " + pathToImage.getAbsoluteFile());
+        throw new NullPointerException("Image not found by path " + file.getAbsoluteFile());
+    }
+
+    @NonNull
+    public static File getAudioFile(String name) throws NullPointerException {
+        String child = String.format("%s.%s", name, Constants.MP3);
+        File file = new File(Settings.AUDIO_CONTENT, child);
+        if (file.exists()) {
+            return file;
+        }
+
+        throw new NullPointerException("Audio not found by path " + file.getAbsoluteFile());
     }
 }

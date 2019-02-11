@@ -16,18 +16,19 @@
     android:name=".App"
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
-    android:theme="@style/AppTheme"
+    android:theme="@style/AppTheme.NoActionBar"
     tools:ignore="GoogleAppIndexingWarning">
 
     <activity
       android:label="@string/title_activity_home"
       android:name=".delegation.NavigationDrawerActivity"
-      android:theme="@style/AppTheme.NoActionBar">
+      android:theme="@style/AppTheme.NoActionBar1">
     </activity>
 
     <activity
       android:configChanges="orientation|screenSize"
-      android:name=".activities.route.RouteActivity"/>
+      android:name=".activities.route.RouteActivity"
+      android:theme="@style/AppTheme.NoActionBar"/>
 
     <service
       android:name=".fragments.map.MyService"

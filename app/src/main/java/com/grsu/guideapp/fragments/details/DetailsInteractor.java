@@ -7,8 +7,6 @@ import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.base.listeners.OnSuccessListener;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.models.InfoAboutPoi;
-import com.grsu.guideapp.project_settings.Constants;
-import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.StorageUtils;
 import java.io.File;
 
@@ -31,12 +29,12 @@ public class DetailsInteractor implements DetailsContract.DetailsInteractor {
     }
 
     @Override
-    public void getImageFromStorage(final OnSuccessListener<Bitmap> listener, final File file) {
+    public void getImageFromStorage(final OnSuccessListener<Bitmap> listener, final String name) {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
                 try {
-                    listener.onSuccess(StorageUtils.getImageFromFile(file));
+                    listener.onSuccess(StorageUtils.getImageFromFile(name));
                 } catch (NullPointerException e) {
                     listener.onFailure(e);
                 }
@@ -50,13 +48,7 @@ public class DetailsInteractor implements DetailsContract.DetailsInteractor {
             @Override
             public void run() {
                 try {
-                    File file = new File(Settings.AUDIO_CONTENT, name + Constants.MP3);
-                    if (file.exists()) {
-                        listener.onSuccess(file);
-                    } else {
-                        throw new NullPointerException(
-                                "Audio not found by path " + file.getAbsoluteFile());
-                    }
+                    listener.onSuccess(StorageUtils.getAudioFile(name));
                 } catch (NullPointerException e) {
                     listener.onFailure(e);
                 }

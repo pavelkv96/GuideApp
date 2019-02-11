@@ -58,8 +58,14 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter, RouteActivit
     }
 
     @Override
+    protected String getTitle() {
+        return getString(R.string.details_fragment);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        getActivity.setTitleToolbar(getTitle());
         Bundle bundle = getArguments();
 
         if (bundle != null) {
@@ -114,10 +120,8 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter, RouteActivit
     public void startService(View view) {
         if (getActivity != null) {
             getActivity.stopService(new Intent(getActivity, DetailsPlayerService.class));
-            getActivity.startService(intent
-                    .putExtra(Constants.KEY_NAME_PLACE_RECORD, textView.getText().toString())
-                    .setAction(Constants.KEY_RECORD)
-            );
+            intent.putExtra(Constants.KEY_NAME_PLACE_RECORD, textView.getText().toString());
+            getActivity.startService(intent.setAction(Constants.KEY_RECORD));
         }
     }
 

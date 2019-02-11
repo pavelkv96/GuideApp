@@ -93,7 +93,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     @Override
     public void setPolyline(List<LatLng> geoPointList, int id) {
         PolylineOptions polylineOptions = new PolylineOptions()
-                .color(Color.BLACK)
+                .color(Color.BLUE)
                 .zIndex(1)
                 .addAll(geoPointList);
         mMap.addPolyline(polylineOptions).setTag(id);
@@ -101,9 +101,11 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
 
     @Override
     public void setPointsTurn(LatLng latLng, int icon) {
-        MarkerOptions markerOptions = new MarkerOptions()
-                .position(latLng)
-                .icon(BitmapDescriptorFactory.fromResource(icon));
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        if (icon != -1) {
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(icon));
+        }
         turnPoint.add(mMap.addMarker(markerOptions));
     }
 

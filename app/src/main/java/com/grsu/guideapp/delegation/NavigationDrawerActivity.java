@@ -91,4 +91,10 @@ public class NavigationDrawerActivity
             @NonNull int[] grantResults) {
         mPresenter.checkPermissionsResult(requestCode, grantResults);
     }
+
+    public void setTitleToolbar(String title) {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
+    }
 }

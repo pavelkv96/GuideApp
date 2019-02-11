@@ -6,12 +6,10 @@ import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.view.View;
-import butterknife.OnClick;
 import com.grsu.guideapp.R;
+import com.grsu.guideapp.activities.splash.SplashContract.SplashView;
 import com.grsu.guideapp.base.BaseActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
-import com.grsu.guideapp.activities.splash.SplashContract.SplashView;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CheckSelfPermission;
@@ -103,6 +101,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
         editor.apply();
 
         startActivity(NavigationDrawerActivity.newIntent(this));
+        finish();
     }
 
     @Override

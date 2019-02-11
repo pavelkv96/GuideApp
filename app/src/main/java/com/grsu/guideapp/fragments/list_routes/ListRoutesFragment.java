@@ -39,9 +39,14 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
     }
 
     @Override
+    protected String getTitle() {
+        return getString(R.string.list_routes_fragment);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        getActivity.setTitleToolbar(getTitle());
         mPresenter.createDBIfNeed(getContext());
     }
 

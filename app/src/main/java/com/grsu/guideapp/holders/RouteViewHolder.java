@@ -7,10 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.project_settings.Constants;
-import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.StorageUtils;
-import java.io.File;
 
 public class RouteViewHolder extends ViewHolder {
 
@@ -18,17 +15,14 @@ public class RouteViewHolder extends ViewHolder {
     private TextView tv_item_routes_id_author;
     private TextView tv_item_routes_distance;
     private TextView tv_item_routes_name_route;
-    private View mView;
 
-    public RouteViewHolder(@NonNull View itemView) {
-        super(itemView);
+    public RouteViewHolder(@NonNull View pView) {
+        super(pView);
 
-        mView = itemView;
-
-        iv_item_preview_photo_route = mView.findViewById(R.id.iv_item_preview_photo_route);
-        tv_item_routes_id_author = mView.findViewById(R.id.tv_item_routes_id_author);
-        tv_item_routes_distance = mView.findViewById(R.id.tv_item_routes_distance);
-        tv_item_routes_name_route = mView.findViewById(R.id.tv_item_routes_name_route);
+        iv_item_preview_photo_route = pView.findViewById(R.id.iv_item_preview_photo_route);
+        tv_item_routes_id_author = pView.findViewById(R.id.tv_item_routes_id_author);
+        tv_item_routes_distance = pView.findViewById(R.id.tv_item_routes_distance);
+        tv_item_routes_name_route = pView.findViewById(R.id.tv_item_routes_name_route);
     }
 
     public void bind(final Route route) {
@@ -36,11 +30,10 @@ public class RouteViewHolder extends ViewHolder {
         tv_item_routes_distance.setText(String.valueOf(route.getDistance()));
         tv_item_routes_name_route.setText(String.valueOf(route.getNameRoute()));
 
-        File file = new File(Settings.PHOTO_CONTENT,
-                route.getReferencePhotoRoute() + Constants.JPG);
+        String photo = route.getReferencePhotoRoute();
 
         try {
-            iv_item_preview_photo_route.setImageBitmap(StorageUtils.getImageFromFile(file));
+            iv_item_preview_photo_route.setImageBitmap(StorageUtils.getImageFromFile(photo));
         } catch (NullPointerException e) {
             iv_item_preview_photo_route.setImageResource(R.drawable.ic_launcher_background);
         }

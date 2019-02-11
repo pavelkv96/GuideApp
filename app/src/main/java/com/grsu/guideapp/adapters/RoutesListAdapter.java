@@ -38,12 +38,13 @@ public class RoutesListAdapter extends RecyclerView.Adapter<RouteViewHolder> {
     public void onBindViewHolder(@NonNull RouteViewHolder holder, int position) {
         Route route = routesList.get(position);
         final Integer id_route = route.getIdRoute();
+        final String name_route = route.getNameRoute();
         holder.bind(route);
 
         holder.itemView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                openActivity(view, id_route);
+                openActivity(view, id_route, name_route);
             }
         });
     }
@@ -53,12 +54,12 @@ public class RoutesListAdapter extends RecyclerView.Adapter<RouteViewHolder> {
         return routesList != null ? routesList.size() : 0;
     }
 
-    private void openActivity(View view, Integer id_route) {
+    private void openActivity(View view, Integer id_route, String name_route) {
         if (CheckSelfPermission.writeExternalStorageIsGranted(activity)) {
             MySnackbar.makeL(view,
                     R.string.error_snackbar_do_not_have_permission_write_on_the_storage, activity);
         } else {
-            activity.startActivity(RouteActivity.newIntent(activity, id_route));
+            activity.startActivity(RouteActivity.newIntent(activity, id_route, name_route));
         }
     }
 }

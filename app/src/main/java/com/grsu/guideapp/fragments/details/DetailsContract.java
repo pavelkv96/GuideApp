@@ -38,7 +38,7 @@ public interface DetailsContract extends OnSuccessListener, OnFinishedListener {
 
         void getInfoById(OnFinishedListener<InfoAboutPoi> listener, String id);
 
-        void getImageFromStorage(OnSuccessListener<Bitmap> listener, File file);
+        void getImageFromStorage(OnSuccessListener<Bitmap> listener, String name);
 
         void getAudioFromStorage(OnSuccessListener<File> listener, String name);
     }

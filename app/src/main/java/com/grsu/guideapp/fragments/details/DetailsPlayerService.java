@@ -11,6 +11,7 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.NotificationBuilder;
@@ -29,8 +30,9 @@ public class DetailsPlayerService extends Service implements OnPreparedListener,
     public void onCreate() {
         super.onCreate();
         Logs.e(TAG, "onCreate:");
-        Notification notification = createNotification(this, NotificationBuilder.getBigView(this),
-                NotificationBuilder.getSmallView(this));
+        RemoteViews bigView = NotificationBuilder.getBigView(this);
+        RemoteViews smallView = NotificationBuilder.getSmallView(this);
+        Notification notification = createNotification(this, bigView, smallView);
         startForeground(Constants.NOTIFICATION_ID, notification);
     }
 

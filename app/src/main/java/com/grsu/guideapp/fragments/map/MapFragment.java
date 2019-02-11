@@ -58,14 +58,24 @@ public class MapFragment extends MapPreviewFragment<MapPresenter> implements Map
     }
 
     @Override
+    protected String getTitle() {
+        return getString(R.string.map_fragment);
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
+        String name = getTitle();
 
         if (getArguments() != null) {
             route = getArguments().getInt(Constants.KEY_ID_ROUTE, -1);
+            name = getArguments().getString(Constants.KEY_NAME_ROUTE);
         }
 
         super.onCreateView(inflater, container, savedInstanceState);
+
+        getActivity.setTitleToolbar(name);
+
         if (route != -1) {
             br = new MyBroadcastReceiver();
         }
@@ -197,9 +207,10 @@ public class MapFragment extends MapPreviewFragment<MapPresenter> implements Map
         Toasts.makeS(getActivity, s);
     }
 
-    public static MapFragment newInstance(Integer id_route) {
+    public static MapFragment newInstance(Integer id_route, String name_route) {
         Bundle args = new Bundle();
         args.putInt(Constants.KEY_ID_ROUTE, id_route);
+        args.putString(Constants.KEY_NAME_ROUTE, name_route);
         MapFragment fragment = new MapFragment();
         fragment.setArguments(args);
         return fragment;
