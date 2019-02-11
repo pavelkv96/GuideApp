@@ -1,4 +1,4 @@
-package com.grsu.guideapp.views.custom;
+package com.grsu.ui.progress;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,7 +8,7 @@ import android.graphics.RectF;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
-import com.grsu.guideapp.R;
+import com.grsu.ui.R;
 
 public class CustomProgressBar extends View {
 

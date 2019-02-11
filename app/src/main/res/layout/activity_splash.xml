@@ -7,7 +7,7 @@
   android:orientation="vertical"
   tools:context=".activities.splash.SplashActivity">
 
-  <com.grsu.guideapp.views.custom.CustomProgressBar
+  <com.grsu.ui.progress.CustomProgressBar
     android:id="@+id/current_progress"
     android:layout_width="@dimen/width_height_progress"
     android:layout_height="@dimen/width_height_progress"

@@ -16,7 +16,7 @@ import com.grsu.guideapp.utils.CheckSelfPermission;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.utils.StorageUtils;
-import com.grsu.guideapp.views.custom.CustomProgressBar;
+import com.grsu.ui.progress.CustomProgressBar;
 import java.io.File;
 
 public class SplashActivity extends BaseActivity<SplashPresenter> implements SplashView {
