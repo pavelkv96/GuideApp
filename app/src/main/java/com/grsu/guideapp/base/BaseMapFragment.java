@@ -60,6 +60,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
         mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
         mMap.setMinZoomPreference(Settings.MIN_ZOOM_LEVEL);
         mMap.setMaxZoomPreference(Settings.MAX_ZOOM_LEVEL);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
         File file = getActivity.getDatabasePath(Settings.MAP_FILE);
         LatLngBounds borders = MapsForgeTileSource.getBoundingBox(file);

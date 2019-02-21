@@ -42,7 +42,7 @@ public class MultiChoiceItemsDialogFragment extends DialogFragment implements On
         Builder builder = new Builder(getActivity());
         builder.setTitle(getResources().getString(R.string.dialog_types_objects));
         builder.setMultiChoiceItems(cur, cur.getColumnName(1), cur.getColumnName(2), this);
-        builder.setPositiveButton(getResources().getString(R.string.ok), this);
+        builder.setPositiveButton(getResources().getString(android.R.string.ok), this);
 
         return builder.create();
     }

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">GuideApp</string>
   <string name="title_activity_home">HomeActivity</string>
@@ -6,7 +7,24 @@
   <string name="nav_header_title">Official site GrSU</string>
   <string name="nav_header_subtitle">grsu.by</string>
   <string name="nav_header_desc">Navigation header</string>
-  <string name="action_settings">Settings</string>
+
+  <!--VIEW TEXT-->
+  <string name="view_delete_database">Delete database</string>
+  <string name="view_clean_map">Clean map</string>
+  <string name="view_delete_content_folder">Delete content folder</string>
+  <string name="view_refresh_map_file">Update map file</string>
+  <string name="view_start">Start</string>
+  <string name="view_stop">Stop</string>
+  <string name="view_next">Next</string>
+  <string name="view_start_player">Start player</string>
+
+  <!--MENU ITEM NAME-->
+  <string name="menu_item_settings">Settings</string>
+  <string name="menu_item_routes">Routes</string>
+  <string name="menu_item_types_object">Types Object menu</string>
+  <string name="menu_item_distance">Distance menu</string>
+  <string name="menu_item_showing_selected_poi">Showing all poi</string>
+  <string name="menu_item_showing_all_turn">Showing all turn</string>
 
   <!--SCREEN NAME TITLE-->
   <string name="map_fragment">Map</string>
@@ -16,16 +34,20 @@
 
 
   <!--ERRORS MESSAGES-->
-  <string name="error_snackbar_open_settings" translatable="false">Open settings</string>
-  <string name="error_do_not_have_permission" translatable="false">Don`t have permission</string>
-  <string name="error_snackbar_do_not_have_permission_write_on_the_storage" translatable="false">Don`t have permission write on the storage</string>
-  <string name="error_copy_data_error" translatable="false">Copy data error</string>
-  <string name="error_please_refresh_your_database" translatable="false">"Empty data, please refresh your database"</string>
+  <string name="error_snackbar_open_settings">Open settings</string>
+  <string name="error_snackbar_do_not_have_permission_access_fine_location">Don`t have permission access fine location</string>
+  <string name="error_snackbar_do_not_have_permission_write_on_the_storage">Don`t have permission write on the storage</string>
+  <string name="error_copy_data_error">Copy data error</string>
+  <string name="error_please_refresh_your_database">"Empty data, please refresh your database"</string>
+  <string name="error_database_not_found">Database not found</string>
+  <string name="error_not_find_map_file">Not find map file</string>
 
   <!--SUCCESS MESSAGES-->
   <string name="success_copy_database_success">Copy database success</string>
+  <string name="success_database_deleted">Database deleted</string>
+  <string name="success_map_file_updated">Map file updated</string>
+  <string name="success_deleted_content_folder">Deleted content folder</string>
 
-  <string name="ok">OK</string>
   <string name="dialog_types_objects">Types objects</string>
   <string name="dialog_radius_in_meters">Radius (in meters)</string>
 

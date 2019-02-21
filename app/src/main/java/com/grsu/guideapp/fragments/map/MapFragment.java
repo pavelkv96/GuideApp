@@ -157,7 +157,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter> implements Map
             getActivity.startService(new Intent(getContext(), MyService.class));
             mMap.setMyLocationEnabled(true);
         } else {
-            MySnackbar.makeL(view, R.string.error_do_not_have_permission, getActivity);
+            MySnackbar.makeL(view, R.string.error_snackbar_do_not_have_permission_access_fine_location, getActivity);
         }
     }
 

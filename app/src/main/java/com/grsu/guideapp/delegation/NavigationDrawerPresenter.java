@@ -1,8 +1,8 @@
 package com.grsu.guideapp.delegation;
 
+import static android.support.v4.app.ActivityCompat.requestPermissions;
 import static com.grsu.guideapp.utils.CheckSelfPermission.checkVersionSdk;
 import static com.grsu.guideapp.utils.CheckSelfPermission.groupExternalStorage;
-import static com.grsu.guideapp.utils.CheckSelfPermission.requestPermissions;
 import static com.grsu.guideapp.utils.CheckSelfPermission.writeExternalStorageIsGranted;
 
 import android.os.Build.VERSION_CODES;

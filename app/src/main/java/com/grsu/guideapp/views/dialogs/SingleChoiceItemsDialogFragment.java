@@ -46,7 +46,7 @@ public class SingleChoiceItemsDialogFragment extends DialogFragment implements O
         AlertDialog.Builder builder = new Builder(getActivity());
         builder.setTitle(getResources().getString(R.string.dialog_radius_in_meters));
         builder.setSingleChoiceItems(R.array.single_items, checkedItem, null);
-        builder.setPositiveButton(getResources().getString(R.string.ok), this);
+        builder.setPositiveButton(getResources().getString(android.R.string.ok), this);
 
         return builder.create();
     }

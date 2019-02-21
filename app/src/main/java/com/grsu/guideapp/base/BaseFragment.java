@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import java.util.Arrays;
 
 public abstract class BaseFragment<P extends BasePresenter, A extends FragmentActivity>
@@ -126,6 +127,11 @@ public abstract class BaseFragment<P extends BasePresenter, A extends FragmentAc
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
+    }
+
+    @Override
+    public void showToast(String message) {
+        Toasts.makeL(getActivity, message);
     }
 
     @Override

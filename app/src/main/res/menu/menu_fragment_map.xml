@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto">
+
   <item
     android:id="@+id/menu_fragment_map_settings"
     android:orderInCategory="100"
-    android:title="Types Object menu"
+    android:title="@string/menu_item_types_object"
     app:showAsAction="never"/>
+
   <item
     android:id="@+id/menu_fragment_map_distance"
     android:orderInCategory="100"
-    android:title="Distance menu"
-    app:showAsAction="never"
-    />
+    android:title="@string/menu_item_distance"
+    app:showAsAction="never"/>
+
   <item
     android:id="@+id/menu_fragment_map_get_all"
     android:checkable="true"
     android:enabled="false"
     android:orderInCategory="100"
-    android:title="Showing all poi"
-    app:showAsAction="never"
-    />
+    android:title="@string/menu_item_showing_selected_poi"
+    app:showAsAction="never"/>
+
   <item
     android:id="@+id/menu_fragment_map_hide_turn_point"
     android:checkable="true"
     android:checked="true"
     android:orderInCategory="100"
-    android:title="Showing all turn"
-    app:showAsAction="never"
-    />
+    android:title="@string/menu_item_showing_all_turn"
+    app:showAsAction="never"/>
 
 </menu>

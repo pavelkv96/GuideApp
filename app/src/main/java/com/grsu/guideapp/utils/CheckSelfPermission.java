@@ -52,19 +52,15 @@ public class CheckSelfPermission {
         return true;
     }
 
-    public static void requestPermissions(Activity activity, String[] strings, int requestCode) {
-        ActivityCompat.requestPermissions(activity, strings, requestCode);
-    }
-
     public static boolean checkVersionSdk(int version) {
         return VERSION.SDK_INT >= version;
     }
 
-    public static <T extends FragmentActivity> void settingsIntent(T activity) {
+    public static void settingsIntent(Context context) {
         Intent intent = new Intent();
         intent.setAction(Constants.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(Uri.fromParts(Constants.PACKAGE, Constants.PACKAGE_NAME, null));
-        activity.startActivity(intent);
+        context.startActivity(intent);
     }
 }
 

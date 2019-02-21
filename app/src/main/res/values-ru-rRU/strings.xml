@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Августовский путеводитель</string>
+  <string name="title_activity_home">Главная</string>
+  <string name="navigation_drawer_open">Open navigation drawer</string>
+  <string name="navigation_drawer_close">Close navigation drawer</string>
+  <string name="nav_header_title">Официальный сайт ГрГУ</string>
+  <string name="nav_header_subtitle">grsu.by</string>
+  <string name="nav_header_desc">Navigation header</string>
+
+  <!--VIEW TEXT-->
+  <string name="view_delete_database">Удалить базу данных</string>
+  <string name="view_clean_map">Очистить кеш карты</string>
+  <string name="view_delete_content_folder">Удалить папку с контентом</string>
+  <string name="view_refresh_map_file">Обновить файл карт</string>
+  <string name="view_start">Начать</string>
+  <string name="view_stop">Прекратить</string>
+  <string name="view_next">Дальше</string>
+  <string name="view_start_player">Запустить плеер</string>
+
+  <!--MENU ITEM NAME-->
+  <string name="menu_item_settings">Настройки</string>
+  <string name="menu_item_routes">Маршруты</string>
+  <string name="menu_item_types_object">Типы POI на карте</string>
+  <string name="menu_item_distance">POI на расстоянии</string>
+  <string name="menu_item_showing_selected_poi">Отобразить выбранные POI</string>
+  <string name="menu_item_showing_all_turn">Отобразить съезды с маршрута</string>
+
+  <!--SCREEN NAME TITLE-->
+  <string name="map_fragment">Карта</string>
+  <string name="details_fragment">Детали</string>
+  <string name="settings_fragment">Настройки</string>
+  <string name="list_routes_fragment">Список маршрутов</string>
+
+
+  <!--ERRORS MESSAGES-->
+  <string name="error_snackbar_open_settings">Настройки</string>
+  <string name="error_snackbar_do_not_have_permission_access_fine_location">Требуется разрешение для работы с GPS</string>
+  <string name="error_snackbar_do_not_have_permission_write_on_the_storage">Нет разрешения для записи на локальное хранилище</string>
+  <string name="error_copy_data_error">Ошибка копирования данных</string>
+  <string name="error_please_refresh_your_database">Нет данных, пожалуйста обновите вашу базу данных</string>
+  <string name="error_database_not_found">База данных не найдена</string>
+  <string name="error_not_find_map_file">Файл карт не найден</string>
+
+  <!--SUCCESS MESSAGES-->
+  <string name="success_copy_database_success">База данных скопирована успешно</string>
+  <string name="success_database_deleted">База данных была удалена</string>
+  <string name="success_map_file_updated">Файл карт обнавлён</string>
+  <string name="success_deleted_content_folder">Удалена папка с контентом</string>
+
+  <string name="dialog_types_objects">Типы объектов</string>
+  <string name="dialog_radius_in_meters">Радиус (в метрах)</string>
+
+  <string-array name="single_items">
+    <item>1000</item>
+    <item>500</item>
+    <item>250</item>
+    <item>100</item>
+  </string-array>
+
+</resources>

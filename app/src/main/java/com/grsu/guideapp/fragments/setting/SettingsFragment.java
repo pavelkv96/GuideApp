@@ -14,19 +14,21 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.database.CacheDBHelper;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
+import com.grsu.guideapp.fragments.setting.SettingContract.SettingView;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.utils.StorageUtils;
 import java.io.File;
 
-public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationDrawerActivity> {
+public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationDrawerActivity> implements
+        SettingView {
 
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
     @NonNull
     @Override
     protected SettingPresenter getPresenterInstance() {
-        return new SettingPresenter();
+        return new SettingPresenter(this, new SettingInteractor(getActivity));
     }
 
     @Override
@@ -54,9 +56,9 @@ public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationD
 
         if (context != null) {
             if (StorageUtils.deleteDatabase(context)) {
-                Toasts.makeS(context, "Database deleted");
+                Toasts.makeS(context, R.string.success_database_deleted);
             } else {
-                Toasts.makeS(context, "Database not found");
+                Toasts.makeS(context, R.string.error_database_not_found);
             }
         }
     }
@@ -66,9 +68,9 @@ public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationD
         File file = new File(Settings.CACHE, Settings.CACHE_DATABASE_NAME);
         if (file.exists()) {
             CacheDBHelper.clearCache();
-            Toasts.makeS(getActivity, "Database deleted");
+            Toasts.makeS(getActivity, R.string.success_database_deleted);
         } else {
-            Toasts.makeS(getActivity, "Database not found");
+            Toasts.makeS(getActivity, R.string.error_database_not_found);
         }
     }
 
@@ -84,6 +86,12 @@ public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationD
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity);
         preferences.edit().putBoolean("content", false).apply();
-        Toasts.makeS(getActivity, "Deleted content folder");
+        Toasts.makeS(getActivity, R.string.success_deleted_content_folder);
+    }
+
+    @OnClick(R.id.btn_fragment_settings_delete_map_file)
+    public void deleteMapFile(View view) {
+        final File file = new File(StorageUtils.getDatabasePath(getActivity), Settings.MAP_FILE);
+        mPresenter.deleteMapFile(file);
     }
 }

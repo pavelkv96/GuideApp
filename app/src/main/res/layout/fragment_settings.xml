@@ -10,18 +10,24 @@
     android:id="@+id/btn_fragment_settings_clear_content"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Delete database"/>
+    android:text="@string/view_delete_database"/>
 
   <Button
     android:id="@+id/btn_fragment_settings_clear_map_cache"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Clean map"/>
+    android:text="@string/view_clean_map"/>
 
   <Button
     android:id="@+id/btn_fragment_settings_delete_content"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Delete content folder"/>
+    android:text="@string/view_delete_content_folder"/>
+
+  <Button
+    android:id="@+id/btn_fragment_settings_delete_map_file"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/view_refresh_map_file"/>
 
 </LinearLayout>

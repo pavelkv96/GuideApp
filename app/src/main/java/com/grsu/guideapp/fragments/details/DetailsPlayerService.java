@@ -120,13 +120,14 @@ public class DetailsPlayerService extends Service implements OnPreparedListener,
 
     private void previous() {
         player.seekTo(player.getCurrentPosition() - 10000);
-        Toast.makeText(this, "NOTIFY_PREVIOUS " + player.getCurrentPosition(),
-                Toast.LENGTH_SHORT).show();
+        String text = "NOTIFY_PREVIOUS " + player.getCurrentPosition();
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
     private void next() {
         player.seekTo(player.getCurrentPosition() + 10000);
-        Logs.e(TAG, "NOTIFY_NEXT " + player.getCurrentPosition());
+        String text = "NOTIFY_NEXT " + player.getCurrentPosition();
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
     private void pause() {

@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.grsu.guideapp.utils.MessageViewer.Toasts;
 
 public abstract class BaseActivity<P extends BasePresenter>
         extends AppCompatActivity
@@ -63,6 +64,11 @@ public abstract class BaseActivity<P extends BasePresenter>
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
+    }
+
+    @Override
+    public void showToast(String message) {
+        Toasts.makeL(this, message);
     }
 
     @Override

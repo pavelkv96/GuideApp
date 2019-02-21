@@ -103,6 +103,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     public void setPolyline(List<LatLng> geoPointList, int id) {
         PolylineOptions polylineOptions = new PolylineOptions()
                 .color(Color.BLUE)
+                .width(15)
                 .zIndex(1)
                 .addAll(geoPointList);
         mMap.addPolyline(polylineOptions).setTag(id);
@@ -112,6 +113,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     public void setPointsTurn(LatLng latLng, int icon) {
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
+        markerOptions.visible(false);
         if (icon != -1) {
             markerOptions.icon(BitmapDescriptorFactory.fromResource(icon));
         }
@@ -120,9 +122,9 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
 
     @Override
     public void setPoi(Poi poi) {
-        MarkerOptions markerOptions = new MarkerOptions()
-                .position(CryptoUtils.decodeP(poi.getId()))
-                .icon(BitmapDescriptorFactory.fromBitmap(poi.getIcon()));
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(CryptoUtils.decodeP(poi.getId()));
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(poi.getIcon()));
         Marker marker = mMap.addMarker(markerOptions);
         marker.setTag(true);
         nearPoi.add(marker);

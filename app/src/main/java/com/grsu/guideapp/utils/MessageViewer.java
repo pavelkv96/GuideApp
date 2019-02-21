@@ -4,14 +4,12 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.base.BaseActivity;
 
 public class MessageViewer {
 
@@ -65,13 +63,12 @@ public class MessageViewer {
             abstractSnackbar(view, s, null, null);
         }
 
-        public static <T extends BaseActivity> void makeL(View view, String s, final T activity) {
-            abstractSnackbar(view, s, null, getListener(activity));
+        public static void makeL(View view, String s, Context context) {
+            abstractSnackbar(view, s, null, getListener(context));
         }
 
-        public static <T extends FragmentActivity> void makeL(View view, @StringRes int s,
-                final T activity) {
-            abstractSnackbar(view, null, s, getListener(activity));
+        public static void makeL(View view, @StringRes int s, Context context) {
+            abstractSnackbar(view, null, s, getListener(context));
         }
 
         public static void makeL(View view, String s, OnClickListener listener) {
@@ -92,16 +89,16 @@ public class MessageViewer {
                 snackbar = Snackbar.make(view, resource, Snackbar.LENGTH_LONG);
             }
 
-            snackbar.setAction(R.string.error_snackbar_open_settings, listener)
-                    .setActionTextColor(Color.RED)
-                    .show();
+            snackbar.setAction(R.string.error_snackbar_open_settings, listener);
+            snackbar.setActionTextColor(Color.RED);
+            snackbar.show();
         }
 
-        private static <T extends FragmentActivity> OnClickListener getListener(final T activity) {
+        private static OnClickListener getListener(final Context context) {
             return new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    CheckSelfPermission.settingsIntent(activity);
+                    CheckSelfPermission.settingsIntent(context);
                 }
             };
         }

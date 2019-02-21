@@ -6,6 +6,7 @@ import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.splash.SplashContract.SplashView;
 import com.grsu.guideapp.base.BaseActivity;
@@ -40,7 +41,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
         if (CheckSelfPermission.writeExternalStorageIsGranted(this)) {
             Logs.e(TAG, "true");
             String[] storage = CheckSelfPermission.groupExternalStorage;
-            CheckSelfPermission.requestPermissions(this, storage, 1);
+            ActivityCompat.requestPermissions(this, storage, 1);
         } else {
             Logs.e(TAG, "false");
             start();
