@@ -11,7 +11,10 @@ public class Constants {
     public static final String ACTION_APPLICATION_DETAILS_SETTINGS = "android.settings.APPLICATION_DETAILS_SETTINGS";
 
     //Key constants
+    public static final String KEY_BUNDLE_ROUTE = "bundle_route";
     public static final String KEY_NAME_ROUTE = "name_route";
+    public static final String KEY_SOUTHWEST = "southwest";
+    public static final String KEY_NORTHEAST = "northeast";
     public static final String KEY_CHECKED_ITEM = "checked_item";
     public static final String KEY_SELECTED_ITEM = "selected_item";
     public static final String KEY_ID_ROUTE = "id_route";

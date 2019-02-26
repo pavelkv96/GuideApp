@@ -54,10 +54,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Route> getListRoutes() {
         List<Route> routesList = new ArrayList<>();
         openDatabase();
-        String query = String
-                .format("select c1.id_route, c2.%s, c1.id_author, c1.duration, c1.distance, c1.short_description, c1.reference_photo_route\n"
-                                + "from routes c1, name_by_language c2 where c1.name_route=c2.id_name",
-                        "name_ru");
+        String select = "select c1.id_route, c2.%s, c1.id_author, c1.duration, c1.distance, c1.short_description, c1.reference_photo_route, c1.southwest, c1.northeast\n";
+        String from = "from routes c1, name_by_language c2 where c1.name_route=c2.id_name";
+        String query = String.format(select + from, "name_ru");
         Cursor cursor = mDatabase.rawQuery(query, null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {

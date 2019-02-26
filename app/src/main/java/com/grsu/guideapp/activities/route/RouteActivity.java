@@ -11,7 +11,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.listeners.OnFragmentReplace;
-import com.grsu.guideapp.fragments.map.MapFragment;
+import com.grsu.guideapp.fragments.maps.MapsFragment;
+import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 
@@ -34,23 +35,25 @@ public class RouteActivity extends AppCompatActivity implements OnFragmentReplac
 
         fm = getSupportFragmentManager();
 
-        int id = getIntent().getIntExtra(Constants.KEY_ID_ROUTE, -1);
-        String name = getIntent().getStringExtra(Constants.KEY_NAME_ROUTE);
-
-        if (id == -1 && name.isEmpty()) {
+        Bundle args = getIntent().getBundleExtra(Constants.KEY_BUNDLE_ROUTE);
+        if (args == null) {
             finish();
         } else {
             if (savedInstanceState == null) {
-                onReplace(MapFragment.newInstance(id, name));
+                onReplace(MapsFragment.newInstance(args));
             }
         }
 
     }
 
-    public static Intent newIntent(Context context, int id_route, String name_route) {
+    public static Intent newIntent(Context context, Route route) {
         Intent intent = new Intent(context, RouteActivity.class);
-        intent.putExtra(Constants.KEY_ID_ROUTE, id_route);
-        intent.putExtra(Constants.KEY_NAME_ROUTE, name_route);
+        Bundle bundle = new Bundle();
+        bundle.putInt(Constants.KEY_ID_ROUTE, route.getIdRoute());
+        bundle.putString(Constants.KEY_NAME_ROUTE, route.getNameRoute());
+        bundle.putString(Constants.KEY_SOUTHWEST, route.getSouthwest());
+        bundle.putString(Constants.KEY_NORTHEAST, route.getNortheast());
+        intent.putExtra(Constants.KEY_BUNDLE_ROUTE, bundle);
         return intent;
     }
 

@@ -10,20 +10,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import butterknife.OnClick;
+import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.database.CacheDBHelper;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.fragments.setting.SettingContract.SettingView;
 import com.grsu.guideapp.project_settings.Settings;
+import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.utils.StorageUtils;
 import java.io.File;
 
-public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationDrawerActivity> implements
-        SettingView {
+public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationDrawerActivity>
+        implements SettingView {
 
-    private static final String TAG = SettingsFragment.class.getSimpleName();
+    private SharedPreferences preference;
 
     @NonNull
     @Override
@@ -47,6 +49,7 @@ public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationD
             @Nullable Bundle savedInstanceState) {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
         getActivity.setTitleToolbar(getTitle());
+        preference = PreferenceManager.getDefaultSharedPreferences(getActivity);
         return rootView;
     }
 
@@ -85,7 +88,7 @@ public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationD
         }).start();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity);
-        preferences.edit().putBoolean("content", false).apply();
+        preferences.edit().putBoolean(SharedPref.KEY_CONTENT, false).apply();
         Toasts.makeS(getActivity, R.string.success_deleted_content_folder);
     }
 
@@ -93,5 +96,20 @@ public class SettingsFragment extends BaseFragment<SettingPresenter, NavigationD
     public void deleteMapFile(View view) {
         final File file = new File(StorageUtils.getDatabasePath(getActivity), Settings.MAP_FILE);
         mPresenter.deleteMapFile(file);
+    }
+
+    @OnClick(R.id.btn_fragment_settings_change_language)
+    public void onChecked(View view) {
+        String s = preference.getString(SharedPref.KEY_LANGUAGE, "en");
+        if (s.equals("en")) {
+            s = "ru";
+            preference.edit().putString(SharedPref.KEY_LANGUAGE, s).apply();
+        } else {
+            s = "en";
+            preference.edit().putString(SharedPref.KEY_LANGUAGE, s).apply();
+        }
+
+        App.setLocale(preference, getResources());
+        getActivity.recreate();
     }
 }

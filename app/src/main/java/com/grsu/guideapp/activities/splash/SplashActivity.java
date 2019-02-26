@@ -13,6 +13,7 @@ import com.grsu.guideapp.base.BaseActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
+import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.CheckSelfPermission;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
@@ -64,7 +65,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
     @Override
     public void writeInSharedPreference(boolean flag) {
         Editor editor = preferences.edit();
-        editor.putBoolean("content", flag);
+        editor.putBoolean(SharedPref.KEY_CONTENT, flag);
         editor.apply();
     }
 
@@ -84,6 +85,8 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
     public void otherContent() {
         File file = new File(getFilesDir(), Settings.ZOOM_TABLE);
         File file1 = new File(StorageUtils.getDatabasePath(this), Settings.MAP_FILE);
+        file1.delete();
+
         AssetManager assetManager = getAssets();
 
         if (!file.exists()) {
@@ -97,7 +100,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
 
         Editor editor = preferences.edit();
         if (!preferences.contains(Constants.KEY_SINGLE_CHOICE_ITEM)) {
-            editor.putInt(Constants.KEY_SINGLE_CHOICE_ITEM, 100);
+            editor.putInt(Constants.KEY_SINGLE_CHOICE_ITEM, 1000);
         }
         editor.apply();
 
@@ -121,13 +124,13 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
         progress_view = findViewById(R.id.current_progress);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if (!preferences.contains("content")) {
+        if (!preferences.contains(SharedPref.KEY_CONTENT)) {
             Editor editor = preferences.edit();
-            editor.putBoolean("content", false);
+            editor.putBoolean(SharedPref.KEY_CONTENT, false);
             editor.apply();
         }
 
-        if (!preferences.getBoolean("content", false)) {
+        if (!preferences.getBoolean(SharedPref.KEY_CONTENT, false)) {
             mPresenter.delNewProgress();
         } else {
             otherContent();

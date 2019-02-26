@@ -1,11 +1,12 @@
 ext.versions = [
         compileSdk : 28,
-        buildTools : "27.0.3",
+        buildTools : "28.0.3",
         minSdk     : 16,
         targetSdk  : 28,
-        support    : "27.1.0",//"28.0.0-beta01",
+        support    : "28.0.0",
         butterknife: "8.8.1",
         osmdroid   : "6.0.2",
         mapsforge  : "0.10.0",
-        google_maps: "15.0.1"
+        google_maps: "15.0.1",
+        constraint : "1.0.2"
 ]

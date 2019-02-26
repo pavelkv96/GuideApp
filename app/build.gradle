@@ -49,7 +49,7 @@ dependencies {
     implementation "org.mapsforge:mapsforge-map:${versions.mapsforge}"
     implementation "org.mapsforge:mapsforge-themes:${versions.mapsforge}"
 
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation "com.android.support.constraint:constraint-layout:${versions.constraint}"
 
     testImplementation 'junit:junit:4.12'
 

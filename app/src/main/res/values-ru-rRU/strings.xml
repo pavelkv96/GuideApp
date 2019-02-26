@@ -17,6 +17,7 @@
   <string name="view_stop">Прекратить</string>
   <string name="view_next">Дальше</string>
   <string name="view_start_player">Запустить плеер</string>
+  <string name="view_select_language">Смеенить язык на Английский</string>
 
   <!--MENU ITEM NAME-->
   <string name="menu_item_settings">Настройки</string>
@@ -50,6 +51,7 @@
 
   <string name="dialog_types_objects">Типы объектов</string>
   <string name="dialog_radius_in_meters">Радиус (в метрах)</string>
+  <string name="locale">ru</string>
 
   <string-array name="single_items">
     <item>1000</item>

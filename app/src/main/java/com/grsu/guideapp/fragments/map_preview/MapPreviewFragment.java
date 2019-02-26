@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import butterknife.BindView;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.grsu.ui.scale.MapScaleView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -49,6 +50,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     private List<Marker> turnPoint = new ArrayList<>();
 
     protected int route = -1;
+    protected LatLngBounds bounds;
     Menu menu;
 
     @BindView(R.id.tv_fragment_map_distance)
@@ -84,6 +86,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
             mPresenter.getId(route);
             Integer choiceItem = read(Constants.KEY_SINGLE_CHOICE_ITEM, Integer.class);
             mPresenter.setRadius(choiceItem);
+            mPresenter.getAllPoi(true);
             distanceTextView.setText(String.valueOf(choiceItem));
         } else {
             if (getActivity != null) {
@@ -212,7 +215,8 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
 
     @Override
     public void moveToStart(LatLng latLng) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
     }
 
     @Override
@@ -231,16 +235,16 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
 
     @Override
     public void onCameraMove() {
-        CameraPosition cameraPosition = mMap.getCameraPosition();
         if (scaleView != null) {
+            CameraPosition cameraPosition = mMap.getCameraPosition();
             scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
         }
     }
 
     @Override
     public void onCameraIdle() {
-        CameraPosition cameraPosition = mMap.getCameraPosition();
         if (scaleView != null) {
+            CameraPosition cameraPosition = mMap.getCameraPosition();
             scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
         }
     }
