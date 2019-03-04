@@ -44,7 +44,7 @@ public class InfoAboutPoi implements Serializable {
         return type;
     }
 
-    public String getName_locale() {
+    public String getNameLocale() {
         return name_locale;
     }
 

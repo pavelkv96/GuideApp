@@ -20,7 +20,7 @@ public class Animator implements Runnable {
     private LatLng beginLatLng;
     private LatLng endLatLng;
     private GoogleMap map;
-
+    private float tilt = 67.5f;
 
     Animator(GoogleMap map, Marker marker) {
         this.map = map;
@@ -38,6 +38,10 @@ public class Animator implements Runnable {
 
     private void stopAnimation() {
         mHandler.removeCallbacks(this);
+    }
+
+    public void setTilt(float tilt) {
+        this.tilt = tilt;
     }
 
     @Override
@@ -64,7 +68,7 @@ public class Animator implements Runnable {
     private CameraPosition createCamera(LatLng target, float bearing) {
         float zoom = map.getCameraPosition().zoom;
         Builder builder = new Builder();
-        builder.target(target).bearing(bearing)/*.tilt(67.5f)*/.zoom(zoom);
+        builder.target(target).bearing(bearing).tilt(tilt).zoom(zoom);
         return builder.build();
     }
 

@@ -61,8 +61,8 @@ class Logic1 {
                 setChange(shortestDistance.getNumber());
                 currentPosition = shortestDistance;
                 fivePoint = getNewList(shortestDistance);
-                for (Point latLng:fivePoint) {
-                    Log.e(TAG, "findNearestPointInPolyline: " +latLng.getPosition());
+                for (Point latLng : fivePoint) {
+                    Log.e(TAG, "findNearestPointInPolyline: " + latLng.getPosition());
                 }
                 Log.e(TAG, "findNearestPointInPolyline: -----------------------------------");
 
@@ -74,8 +74,8 @@ class Logic1 {
                 setChange(shortestDistance.getNumber());
                 currentPosition = shortestDistance;
                 fivePoint = getNewList(shortestDistance);
-                for (Point latLng:fivePoint) {
-                    Log.e(TAG, "findNearestPointInPolyline1: " +latLng.getPosition());
+                for (Point latLng : fivePoint) {
+                    Log.e(TAG, "findNearestPointInPolyline1: " + latLng.getPosition());
                 }
                 Log.e(TAG, "findNearestPointInPolyline1: -----------------------------------");
 
@@ -110,9 +110,20 @@ class Logic1 {
 
     ///
     private List<Point> getDecodeLine(List<Line> lines) {
+        boolean flag = true;
+
         List<Point> allPoint = new ArrayList<>();
         for (Line line : lines) {
-            List<LatLng> polyline = CryptoUtils.decodeL(line.getPolyline());
+            List<LatLng> polyline;
+
+            if (flag) {
+                polyline = CryptoUtils.decodeL(line.getPolyline());
+                flag = false;
+            } else {
+                polyline = CryptoUtils.decodeL(line.getPolyline());
+                polyline.remove(0);
+            }
+
             for (LatLng latLng : polyline) {
                 allPoint.add(new Point(line.getIdLine(), latLng, -1f));
             }
@@ -130,7 +141,7 @@ class Logic1 {
 
     ///
     private List<Point> getTurnsList(List<Line> lines) {
-        turnPoint = new ArrayList<>(lines.size()+1);
+        turnPoint = new ArrayList<>(lines.size() + 1);
         for (Line decodeLine : lines) {
             if (turnPoint.isEmpty()) {
                 turnPoint.add(new Point(1, CryptoUtils.decodeP(decodeLine.getStartPoint()), -1f));

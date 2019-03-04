@@ -43,8 +43,8 @@ public class ListRoutesPresenter extends BasePresenterImpl<ListRoutesViews> impl
     }
 
     @Override
-    public void getListRoutes() {
-        listRoutesInteractor.getListAllRoutes(this);
+    public void getListRoutes(String locale) {
+        listRoutesInteractor.getListAllRoutes(this, locale);
     }
 
     @Override

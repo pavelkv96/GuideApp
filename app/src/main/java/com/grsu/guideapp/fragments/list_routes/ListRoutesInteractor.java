@@ -8,19 +8,19 @@ import java.util.List;
 
 public class ListRoutesInteractor implements ListRoutesContract.ListRoutesInteractor {
 
-    DatabaseHelper helper;
+    private DatabaseHelper helper;
 
     public ListRoutesInteractor(DatabaseHelper databaseHelper) {
         this.helper = databaseHelper;
     }
 
     @Override
-    public void getListAllRoutes(final OnSuccessListener<List<Route>> listener) {
+    public void getListAllRoutes(final OnSuccessListener<List<Route>> listener, final String loc) {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
                 try {
-                    listener.onSuccess(helper.getListRoutes());
+                    listener.onSuccess(helper.getListRoutes(loc));
                 } catch (Exception e) {
                     listener.onFailure(e);
                 }

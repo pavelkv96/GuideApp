@@ -27,7 +27,7 @@ public interface DetailsContract extends OnSuccessListener, OnFinishedListener {
 
     interface DetailsPresenter extends BasePresenter<DetailsView> {
 
-        void getById(String idPoint);
+        void getById(String idPoint, String locale);
 
         void getImageByName(String imageName);
 
@@ -36,7 +36,7 @@ public interface DetailsContract extends OnSuccessListener, OnFinishedListener {
 
     interface DetailsInteractor {
 
-        void getInfoById(OnFinishedListener<InfoAboutPoi> listener, String id);
+        void getInfoById(OnFinishedListener<InfoAboutPoi> listener, String id, String locale);
 
         void getImageFromStorage(OnSuccessListener<Bitmap> listener, String name);
 

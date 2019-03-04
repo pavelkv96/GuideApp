@@ -19,11 +19,12 @@ public class DetailsInteractor implements DetailsContract.DetailsInteractor {
     }
 
     @Override
-    public void getInfoById(final OnFinishedListener<InfoAboutPoi> listener, final String id) {
+    public void getInfoById(final OnFinishedListener<InfoAboutPoi> listener, final String id,
+            final String locale) {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                listener.onFinished(helper.getInfoById(id));
+                listener.onFinished(helper.getInfoById(id, locale));
             }
         });
     }

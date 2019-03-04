@@ -48,7 +48,9 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
         super.onCreateView(inflater, container, savedInstanceState);
 
         Fragment mapFragment = getChildFragmentManager().findFragmentById(getMap());
-        ((SupportMapFragment) mapFragment).getMapAsync(this);
+        if (mapFragment != null) {
+            ((SupportMapFragment) mapFragment).getMapAsync(this);
+        }
 
         return rootView;
     }

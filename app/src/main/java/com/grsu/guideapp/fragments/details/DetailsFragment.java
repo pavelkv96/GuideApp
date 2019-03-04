@@ -74,7 +74,7 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter, RouteActivit
 
             textView.setText(idPoint);
 
-            mPresenter.getById(idPoint);
+            mPresenter.getById(idPoint, getString(R.string.locale));
 
         } else {
             Toasts.makeS(getActivity, "Error get data");
@@ -94,8 +94,9 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter, RouteActivit
 
     @Override
     public void setContent(InfoAboutPoi content) {
+        getActivity.setTitleToolbar(content.getNameLocale());
         textView1.setText(content.getType());
-        textView2.setText(content.getName_locale());
+        textView2.setText(content.getNameLocale());
         textView3.setText(content.getShortDescriptionPoint());
         textView4.setText(content.getAudioReference());
         textView5.setText(content.getLink());

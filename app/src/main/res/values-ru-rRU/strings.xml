@@ -52,6 +52,7 @@
   <string name="dialog_types_objects">Типы объектов</string>
   <string name="dialog_radius_in_meters">Радиус (в метрах)</string>
   <string name="locale">ru</string>
+  <string name="message_once_more_to_exit">Еще раз, чтобы выйти</string>
 
   <string-array name="single_items">
     <item>1000</item>

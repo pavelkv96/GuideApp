@@ -5,10 +5,10 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -140,26 +140,21 @@ public class MapsFragment extends MapPreviewFragment<MapsPresenter>
 
     @OnClick(R.id.btn_fragment_map_next)
     public void next(View view) {
-        LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-        Log.e(TAG, "next: " + bounds);
-        /*if (i < myMovement.size() - 1) {
+    }
 
-            LatLng position = myMovement.get(i);
-            if (i == 0) {
-                MarkerOptions markerOptions = new MarkerOptions().position(position);
-                float hueGreen = BitmapDescriptorFactory.HUE_GREEN;
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(hueGreen));
-                marker = mMap.addMarker(markerOptions);
-                current = mMap.addMarker(markerOptions);
-                animator = new Animator(mMap, current);
-            }
-            marker.setPosition(position);
-            mPresenter.getProjectionLocation(MapUtils.toLocation(position));
-            i++;
+    @OnClick(R.id.btn_fragment_map_tilt)
+    public void tilt(View view) {
+        Button button = (Button) view;
+        String text = button.getText().toString();
+        float tilt;
+        if (text.equals("2D")) {
+            button.setText("3D");
+            tilt = 0f;
         } else {
-            Location currentLocation = MapUtils.toLocation(myMovement.get(myMovement.size() - 1));
-            mPresenter.getProjectionLocation(currentLocation);
-        }*/
+            button.setText("2D");
+            tilt = 67.5f;
+        }
+        animator.setTilt(tilt);
     }
 
     @Override
@@ -176,7 +171,6 @@ public class MapsFragment extends MapPreviewFragment<MapsPresenter>
 
     @Override
     public void onMyLocationChange(Location location) {
-        //listener.onLocationChanged(location);
         if (i < myMovement.size() - 1) {
 
             LatLng position = myMovement.get(i);

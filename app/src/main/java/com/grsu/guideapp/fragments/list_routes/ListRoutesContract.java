@@ -25,11 +25,11 @@ public interface ListRoutesContract extends OnSuccessListener<List<Route>> {
 
         void createDBIfNeed(Context context);
 
-        void getListRoutes();
+        void getListRoutes(String locale);
     }
 
     interface ListRoutesInteractor {
 
-        void getListAllRoutes(OnSuccessListener<List<Route>> listener);
+        void getListAllRoutes(OnSuccessListener<List<Route>> listener, String locale);
     }
 }

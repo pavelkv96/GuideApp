@@ -47,7 +47,14 @@
       android:id="@+id/btn_fragment_map_next"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="@string/view_next"/>
+      android:text="@string/view_next"
+      android:visibility="gone"/>
+
+    <Button
+      android:id="@+id/btn_fragment_map_tilt"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="2D"/>
 
     <TextView
       android:id="@+id/tv_fragment_map_distance"

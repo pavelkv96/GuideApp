@@ -40,6 +40,7 @@ public class NavigationDrawerDelegate
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         mNavigationView.setNavigationItemSelectedListener(this);
+        onNavigationItemSelected(mNavigationView.getMenu().findItem(R.id.nav_slideshow));
     }
 
     @Override

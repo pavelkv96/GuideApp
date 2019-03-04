@@ -24,7 +24,7 @@ public class SettingInteractor implements SettingContract.SettingInteractor {
                 StorageUtils.deleteRecursive(path);
                 if (!path.exists()) {
                     String toFilePath = path.getAbsolutePath();
-                    StorageUtils.copyAssets(Settings.MAP_FILE, toFilePath, context.getAssets());
+                    StorageUtils.copyAssets(toFilePath, Settings.MAP_FILE, context.getAssets());
                     listener.onFinished(context.getString(R.string.success_map_file_updated));
                 } else {
                     listener.onFinished(context.getString(R.string.error_not_find_map_file));

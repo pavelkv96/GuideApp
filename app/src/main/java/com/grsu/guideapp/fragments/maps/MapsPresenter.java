@@ -18,14 +18,14 @@ public class MapsPresenter extends MapPreviewPresenter implements MapsContract.M
 
     private MapViews mapViews;
     private MapsInteractor mapInteractor;
-    private Logic logic;
+    private Logic1 logic;
     private boolean flag;
 
     public MapsPresenter(MapViews mapViews, MapsInteractor mapInteractor) {
         super(mapViews, mapInteractor);
         this.mapViews = mapViews;
         this.mapInteractor = mapInteractor;
-        this.logic = Logic.getInstance(this);
+        this.logic = Logic1.getInstance(this);
     }
 
     private static final Integer RADIUS = 100;

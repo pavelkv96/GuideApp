@@ -24,8 +24,8 @@ public class DetailsPresenter extends BasePresenterImpl<DetailsView> implements
     }
 
     @Override
-    public void getById(String idPoint) {
-        detailsInteractor.getInfoById(this, idPoint);
+    public void getById(String idPoint, String locale) {
+        detailsInteractor.getInfoById(this, idPoint, locale);
     }
 
     @Override

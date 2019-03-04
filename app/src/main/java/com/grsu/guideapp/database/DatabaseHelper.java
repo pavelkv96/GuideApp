@@ -51,12 +51,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Route> getListRoutes() {
+    public List<Route> getListRoutes(String locale) {
         List<Route> routesList = new ArrayList<>();
         openDatabase();
-        String select = "select c1.id_route, c2.%s, c1.id_author, c1.duration, c1.distance, c1.short_description, c1.reference_photo_route, c1.southwest, c1.northeast\n";
+        String select = "select c1.id_route, c2.name_%s, c1.id_author, c1.duration, c1.distance, c1.short_description, c1.reference_photo_route, c1.southwest, c1.northeast\n";
         String from = "from routes c1, name_by_language c2 where c1.name_route=c2.id_name";
-        String query = String.format(select + from, "name_ru");
+        String query = String.format(select + from, locale);
         Cursor cursor = mDatabase.rawQuery(query, null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
@@ -101,11 +101,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return poiList;
     }
 
-    public InfoAboutPoi getInfoById(String id_point) {
+    public InfoAboutPoi getInfoById(String id_point, String locale) {
         openDatabase();
-        String query = String
-                .format("select type, %s, short_description_point, audio_reference, photo_reference, link from poi c1, name_by_language c2 where c1.name_poi = c2.id_name and id_poi = ? limit 1",
-                        "name_ru");
+        String select ="select type, name_%s, short_description_point, audio_reference, photo_reference, link\n";
+        String from = "from poi c1, name_by_language c2 where c1.name_poi = c2.id_name and id_poi = ? limit 1";
+        String query = String.format(select + from, locale);
 
         Cursor cursor = mDatabase.rawQuery(query, new String[]{id_point});
 

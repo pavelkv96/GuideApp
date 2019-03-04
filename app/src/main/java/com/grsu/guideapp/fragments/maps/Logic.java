@@ -70,8 +70,8 @@ class Logic {
                 setChange(shortestDistance.getNumber());
                 currentPosition = shortestDistance;
                 latLngs = getNewList(shortestDistance);
-                for (Point latLng:latLngs) {
-                    Log.e(TAG, "findNearestPointInPolyline: " +latLng.getPosition());
+                for (Point latLng : latLngs) {
+                    Log.e(TAG, "findNearestPointInPolyline: " + latLng.getPosition());
                 }
                 Log.e(TAG, "findNearestPointInPolyline: -----------------------------------");
 
@@ -83,8 +83,8 @@ class Logic {
                 setChange(shortestDistance.getNumber());
                 currentPosition = shortestDistance;
                 latLngs = getNewList(shortestDistance);
-                for (Point latLng:latLngs) {
-                    Log.e(TAG, "findNearestPointInPolyline1: " +latLng.getPosition());
+                for (Point latLng : latLngs) {
+                    Log.e(TAG, "findNearestPointInPolyline1: " + latLng.getPosition());
                 }
                 Log.e(TAG, "findNearestPointInPolyline1: -----------------------------------");
             }

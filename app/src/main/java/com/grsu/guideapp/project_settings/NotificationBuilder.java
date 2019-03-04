@@ -39,8 +39,8 @@ public class NotificationBuilder {
     @SuppressLint("RestrictedApi")
     public static Notification createNotification(Context ctx, RemoteViews big, RemoteViews small) {
         if (notification == null) {
-            PendingIntent pendingIntent =
-                    PendingIntent.getActivity(ctx, 0, new Intent(ctx, RouteActivity.class), 0);
+            Intent i = new Intent(ctx, RouteActivity.class);
+            PendingIntent pendingIntent =PendingIntent.getActivity(ctx, 0, i, 0);
             notification = new NotificationCompat.Builder(ctx, CHANNEL_ID);
             notification.setContentIntent(pendingIntent);
             notification.setSmallIcon(R.drawable.ic_action_play);
@@ -57,16 +57,13 @@ public class NotificationBuilder {
     }
 
     private static void setListeners(Context context, RemoteViews big, RemoteViews small) {
-        Intent delete = new Intent(context, DetailsPlayerService.class)
-                .setAction(Constants.NOTIFY_DELETE);
-        Intent next = new Intent(context, DetailsPlayerService.class)
-                .setAction(Constants.NOTIFY_NEXT);
-        Intent pause = new Intent(context, DetailsPlayerService.class)
-                .setAction(Constants.NOTIFY_PAUSE);
-        Intent play = new Intent(context, DetailsPlayerService.class)
-                .setAction(Constants.NOTIFY_PLAY);
-        Intent previous = new Intent(context, DetailsPlayerService.class)
-                .setAction(Constants.NOTIFY_PREVIOUS);
+
+        Class<DetailsPlayerService> aClass = DetailsPlayerService.class;
+        Intent delete = new Intent(context, aClass).setAction(Constants.NOTIFY_DELETE);
+        Intent next = new Intent(context, aClass).setAction(Constants.NOTIFY_NEXT);
+        Intent pause = new Intent(context, aClass).setAction(Constants.NOTIFY_PAUSE);
+        Intent play = new Intent(context, aClass).setAction(Constants.NOTIFY_PLAY);
+        Intent previous = new Intent(context, aClass).setAction(Constants.NOTIFY_PREVIOUS);
 
         PendingIntent pDelete = PendingIntent.getService(context, 0, delete, 0);
         big.setOnClickPendingIntent(R.id.btnDelete, pDelete);

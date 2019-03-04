@@ -28,7 +28,7 @@
         tools:src="@color/cardview_dark_background"/>
 
       <TextView
-        android:id="@+id/tv_item_routes_id_author"
+        android:id="@+id/tv_item_routes_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -44,8 +44,8 @@
         android:layout_marginStart="15dp"
         android:layout_marginLeft="15dp"
         android:layout_alignBottom="@id/iv_item_preview_photo_route"
-        android:layout_toEndOf="@id/tv_item_routes_id_author"
-        android:layout_toRightOf="@id/tv_item_routes_id_author"
+        android:layout_toEndOf="@id/tv_item_routes_duration"
+        android:layout_toRightOf="@id/tv_item_routes_duration"
         android:textColor="#fff"
         tools:text="150 km"/>
     </RelativeLayout>

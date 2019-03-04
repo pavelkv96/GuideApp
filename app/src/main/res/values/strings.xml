@@ -52,6 +52,7 @@
   <string name="dialog_types_objects">Types objects</string>
   <string name="dialog_radius_in_meters">Radius (in meters)</string>
   <string name="locale">en</string>
+  <string name="message_once_more_to_exit">Once more to exit</string>
 
   <string-array name="single_items">
     <item>1000</item>

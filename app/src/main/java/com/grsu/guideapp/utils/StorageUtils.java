@@ -52,7 +52,7 @@ public class StorageUtils {
         fileOrDirectory.delete();
     }
 
-    public static void copyAssets(String fileName, String toFilePath, AssetManager assetManager) {
+    public static void copyAssets(String toFilePath, String fileName, AssetManager assetManager) {
         InputStream in = null;
         OutputStream out = null;
         try {
@@ -68,7 +68,7 @@ public class StorageUtils {
         }
     }
 
-    public static void copyAssetsFolder(String assetsPath, File toFile, AssetManager assetManager) {
+    public static void copyAssetsFolder(File toFile, String assetsPath, AssetManager assetManager) {
         String[] files = null;
         try {
             files = assetManager.list(assetsPath);
@@ -125,6 +125,8 @@ public class StorageUtils {
 
     public static boolean deleteDatabase(@NonNull Context context) {
         File database = context.getDatabasePath(Settings.DATABASE_INFORMATION_NAME);
+        File journal = context.getDatabasePath(Settings.DATABASE_JOURNAL);
+        journal.delete();
         if (database.exists()) {
             return database.delete();
         }
