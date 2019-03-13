@@ -17,6 +17,8 @@ import java.util.Locale;
 
 public class App extends Application {
 
+    static AppExecutors executors;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -56,5 +58,13 @@ public class App extends Application {
         }
 
         res.updateConfiguration(conf, res.getDisplayMetrics());
+    }
+
+    public static AppExecutors getThread() {
+        if (executors == null) {
+            executors = AppExecutors.INSTANCE;
+        }
+
+        return executors;
     }
 }

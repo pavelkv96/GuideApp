@@ -8,8 +8,6 @@ public interface NavigationDrawerContract {
 
     interface NavigationDrawerView extends BaseView {
 
-        void openMapFragment();
-
         void openSettingsFragment();
 
         void openListRoutesFragment();
@@ -24,10 +22,5 @@ public interface NavigationDrawerContract {
     interface NavigationDrawerPresenter extends BasePresenter<NavigationDrawerView> {
 
         void replaceFragment(Fragment fragment);
-
-        boolean checkPermissions();
-
-        void checkPermissionsResult(int requestCode, int[] grantResults);
-
     }
 }

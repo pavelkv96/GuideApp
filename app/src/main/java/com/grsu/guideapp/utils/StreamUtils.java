@@ -13,7 +13,7 @@ public class StreamUtils {
         copyFile(in, out, new byte[1024]);
     }
 
-    static void copyFile(InputStream in, OutputStream out, byte[] buffer) throws IOException {
+    public static void copyFile(InputStream in, OutputStream out, byte[] buffer) throws IOException {
         int read;
         while ((read = in.read(buffer)) != -1) {
             out.write(buffer, 0, read);

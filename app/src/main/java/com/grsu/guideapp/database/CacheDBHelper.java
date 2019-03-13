@@ -1,17 +1,11 @@
 package com.grsu.guideapp.database;
 
-import static com.grsu.guideapp.project_settings.Settings.CACHE;
-import static com.grsu.guideapp.project_settings.Settings.CACHE_DATABASE_NAME;
-import static com.grsu.guideapp.project_settings.Settings.CACHE_DATABASE_VERSION;
-import static com.grsu.guideapp.utils.MapUtils.getIndex;
-
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteFullException;
-import android.database.sqlite.SQLiteOpenHelper;
+import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StorageUtils;
@@ -20,37 +14,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 
-public class CacheDBHelper extends SQLiteOpenHelper implements TileConstants {
-
-    private static final Object mLock = new Object();
-
-    private static SQLiteDatabase mDb;
+public class CacheDBHelper implements TileConstants {
 
     private static final String TAG = CacheDBHelper.class.getSimpleName();
-    private static final String primaryKey =
-            COLUMN_KEY + "=? and " + COLUMN_PROVIDER + "=? limit 1";
-    private static final String[] queryColumns = {COLUMN_TILE};
-
-    public CacheDBHelper(Context context) {
-        super(context, CACHE_DATABASE_NAME, null, CACHE_DATABASE_VERSION);
-        mDb = getDb();
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-    }
+    private static SQLiteDatabase mDb;
 
     private static SQLiteDatabase getDb() {
         if (mDb != null) {
             return mDb;
         }
-        synchronized (mLock) {
-            new File(CACHE).mkdirs();
-            File db_file = new File(CACHE, CACHE_DATABASE_NAME);
+        synchronized (TAG) {
+            new File(Settings.CACHE).mkdirs();
+            File db_file = new File(Settings.CACHE, Settings.CACHE_DATABASE_NAME);
 
             if (mDb == null) {
                 try {
@@ -66,8 +41,8 @@ public class CacheDBHelper extends SQLiteOpenHelper implements TileConstants {
         return mDb;
     }
 
-    public static void refreshDb() {
-        synchronized (mLock) {
+    public static void disconnectDB() {
+        synchronized (TAG) {
             if (mDb != null) {
                 mDb.close();
                 mDb = null;
@@ -75,7 +50,7 @@ public class CacheDBHelper extends SQLiteOpenHelper implements TileConstants {
         }
     }
 
-    public static void saveFile(long pIndex, String pProvider, InputStream pStream, Long pTime) {
+    public static void saveTile(long pIndex, String pProvider, InputStream pStream, Long pTime) {
 
         String message = "Unable to store cached tile from ";
         String toString = MapUtils.toString(pIndex);
@@ -88,24 +63,19 @@ public class CacheDBHelper extends SQLiteOpenHelper implements TileConstants {
 
         ByteArrayOutputStream bos = null;
         try {
-            ContentValues cv = new ContentValues();
-            final long index = getIndex(pIndex);
-            cv.put(COLUMN_PROVIDER, pProvider);
+            final long index = MapUtils.getIndex(pIndex);
 
-            byte[] buffer = new byte[512];
-            int l;
             bos = new ByteArrayOutputStream();
-            while ((l = pStream.read(buffer)) != -1) {
-                bos.write(buffer, 0, l);
-            }
+            StreamUtils.copyFile(pStream, bos, new byte[512]);
+
             byte[] bits = bos.toByteArray();
 
+            ContentValues cv = new ContentValues();
             cv.put(COLUMN_KEY, index);
+            cv.put(COLUMN_PROVIDER, pProvider);
             cv.put(COLUMN_TILE, bits);
             cv.put(COLUMN_EXPIRES, pTime);
             mDb.replace(TABLE, null, cv);
-
-
         } catch (SQLiteFullException ex) {
             catchException(ex);
         } catch (Exception ex) {
@@ -118,57 +88,61 @@ public class CacheDBHelper extends SQLiteOpenHelper implements TileConstants {
 
     public static byte[] getTile(long index, String tileProvider) {
 
-        Cursor cur = getTileCursor(getPrimaryKeyParameters(index, tileProvider), queryColumns);
+        Cursor cur = getTileCursor(getParameters(index, tileProvider));
         byte[] bits = null;
         try {
-            if (cur.moveToFirst()) {
+            if (cur != null && cur.moveToFirst()) {
                 bits = cur.getBlob(cur.getColumnIndex(COLUMN_TILE));
             }
+        } catch (NullPointerException ignore) {
         } finally {
-            cur.close();
+            StreamUtils.closeStream(cur);
         }
 
         return bits;
     }
 
-    private static Cursor getTileCursor(String[] pPrimaryKeyParameters, String[] pColumns) {
-        mDb = getDb();
-        return mDb.query(TABLE, pColumns, primaryKey, pPrimaryKeyParameters, null, null, null);
-    }
-
-    private static String[] getPrimaryKeyParameters(long pIndex, String pTileSourceInfo) {
-        return new String[]{String.valueOf(pIndex), pTileSourceInfo};
-    }
-
     public static void clearCache() {
         if (mDb != null) {
-            refreshDb();
+            disconnectDB();
         }
 
-        synchronized (mLock) {
-            StorageUtils.removeDir(CACHE);
+        synchronized (TAG) {
+            StorageUtils.removeDir(Settings.CACHE);
         }
+    }
+
+    private static Cursor getTileCursor(String[] pParameters) {
+        mDb = getDb();
+        if (mDb != null) {
+            return mDb.query(TABLE, columns, primaryKey, pParameters, null, null, null);
+        }
+        return null;
+    }
+
+    private static String[] getParameters(long pIndex, String pTileSourceInfo) {
+        return new String[]{String.valueOf(pIndex), pTileSourceInfo};
     }
 
     private static boolean isFunctionalException(final SQLiteException pSQLiteException) {
         switch (pSQLiteException.getClass().getSimpleName()) {
-            case "SQLiteBindOrColumnIndexOutOfRangeException":
-            case "SQLiteBlobTooBigException":
-            case "SQLiteConstraintException":
-            case "SQLiteDatatypeMismatchException":
-            case "SQLiteFullException":
-            case "SQLiteMisuseException":
-            case "SQLiteTableLockedException":
+            case SQLITE_BIND_OR_COLUMN_INDEX_OUT_OF_RANGE_EXCEPTION:
+            case SQLITE_BLOB_TOO_BIG_EXCEPTION:
+            case SQLITE_CONSTRAINT_EXCEPTION:
+            case SQLITE_DATATYPE_MISMATCH_EXCEPTION:
+            case SQLITE_FULL_EXCEPTION:
+            case SQLITE_MISUSE_EXCEPTION:
+            case SQLITE_TABLE_LOCKED_EXCEPTION:
                 return true;
-            case "SQLiteAbortException":
-            case "SQLiteAccessPermException":
-            case "SQLiteCantOpenDatabaseException":
-            case "SQLiteDatabaseCorruptException":
-            case "SQLiteDatabaseLockedException":
-            case "SQLiteDiskIOException":
-            case "SQLiteDoneException":
-            case "SQLiteOutOfMemoryException":
-            case "SQLiteReadOnlyDatabaseException":
+            case SQLITE_ABORT_EXCEPTION:
+            case SQLITE_ACCESS_PERM_EXCEPTION:
+            case SQLITE_CANT_OPEN_DATABASE_EXCEPTION:
+            case SQLITE_DATABASE_CORRUPT_EXCEPTION:
+            case SQLITE_DATABASE_LOCKED_EXCEPTION:
+            case SQLITE_DISK_IOEXCEPTION:
+            case SQLITE_DONE_EXCEPTION:
+            case SQLITE_OUT_OF_MEMORY_EXCEPTION:
+            case SQLITE_READ_ONLY_DATABASE_EXCEPTION:
                 return false;
             default:
                 return false;
@@ -178,7 +152,7 @@ public class CacheDBHelper extends SQLiteOpenHelper implements TileConstants {
     private static void catchException(final Exception pException) {
         if (pException instanceof SQLiteException) {
             if (!isFunctionalException((SQLiteException) pException)) {
-                refreshDb();
+                disconnectDB();
             }
         }
     }

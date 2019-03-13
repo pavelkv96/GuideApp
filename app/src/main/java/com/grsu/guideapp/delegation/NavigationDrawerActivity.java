@@ -12,7 +12,6 @@ import com.grsu.guideapp.base.BaseDelegationActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
 import com.grsu.guideapp.fragments.Tracker;
 import com.grsu.guideapp.fragments.list_routes.ListRoutesFragment;
-import com.grsu.guideapp.fragments.map.MapFragment;
 import com.grsu.guideapp.fragments.setting.SettingsFragment;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 
@@ -52,13 +51,17 @@ public class NavigationDrawerActivity
 
     @Override
     public void onBackPressed() {
-        if (!mDelegate.closeDrawer() && doubleBackToExitPressedOnce) {
-            super.onBackPressed();
-        }
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            if (!mDelegate.closeDrawer() && doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+            }
 
-        doubleBackToExitPressedOnce = true;
-        Toasts.makeS(this, R.string.message_once_more_to_exit);
-        new Handler().postDelayed(this, 2000);
+            doubleBackToExitPressedOnce = true;
+            Toasts.makeS(this, R.string.message_once_more_to_exit);
+            new Handler().postDelayed(this, 2000);
+        }
     }
 
     @Override
@@ -69,13 +72,6 @@ public class NavigationDrawerActivity
     @Override
     public void openTrackerFragment() {
         mPresenter.replaceFragment(Tracker.newInstance());
-    }
-
-    @Override
-    public void openMapFragment() {
-        if (mPresenter.checkPermissions()) {
-            mPresenter.replaceFragment(new MapFragment());
-        }
     }
 
     @Override
@@ -91,12 +87,6 @@ public class NavigationDrawerActivity
     @Override
     public void showToastMessage(String message) {
         Toasts.makeS(this, message);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-            @NonNull int[] grantResults) {
-        mPresenter.checkPermissionsResult(requestCode, grantResults);
     }
 
     public void setTitleToolbar(String title) {

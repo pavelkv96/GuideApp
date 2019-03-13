@@ -1,10 +1,12 @@
 package com.grsu.guideapp.mf;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.grsu.guideapp.database.CacheDBHelper;
+import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StreamUtils;
@@ -16,6 +18,7 @@ import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.graphics.AndroidTileBitmap;
+import org.mapsforge.map.android.rendertheme.AssetsRenderTheme;
 import org.mapsforge.map.datastore.MultiMapDataStore;
 import org.mapsforge.map.datastore.MultiMapDataStore.DataPolicy;
 import org.mapsforge.map.layer.cache.InMemoryTileCache;
@@ -39,7 +42,16 @@ public class MapsForgeTileSource {
 
     private static MultiMapDataStore mapDatabase;
 
-    public static void createFromFiles(File file, XmlRenderTheme renderTheme, String provider) {
+    public static void createInstance(File file, Context context, String provider) {
+        XmlRenderTheme renderTheme = null;
+        try {
+            renderTheme = new AssetsRenderTheme(context, Settings.THEME_FOLDR, Settings.THEME_FILE);
+        } catch (Exception ignore) {
+        } finally {
+            if (renderTheme == null) {
+                renderTheme = InternalRenderTheme.OSMARENDER;
+            }
+        }
         mProvider = provider;
 
         if (mapDatabase == null) {
@@ -47,38 +59,27 @@ public class MapsForgeTileSource {
             mapDatabase.addMapDataStore(new MapFile(file), false, false);
         }
 
-        if (AndroidGraphicFactory.INSTANCE == null) {
-            throw new RuntimeException(
-                    "Must call MapsForgeTileSource.createInstance(context.getApplication()); once before MapsForgeTileSource.createFromFiles().");
+        AndroidGraphicFactory instance = AndroidGraphicFactory.INSTANCE;
+        if (instance == null) {
+            throw new RuntimeException("Must call AndroidGraphicFactory.createInstance(app)");
         }
 
-        InMemoryTileCache tileCache = new InMemoryTileCache(2);
-        TileBasedLabelStore labelStore = new TileBasedLabelStore(tileCache.getCapacityFirstLevel());
-        renderer = new DatabaseRenderer(
-                mapDatabase,
-                AndroidGraphicFactory.INSTANCE,
-                tileCache,
-                labelStore,
-                true,
-                true,
-                null);
+        InMemoryTileCache cache = new InMemoryTileCache(2);
+        TileBasedLabelStore labelStore = new TileBasedLabelStore(cache.getCapacityFirstLevel());
+        renderer = new DatabaseRenderer(mapDatabase, instance, cache, labelStore, true, true, null);
 
-        if (renderTheme == null) {
-            renderTheme = InternalRenderTheme.OSMARENDER;
-        }
-        theme = new RenderThemeFuture(AndroidGraphicFactory.INSTANCE, renderTheme, model);
+        theme = new RenderThemeFuture(instance, renderTheme, model);
         Executors.newFixedThreadPool(3).execute(theme);
     }
 
     @Nullable
     private static synchronized Bitmap renderTile(final long pMapTileIndex) {
-
-        Tile tile = MapUtils.getTile(pMapTileIndex, 600);
-
         if (mapDatabase == null) {
             return null;
         }
+
         try {
+            Tile tile = MapUtils.getTile(pMapTileIndex, 600);
             RendererJob job = new RendererJob(tile, mapDatabase, theme, model, scale, false, false);
             AndroidTileBitmap bmp = (AndroidTileBitmap) renderer.executeJob(job);
             if (bmp != null) {
@@ -110,9 +111,9 @@ public class MapsForgeTileSource {
 
                 //Set image in database
                 bais = new ByteArrayInputStream(bitmapdata);
-                CacheDBHelper.saveFile(pMapTileIndex, mProvider, bais, null);
-                bytes = CacheDBHelper.getTile(MapUtils.getIndex(pMapTileIndex), mProvider);
+                CacheDBHelper.saveTile(pMapTileIndex, mProvider, bais, null);
                 Logs.e(TAG, "Saved tile " + MapUtils.getIndex(pMapTileIndex));
+                return bitmapdata;
             } catch (Exception ex) {
                 Logs.e(TAG, "forge error storing tile cache", ex);
             } finally {
@@ -120,10 +121,11 @@ public class MapsForgeTileSource {
                 StreamUtils.closeStream(stream);
             }
         }
-        return bytes;
+        return null;
     }
 
     public static void dispose() {
+        CacheDBHelper.disconnectDB();
         if (theme != null) {
             theme.decrementRefCount();
         }

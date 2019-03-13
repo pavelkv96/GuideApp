@@ -1,6 +1,8 @@
 package com.grsu.guideapp.fragments.maps;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,10 +14,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.OnClick;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition.Builder;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -32,6 +38,7 @@ import com.grsu.guideapp.utils.DataUtils;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
+import com.grsu.guideapp.utils.StorageUtils;
 import java.util.List;
 
 public class MapsFragment extends MapPreviewFragment<MapsPresenter>
@@ -40,8 +47,9 @@ public class MapsFragment extends MapPreviewFragment<MapsPresenter>
     private static final String TAG = MapsFragment.class.getSimpleName();
     private List<LatLng> myMovement;//deleting
 
-    private Marker marker;//deleting
+    //private Marker marker;//deleting
     private Marker current;
+    private Circle circle;
     int i = 0;
     Animator animator;
 
@@ -52,6 +60,11 @@ public class MapsFragment extends MapPreviewFragment<MapsPresenter>
     @Override
     protected MapsPresenter getPresenterInstance() {
         return new MapsPresenter(this, new MapsInteractor(new DatabaseHelper(getContext())));
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.fragment_map;
     }
 
     @Override
@@ -154,7 +167,16 @@ public class MapsFragment extends MapPreviewFragment<MapsPresenter>
             button.setText("2D");
             tilt = 67.5f;
         }
+
+        mMap.moveCamera(createCamera(current.getPosition(), tilt));
         animator.setTilt(tilt);
+    }
+
+    public CameraUpdate createCamera(LatLng target, float tilt) {
+        float zoom = mMap.getCameraPosition().zoom;
+        Builder builder = new Builder();
+        builder.target(target).tilt(tilt).zoom(zoom);
+        return CameraUpdateFactory.newCameraPosition(builder.build());
     }
 
     @Override
@@ -175,16 +197,26 @@ public class MapsFragment extends MapPreviewFragment<MapsPresenter>
 
             LatLng position = myMovement.get(i);
             if (i == 0) {
+                CircleOptions options = new CircleOptions();
+                options.center(position);
+                options.radius(5);
+                options.strokeColor(Color.BLUE);
+                options.fillColor(Color.GRAY);
+                options.strokeWidth(5);
+                options.zIndex(0.1f);
+
+                circle = mMap.addCircle(options);
                 MarkerOptions markerOptions = new MarkerOptions().position(position);
-                float hueGreen = BitmapDescriptorFactory.HUE_GREEN;
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(hueGreen));
+                Bitmap hueGreen = StorageUtils.getBitmap(getResources(), R.drawable.ic_my_location);
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(hueGreen));
+                markerOptions.anchor(0.5f, 0.5f);
+                markerOptions.flat(true);
                 //marker = mMap.addMarker(markerOptions);
                 current = mMap.addMarker(markerOptions);
-                animator = new Animator(mMap, current);
+                animator = new Animator(mMap, current, circle);
             }
             //marker.setPosition(position);
             //mPresenter.getProjectionLocation(MapUtils.toLocation(position));
-
             update(MapUtils.toLocation(position));
             i++;
         } else {
@@ -198,13 +230,9 @@ public class MapsFragment extends MapPreviewFragment<MapsPresenter>
     private void update(Location currentLocation) {
         List<Point> list = mPresenter.getList(currentLocation);
         LatLng start = list.get(2).getPosition();
-        LatLng end;
-        if (start != list.get(3).getPosition()) {
-            end = list.get(3).getPosition();
-        } else {
-            end = list.get(4).getPosition();
-        }
-
+        LatLng end = list.get(3).getPosition();
+        circle.setCenter(start);
+        circle.setRadius(MapUtils.getDistanceBetween(currentLocation, MapUtils.toLocation(start)));
         animator.startAnimation(start, end);
     }
 

@@ -1,6 +1,5 @@
 package com.grsu.guideapp.base;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -10,33 +9,39 @@ import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import butterknife.BindView;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener;
+import com.google.android.gms.maps.GoogleMap.OnCameraMoveListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Tile;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
-import com.grsu.guideapp.database.CacheDBHelper;
+import com.grsu.guideapp.R;
 import com.grsu.guideapp.mf.MapsForgeTileSource;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CheckSelfPermission;
 import com.grsu.guideapp.utils.MapUtils;
-import com.grsu.guideapp.utils.MessageViewer.Toasts;
+import com.grsu.ui.scale.MapScaleView;
 import java.io.File;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-import org.mapsforge.map.android.rendertheme.AssetsRenderTheme;
-import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
 public abstract class BaseMapFragment<P extends BasePresenter, A extends FragmentActivity>
         extends BaseFragment<P, A>
-        implements OnMapReadyCallback, TileProvider, OnMarkerClickListener {
+        implements OnMapReadyCallback, TileProvider, OnMarkerClickListener, OnCameraMoveListener,
+        OnCameraIdleListener {
 
     protected GoogleMap mMap;
     protected TileOverlay overlay;
+
+    @BindView(R.id.scaleView)
+    MapScaleView scaleView;
 
     protected abstract @IdRes
     int getMap();
@@ -63,6 +68,8 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
         mMap.setMinZoomPreference(Settings.MIN_ZOOM_LEVEL);
         mMap.setMaxZoomPreference(Settings.MAX_ZOOM_LEVEL);
         mMap.getUiSettings().setMapToolbarEnabled(false);
+        mMap.setOnCameraMoveListener(this);
+        mMap.setOnCameraIdleListener(this);
 
         File file = getActivity.getDatabasePath(Settings.MAP_FILE);
         LatLngBounds borders = MapsForgeTileSource.getBoundingBox(file);
@@ -76,33 +83,20 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
     @Override
     public void onStart() {
         super.onStart();
-        if (CheckSelfPermission.writeExternalStorageIsGranted(getContext())) {
+        File file = getActivity.getDatabasePath(Settings.MAP_FILE);
+        if (CheckSelfPermission.writeExternalStorageIsGranted(getContext()) || !file.exists()) {
             getActivity.finish();
+            return;
         }
 
         AndroidGraphicFactory.createInstance(getActivity.getApplication());
-        new CacheDBHelper(getContext());
-
-        File file = getActivity.getDatabasePath(Settings.MAP_FILE);
-
-        Toasts.makeL(getContext(), "Loaded map file " + file.exists());
-
-        if (file.exists()) {
-            XmlRenderTheme theme = null;
-            try {
-                Context context = getActivity.getApplicationContext();
-                theme = new AssetsRenderTheme(context, Settings.THEME_FOLDR, Settings.THEME_FILE);
-            } catch (Exception ignore) {
-            }
-            MapsForgeTileSource.createFromFiles(file, theme, Settings.CURRENT_PROVIDER);
-        }
+        MapsForgeTileSource.createInstance(file, getActivity, Settings.CURRENT_PROVIDER);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         overlay.clearTileCache();
-        CacheDBHelper.refreshDb();
         MapsForgeTileSource.dispose();
         AndroidGraphicFactory.clearResourceMemoryCache();
     }
@@ -126,5 +120,21 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
             overlay.remove();
         }
         super.onDestroyView();
+    }
+
+    @Override
+    public void onCameraMove() {
+        if (scaleView != null && scaleView.getVisibility() == View.VISIBLE) {
+            CameraPosition cameraPosition = mMap.getCameraPosition();
+            scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
+        }
+    }
+
+    @Override
+    public void onCameraIdle() {
+        if (scaleView != null && scaleView.getVisibility() == View.VISIBLE) {
+            CameraPosition cameraPosition = mMap.getCameraPosition();
+            scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
+        }
     }
 }

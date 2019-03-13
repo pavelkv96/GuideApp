@@ -71,20 +71,4 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
         rw_fragment_list_routes.setLayoutManager(new LinearLayoutManager(getContext()));
         mPresenter.getListRoutes(getString(R.string.locale));
     }
-
-    @Override
-    public void onResponse(@NonNull Call<Category> call, @NonNull Response<Category> response) {
-        Logs.e(TAG, "THIS2");
-        if (response.isSuccessful()) {
-            Category category = response.body();
-            if (category !=null){
-                category.getData().get(0).getData();
-            }
-        }
-    }
-
-    @Override
-    public void onFailure(@NonNull Call<Category> call, @NonNull Throwable t) {
-        Logs.e(TAG, "onFailure: " + t.getMessage(), t);
-    }
 }

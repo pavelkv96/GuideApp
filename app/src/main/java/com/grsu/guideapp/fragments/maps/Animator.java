@@ -7,6 +7,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CameraPosition.Builder;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.grsu.guideapp.utils.MapUtils;
@@ -17,14 +18,16 @@ public class Animator implements Runnable {
     private final Handler mHandler;
     private long startTime;
     private Marker marker;
+    private Circle circle;
     private LatLng beginLatLng;
     private LatLng endLatLng;
     private GoogleMap map;
     private float tilt = 67.5f;
 
-    Animator(GoogleMap map, Marker marker) {
+    Animator(GoogleMap map, Marker marker, Circle circle) {
         this.map = map;
         this.marker = marker;
+        this.circle = circle;
         mHandler = new Handler();
     }
 
@@ -53,6 +56,7 @@ public class Animator implements Runnable {
         LatLng newPosition = new LatLng(lat, lng);
 
         marker.setPosition(newPosition);
+        circle.setCenter(newPosition);
 
         if (t < 1) {
             float bearing = bearingBetweenLatLngs(beginLatLng, newPosition);
@@ -65,7 +69,7 @@ public class Animator implements Runnable {
         }
     }
 
-    private CameraPosition createCamera(LatLng target, float bearing) {
+    public CameraPosition createCamera(LatLng target, float bearing) {
         float zoom = map.getCameraPosition().zoom;
         Builder builder = new Builder();
         builder.target(target).bearing(bearing).tilt(tilt).zoom(zoom);
