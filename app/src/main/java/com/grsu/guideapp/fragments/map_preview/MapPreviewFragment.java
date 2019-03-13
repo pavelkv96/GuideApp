@@ -13,18 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import butterknife.BindView;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.grsu.ui.scale.MapScaleView;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener;
-import com.google.android.gms.maps.GoogleMap.OnCameraMoveListener;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.SquareCap;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.base.BaseMapFragment;
@@ -42,8 +38,7 @@ import java.util.List;
 
 public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
         BaseMapFragment<P, RouteActivity>
-        implements OnChoiceItemListener, MapPreviewViews, OnMultiChoiceItemsListener,
-        OnCameraMoveListener, OnCameraIdleListener {
+        implements OnChoiceItemListener, MapPreviewViews, OnMultiChoiceItemsListener {
 
     private static final String TAG = MapPreviewFragment.class.getSimpleName();
     private List<Marker> nearPoi = new ArrayList<>();
@@ -66,13 +61,8 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     }
 
     @Override
-    protected int getLayout() {
-        return R.layout.fragment_map;
-    }
-
-    @Override
     protected int getMap() {
-        return R.id.fragment_map_map;
+        return R.id.map;
     }
 
     @Override
@@ -108,6 +98,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
                 .color(Color.BLUE)
                 .width(15)
                 .zIndex(1)
+                .startCap(new SquareCap()).endCap(new SquareCap())
                 .addAll(geoPointList);
         mMap.addPolyline(polylineOptions).setTag(id);
     }
@@ -223,29 +214,6 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     public void showTurn(boolean visibility) {
         for (Marker marker : turnPoint) {
             marker.setVisible(visibility);
-        }
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        super.onMapReady(googleMap);
-        googleMap.setOnCameraMoveListener(this);
-        googleMap.setOnCameraIdleListener(this);
-    }
-
-    @Override
-    public void onCameraMove() {
-        if (scaleView != null) {
-            CameraPosition cameraPosition = mMap.getCameraPosition();
-            scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
-        }
-    }
-
-    @Override
-    public void onCameraIdle() {
-        if (scaleView != null) {
-            CameraPosition cameraPosition = mMap.getCameraPosition();
-            scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
         }
     }
 }

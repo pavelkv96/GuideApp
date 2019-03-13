@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:map="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/coordinator_layout"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  tools:context=".fragments.test.TestFragment">
+
+  <include
+    layout="@layout/map"
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    />
+
+  <android.support.v4.widget.NestedScrollView
+    android:id="@+id/bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    map:anchorPoint="300dp"
+    map:behavior_peekHeight="?attr/actionBarSize"
+    map:layout_behavior="com.grsu.ui.bottomsheet.BottomSheetBehaviorGoogleMaps">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      android:background="@color/colorPrimary">
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="Drive"
+        android:textColor="@color/colorAccent"/>
+
+    </LinearLayout>
+
+  </android.support.v4.widget.NestedScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

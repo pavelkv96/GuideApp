@@ -58,6 +58,11 @@ public class MapFragment extends MapPreviewFragment<MapPresenter> implements Map
     }
 
     @Override
+    protected int getLayout() {
+        return R.layout.fragment_map;
+    }
+
+    @Override
     protected String getTitle() {
         return getString(R.string.map_fragment);
     }

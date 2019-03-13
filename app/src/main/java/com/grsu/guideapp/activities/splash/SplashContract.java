@@ -2,24 +2,19 @@ package com.grsu.guideapp.activities.splash;
 
 import com.grsu.guideapp.base.BasePresenter;
 import com.grsu.guideapp.base.BaseView;
-import com.grsu.guideapp.base.listeners.OnSuccessListener;
 import java.io.File;
 
 public interface SplashContract {
 
     interface SplashView extends BaseView {
 
-        void showMessage(String message);
-
-        void writeInSharedPreference(boolean flag);
-
         void updateViewProgress(int progress);
+
+        void openActivity();
     }
 
     interface SplashPresenter extends BasePresenter<SplashView> {
-        void getNewProgress();
-
-        void delNewProgress();
+        void copyInAssets(File path, String name);
     }
 
     interface SplashInteractor {
@@ -34,8 +29,6 @@ public interface SplashContract {
             void onUpdated(int progress);
         }
 
-        void deleteAll(OnFinishedListener finished, OnUpdatedListener updated, File file);
-
-        void copyAndUnZip(OnSuccessListener<String> success, OnUpdatedListener updated, File file);
+        void copy(OnUpdatedListener updated, File path, String name);
     }
 }
