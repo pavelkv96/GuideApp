@@ -1,11 +1,13 @@
 package com.grsu.guideapp.base;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +26,9 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.mf.MapsForgeTileSource;
+import com.grsu.guideapp.adapters.TileAdapter;
+import com.grsu.guideapp.views.overlay.MyLocationOverlay;
+import com.grsu.guideapp.views.overlay.MyLocationOverlay.Builder;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CheckSelfPermission;
 import com.grsu.guideapp.utils.MapUtils;
@@ -35,10 +39,14 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 public abstract class BaseMapFragment<P extends BasePresenter, A extends FragmentActivity>
         extends BaseFragment<P, A>
         implements OnMapReadyCallback, TileProvider, OnMarkerClickListener, OnCameraMoveListener,
-        OnCameraIdleListener {
+        OnCameraIdleListener, Runnable {
 
     protected GoogleMap mMap;
     protected TileOverlay overlay;
+    protected MyLocationOverlay myLocation;
+    private LatLngBounds borders;
+    private float previousZoom = -1.0f;
+    private Handler handler;
 
     @BindView(R.id.scaleView)
     MapScaleView scaleView;
@@ -63,6 +71,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        handler = new Handler();
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
         mMap.setMinZoomPreference(Settings.MIN_ZOOM_LEVEL);
@@ -72,12 +81,13 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
         mMap.setOnCameraIdleListener(this);
 
         File file = getActivity.getDatabasePath(Settings.MAP_FILE);
-        LatLngBounds borders = MapsForgeTileSource.getBoundingBox(file);
+        borders = TileAdapter.getBoundingBox(file);
         mMap.setLatLngBoundsForCameraTarget(borders);
 
         mMap.setOnMarkerClickListener(this);
 
         overlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(this));
+        myLocation = new Builder(mMap).addResource(getResources()).build();
     }
 
     @Override
@@ -90,15 +100,16 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
         }
 
         AndroidGraphicFactory.createInstance(getActivity.getApplication());
-        MapsForgeTileSource.createInstance(file, getActivity, Settings.CURRENT_PROVIDER);
+        TileAdapter.createInstance(file, getActivity, Settings.CURRENT_PROVIDER);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         overlay.clearTileCache();
-        MapsForgeTileSource.dispose();
+        TileAdapter.dispose();
         AndroidGraphicFactory.clearResourceMemoryCache();
+        handler.removeCallbacks(this);
     }
 
     @Override
@@ -109,7 +120,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
     @Override
     public Tile getTile(int x, int y, int zoom) {
         long tileIndex = MapUtils.getTileIndex(zoom, x, y);
-        byte[] tile = MapsForgeTileSource.loadTile(tileIndex);
+        byte[] tile = TileAdapter.loadTile(tileIndex);
 
         return tile != null ? new Tile(256, 256, tile) : NO_TILE;
     }
@@ -124,17 +135,37 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
 
     @Override
     public void onCameraMove() {
-        if (scaleView != null && scaleView.getVisibility() == View.VISIBLE) {
-            CameraPosition cameraPosition = mMap.getCameraPosition();
-            scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
-        }
+        /*Log.e("TAG", "onCameraMove: ");
+        if (scaleView != null && scaleView.getVisibility() != View.GONE) {
+            updateScaleView();
+        }*/
     }
 
     @Override
     public void onCameraIdle() {
-        if (scaleView != null && scaleView.getVisibility() == View.VISIBLE) {
-            CameraPosition cameraPosition = mMap.getCameraPosition();
-            scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
+        Log.e("TAG", "onCameraIdle: ");
+        if (scaleView != null && scaleView.getVisibility() != View.GONE) {
+            updateScaleView();
         }
+    }
+
+    private void updateScaleView() {
+        CameraPosition position = mMap.getCameraPosition();
+        if (previousZoom != position.zoom) {
+            handler.removeCallbacks(this);
+            scaleView.setVisibility(View.VISIBLE);
+            handler.postDelayed(this, 3500);
+            scaleView.update(position.zoom, position.target.latitude);
+            previousZoom = position.zoom;
+        }
+    }
+
+    protected LatLngBounds getBorders() {
+        return borders;
+    }
+
+    @Override
+    public void run() {
+        scaleView.setVisibility(View.INVISIBLE);
     }
 }

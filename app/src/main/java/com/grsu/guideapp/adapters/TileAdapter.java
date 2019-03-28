@@ -1,4 +1,4 @@
-package com.grsu.guideapp.mf;
+package com.grsu.guideapp.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -31,9 +31,9 @@ import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import org.mapsforge.map.rendertheme.rule.RenderThemeFuture;
 
-public class MapsForgeTileSource {
+public class TileAdapter {
 
-    private static final String TAG = MapsForgeTileSource.class.getSimpleName();
+    private static final String TAG = TileAdapter.class.getSimpleName();
     private static final DisplayModel model = new DisplayModel();
     private static final float scale = DisplayModel.getDefaultUserScaleFactor();
     private static RenderThemeFuture theme;

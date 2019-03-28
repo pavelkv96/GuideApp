@@ -11,7 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.listeners.OnFragmentReplace;
-import com.grsu.guideapp.fragments.maps.MapsFragment;
+import com.grsu.guideapp.fragments.map.MapFragment;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
@@ -40,7 +40,7 @@ public class RouteActivity extends AppCompatActivity implements OnFragmentReplac
             finish();
         } else {
             if (savedInstanceState == null) {
-                onReplace(MapsFragment.newInstance(args));
+                onReplace(MapFragment.newInstance(args));
             }
         }
 

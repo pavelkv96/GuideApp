@@ -8,7 +8,7 @@ import android.graphics.RectF;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
-import com.grsu.ui.R;
+import com.grsu.R;
 
 public class CustomProgressBar extends View {
 
@@ -67,7 +67,7 @@ public class CustomProgressBar extends View {
         mArcPaintPrimary = new Paint();
         mArcPaintPrimary.setDither(true);
         mArcPaintPrimary.setStyle(Paint.Style.STROKE);
-        mArcPaintPrimary.setColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+        mArcPaintPrimary.setColor(ContextCompat.getColor(getContext(), R.color.colorArc));
         mArcPaintPrimary.setStrokeWidth(mWidthAcrPrimary);
         mArcPaintPrimary.setAntiAlias(true);
 

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import com.grsu.ui.R;
+import com.grsu.R;
 
 class ViewConfig {
 

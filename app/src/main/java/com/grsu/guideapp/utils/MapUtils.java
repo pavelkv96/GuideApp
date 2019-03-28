@@ -2,6 +2,7 @@ package com.grsu.guideapp.utils;
 
 import android.location.Location;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import org.mapsforge.core.model.Tile;
 
 public class MapUtils {
@@ -11,7 +12,7 @@ public class MapUtils {
     private static int mMaxZoomLevel = 29;
     private static int mModulo = 1 << mMaxZoomLevel;
 
-    public static Tile getTile(long pMapTileIndex, int tileSize){
+    public static Tile getTile(long pMapTileIndex, int tileSize) {
         return new Tile(getX(pMapTileIndex), getY(pMapTileIndex), getZoom(pMapTileIndex), tileSize);
     }
 
@@ -64,6 +65,15 @@ public class MapUtils {
 
     public static boolean isMoreDistance(float distance, Location currentLocation, LatLng latLng) {
         return distance > MapUtils.getDistanceBetween(currentLocation, MapUtils.toLocation(latLng));
+    }
+
+    public static LatLngBounds getBounds(LatLng latLng, LatLngBounds bounds, LatLngBounds border) throws NullPointerException{
+
+        if (!border.contains(latLng)){
+            throw new NullPointerException("");
+        }
+
+        return bounds.contains(latLng) ? bounds : bounds.including(latLng);
     }
 
 }

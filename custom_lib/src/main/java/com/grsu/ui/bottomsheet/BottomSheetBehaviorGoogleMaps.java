@@ -14,7 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import com.grsu.ui.R;
+import com.grsu.R;
 import java.lang.ref.WeakReference;
 import java.util.Vector;
 
@@ -125,7 +125,7 @@ public class BottomSheetBehaviorGoogleMaps<V extends View> extends Behavior<V> {
             mAnchorPoint = (int) a
                     .getDimension(R.styleable.CustomBottomSheetBehavior_anchorPoint, 0);
             mState = a
-                    .getInt(R.styleable.CustomBottomSheetBehavior_defaultState, STATE_ANCHOR_POINT);
+                    .getInt(R.styleable.CustomBottomSheetBehavior_defaultState, STATE_COLLAPSED);
         }
         a.recycle();
 
@@ -146,7 +146,11 @@ public class BottomSheetBehaviorGoogleMaps<V extends View> extends Behavior<V> {
         if (ss.state == STATE_DRAGGING || ss.state == STATE_SETTLING) {
             mState = STATE_COLLAPSED;
         } else {
-            mState = ss.state;
+            if (!mHideable && ss.state == STATE_HIDDEN) {
+                mState = STATE_COLLAPSED;
+            } else {
+                mState = ss.state;
+            }
         }
 
         mLastStableState = mState;
