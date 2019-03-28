@@ -1,10 +1,8 @@
 package com.grsu.guideapp.fragments.map;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,49 +10,56 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition.Builder;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.database.DatabaseHelper;
-import com.grsu.guideapp.fragments.map.MapContract.MapViews;
 import com.grsu.guideapp.fragments.map_preview.MapPreviewFragment;
+import com.grsu.guideapp.fragments.maps.MapsContract.MapViews;
+import com.grsu.guideapp.models.Point;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.CheckSelfPermission;
+import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.DataUtils;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
-import com.grsu.guideapp.utils.MessageViewer.Toasts;
+import com.grsu.guideapp.utils.StorageUtils;
 import java.util.List;
 
-public class MapFragment extends MapPreviewFragment<MapPresenter> implements MapViews {
+public class MapsFragment extends MapPreviewFragment<MapsPresenter>
+        implements MapViews, OnMyLocationChangeListener {
 
-    private static final String TAG = MapFragment.class.getSimpleName();
+    private static final String TAG = MapsFragment.class.getSimpleName();
     private List<LatLng> myMovement;//deleting
-    public static final String BR_ACTION = MapFragment.class.getName();
 
-    private Marker marker;//deleting
+    //private Marker marker;//deleting
     private Marker current;
+    private Circle circle;
     int i = 0;
-    private BroadcastReceiver br;
-
-    @BindView(R.id.tv_fragment_map_distance)
-    TextView distanceTextView;
+    Animator animator;
 
     @BindView(R.id.fragment_map_indicator)
     ImageView found;
 
     @NonNull
     @Override
-    protected MapPresenter getPresenterInstance() {
-        return new MapPresenter(this, new MapInteractor(new DatabaseHelper(getContext())));
+    protected MapsPresenter getPresenterInstance() {
+        return new MapsPresenter(this, new MapsInteractor(new DatabaseHelper(getContext())));
     }
 
     @Override
@@ -71,19 +76,19 @@ public class MapFragment extends MapPreviewFragment<MapPresenter> implements Map
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         String name = getTitle();
-
-        if (getArguments() != null) {
-            route = getArguments().getInt(Constants.KEY_ID_ROUTE, -1);
-            name = getArguments().getString(Constants.KEY_NAME_ROUTE);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            route = bundle.getInt(Constants.KEY_ID_ROUTE, -1);
+            name = bundle.getString(Constants.KEY_NAME_ROUTE);
+            LatLng southwest = CryptoUtils.decodeP(bundle.getString(Constants.KEY_SOUTHWEST));
+            LatLng northeast = CryptoUtils.decodeP(bundle.getString(Constants.KEY_NORTHEAST));
+            bounds = new LatLngBounds(southwest, northeast);
         }
 
         super.onCreateView(inflater, container, savedInstanceState);
 
         getActivity.setTitleToolbar(name);
 
-        if (route != -1) {
-            br = new MyBroadcastReceiver();
-        }
         return rootView;
     }
 
@@ -96,7 +101,6 @@ public class MapFragment extends MapPreviewFragment<MapPresenter> implements Map
     @Override
     public void onStop() {
         super.onStop();
-        unregisterListeners();
         Logs.e(TAG, "onStop");
     }
 
@@ -110,7 +114,8 @@ public class MapFragment extends MapPreviewFragment<MapPresenter> implements Map
             MarkerOptions markerOptions = new MarkerOptions().position(latLng);
             current = mMap.addMarker(markerOptions);
         }
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+        float zoom = mMap.getCameraPosition().zoom;
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         current.setPosition(latLng);
     }
 
@@ -124,65 +129,54 @@ public class MapFragment extends MapPreviewFragment<MapPresenter> implements Map
         found.setVisibility(View.GONE);
     }
 
-    @Override
-    public void openDialogViews() {
-        /*FragmentManager manager = getChildFragmentManager();
-        SingleChoiceItemsDialogFragment.newInstance(choiceItem)
-                .show(manager, SingleChoiceItemsDialogFragment.getTags());
-
-        MultiChoiceItemsDialogFragment.newInstance(read("Key", long[].class))
-                .show(manager, MultiChoiceItemsDialogFragment.getTags());*/
-    }
-
-    private void unregisterListeners() {
-        if (br != null) {
-            try {
-                getActivity.unregisterReceiver(br);
-            } catch (IllegalArgumentException ignore) {
-            } finally {
-                getActivity.stopService(new Intent(getActivity, MyService.class));
-            }
-        }
-    }
-
     //-------------------------------------------
     //	Summary: implements OnClicks
     //-------------------------------------------
 
     @OnClick(R.id.btn_fragment_map_stop)
     public void stopService(View view) {
-        unregisterListeners();
+        mMap.setOnMyLocationChangeListener(null);
     }
 
     @SuppressLint("MissingPermission")
     @OnClick(R.id.btn_fragment_map_start)
     public void startService(View view) {
-        if (br != null && !CheckSelfPermission.getAccessLocationIsGranted(getContext())) {
-            getActivity.registerReceiver(br, new IntentFilter(BR_ACTION));
-            getActivity.startService(new Intent(getContext(), MyService.class));
+        if (!CheckSelfPermission.getAccessLocationIsGranted(getContext())) {
             mMap.setMyLocationEnabled(true);
+            mMap.setOnMyLocationChangeListener(this);
         } else {
-            MySnackbar.makeL(view, R.string.error_snackbar_do_not_have_permission_access_fine_location, getActivity);
+            MySnackbar.makeL(view,
+                    R.string.error_snackbar_do_not_have_permission_access_fine_location,
+                    getActivity);
         }
     }
 
     @OnClick(R.id.btn_fragment_map_next)
     public void next(View view) {
-        if (i < myMovement.size() - 1) {
+    }
 
-            LatLng position = myMovement.get(i);
-            if (i == 0) {
-                MarkerOptions markerOptions = new MarkerOptions().position(position);
-                marker = mMap.addMarker(markerOptions);
-                current = mMap.addMarker(markerOptions);
-            }
-            marker.setPosition(position);
-            mPresenter.getProjectionLocation(MapUtils.toLocation(position));
-            i++;
+    @OnClick(R.id.btn_fragment_map_tilt)
+    public void tilt(View view) {
+        Button button = (Button) view;
+        String text = button.getText().toString();
+        float tilt;
+        if (text.equals("2D")) {
+            button.setText("3D");
+            tilt = 0f;
         } else {
-            Location currentLocation = MapUtils.toLocation(myMovement.get(myMovement.size() - 1));
-            mPresenter.getProjectionLocation(currentLocation);
+            button.setText("2D");
+            tilt = 67.5f;
         }
+
+        mMap.moveCamera(createCamera(current.getPosition(), tilt));
+        animator.setTilt(tilt);
+    }
+
+    public CameraUpdate createCamera(LatLng target, float tilt) {
+        float zoom = mMap.getCameraPosition().zoom;
+        Builder builder = new Builder();
+        builder.target(target).tilt(tilt).zoom(zoom);
+        return CameraUpdateFactory.newCameraPosition(builder.build());
     }
 
     @Override
@@ -197,26 +191,53 @@ public class MapFragment extends MapPreviewFragment<MapPresenter> implements Map
         mPresenter.getPoi();
     }
 
-    private class MyBroadcastReceiver extends BroadcastReceiver {
+    @Override
+    public void onMyLocationChange(Location location) {
+        if (i < myMovement.size() - 1) {
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Location location = intent.getParcelableExtra(Constants.KEY_GEO_POINT);
-            Logs.e(TAG, String.valueOf(location));
+            LatLng position = myMovement.get(i);
+            if (i == 0) {
+                CircleOptions options = new CircleOptions();
+                options.center(position);
+                options.radius(5);
+                options.strokeColor(Color.BLUE);
+                options.fillColor(Color.GRAY);
+                options.strokeWidth(5);
+                options.zIndex(0.1f);
 
-            mPresenter.getProjectionLocation(location);
+                circle = mMap.addCircle(options);
+                MarkerOptions markerOptions = new MarkerOptions().position(position);
+                Bitmap hueGreen = StorageUtils.getBitmap(getResources(), R.drawable.ic_my_location);
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(hueGreen));
+                markerOptions.anchor(0.5f, 0.5f);
+                markerOptions.flat(true);
+                //marker = mMap.addMarker(markerOptions);
+                current = mMap.addMarker(markerOptions);
+                animator = new Animator(mMap, current, circle);
+            }
+            //marker.setPosition(position);
+            //mPresenter.getProjectionLocation(MapUtils.toLocation(position));
+            update(MapUtils.toLocation(position));
+            i++;
+        } else {
+            Location currentLocation = MapUtils.toLocation(myMovement.get(myMovement.size() - 1));
+            //mPresenter.getProjectionLocation(currentLocation);
+            update(currentLocation);
+            mMap.setOnMyLocationChangeListener(null);
         }
     }
 
-    public void showT(String s) {
-        Toasts.makeS(getActivity, s);
+    private void update(Location currentLocation) {
+        List<Point> list = mPresenter.getList(currentLocation);
+        LatLng start = list.get(2).getPosition();
+        LatLng end = list.get(3).getPosition();
+        circle.setCenter(start);
+        circle.setRadius(MapUtils.getDistanceBetween(currentLocation, MapUtils.toLocation(start)));
+        animator.startAnimation(start, end);
     }
 
-    public static MapFragment newInstance(Integer id_route, String name_route) {
-        Bundle args = new Bundle();
-        args.putInt(Constants.KEY_ID_ROUTE, id_route);
-        args.putString(Constants.KEY_NAME_ROUTE, name_route);
-        MapFragment fragment = new MapFragment();
+    public static MapsFragment newInstance(Bundle args) {
+        MapsFragment fragment = new MapsFragment();
         fragment.setArguments(args);
         return fragment;
     }

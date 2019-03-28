@@ -1,4 +1,4 @@
-package com.grsu.guideapp.fragments.maps;
+package com.grsu.guideapp.fragments.map;
 
 import android.location.Location;
 import android.util.Log;
@@ -24,7 +24,7 @@ class Logic1 {
     private static OnChangePolyline onChangePolyline;
     private static OnNotFound onNotFound;
 
-    static Logic1 getInstance(MapsPresenter mapPresenter) {
+    static Logic1 getInstance(MapPresenter mapPresenter) {
         if (logic == null) {
             logic = new Logic1();
             onChangePolyline = mapPresenter;

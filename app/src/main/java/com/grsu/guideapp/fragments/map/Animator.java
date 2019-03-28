@@ -1,4 +1,4 @@
-package com.grsu.guideapp.fragments.maps;
+package com.grsu.guideapp.fragments.map;
 
 import android.location.Location;
 import android.os.Handler;
@@ -7,27 +7,24 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CameraPosition.Builder;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.grsu.guideapp.utils.MapUtils;
+import com.grsu.guideapp.views.overlay.MyLocationOverlay;
 
 public class Animator implements Runnable {
 
     private static final int ANIMATE_SPEED = 500;
     private final Handler mHandler;
     private long startTime;
-    private Marker marker;
-    private Circle circle;
+    private MyLocationOverlay overlay;
     private LatLng beginLatLng;
     private LatLng endLatLng;
     private GoogleMap map;
-    private float tilt = 67.5f;
+    private float tilt = 54f;
 
-    Animator(GoogleMap map, Marker marker, Circle circle) {
+    Animator(GoogleMap map, MyLocationOverlay overlay) {
         this.map = map;
-        this.marker = marker;
-        this.circle = circle;
+        this.overlay = overlay;
         mHandler = new Handler();
     }
 
@@ -55,8 +52,7 @@ public class Animator implements Runnable {
         double lng = t * endLatLng.longitude + (1 - t) * beginLatLng.longitude;
         LatLng newPosition = new LatLng(lat, lng);
 
-        marker.setPosition(newPosition);
-        circle.setCenter(newPosition);
+        overlay.setLocation(MapUtils.toLocation(newPosition));
 
         if (t < 1) {
             float bearing = bearingBetweenLatLngs(beginLatLng, newPosition);

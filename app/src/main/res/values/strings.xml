@@ -51,8 +51,23 @@
 
   <string name="dialog_types_objects">Types objects</string>
   <string name="dialog_radius_in_meters">Radius (in meters)</string>
-  <string name="locale">en</string>
   <string name="message_once_more_to_exit">Once more to exit</string>
+
+  <!--LOCALISATION-->
+  <string name="locale">en</string>
+  <string name="lang_ru" translatable="false">Русский</string>
+  <string name="lang_en" translatable="false">English</string>
+  <string name="lang_ru_short" translatable="false">ru</string>
+  <string name="lang_en_short" translatable="false">en</string>
+  <string-array name="pref_languages_titles">
+    <item>@string/lang_ru</item>
+    <item>@string/lang_en</item>
+  </string-array>
+  <string-array name="pref_languages_values">
+    <item>@string/lang_ru_short</item>
+    <item>@string/lang_en_short</item>
+  </string-array>
+
 
   <string-array name="single_items">
     <item>1000</item>

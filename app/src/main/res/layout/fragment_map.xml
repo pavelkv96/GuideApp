@@ -7,6 +7,7 @@
   android:weightSum="2">
 
   <include
+    android:layout_marginTop="@dimen/actionBarSize"
     layout="@layout/map"
     android:layout_width="match_parent"
     android:layout_height="0dp"

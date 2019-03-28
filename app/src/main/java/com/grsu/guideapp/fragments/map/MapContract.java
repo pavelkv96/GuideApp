@@ -11,25 +11,21 @@ public interface MapContract extends OnFinishedListener {
 
     interface MapViews extends MapPreviewViews {
 
-        void openDialogViews();
-
         void setCurrentPoint(LatLng geoPointList);
 
         void show();
 
         void hide();
-
-        void showT(String s);
     }
 
-    interface MapPresenter extends MapPreviewPresenter {
+    interface MapsPresenter extends MapPreviewPresenter {
 
         void getProjectionLocation(Location location);
 
         void getPoi();
     }
 
-    interface MapInteractor extends MapPreviewInteractor {
+    interface MapsInteractor extends MapPreviewInteractor {
 
     }
 }

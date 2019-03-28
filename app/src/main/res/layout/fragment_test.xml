@@ -12,32 +12,23 @@
   <include
     layout="@layout/map"
     android:layout_width="match_parent"
-    android:layout_height="300dp"
-    />
+    android:layout_height="244dp"
+    android:layout_marginTop="@dimen/actionBarSize"/>
 
-  <android.support.v4.widget.NestedScrollView
-    android:id="@+id/bottom_sheet"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white"
-    map:anchorPoint="300dp"
-    map:behavior_peekHeight="?attr/actionBarSize"
-    map:layout_behavior="com.grsu.ui.bottomsheet.BottomSheetBehaviorGoogleMaps">
+  <include layout="@layout/layout_bottom_sheet"/>
 
-    <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="?attr/actionBarSize"
-      android:background="@color/colorPrimary">
-      <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:text="Drive"
-        android:textColor="@color/colorAccent"/>
+  <android.support.design.widget.FloatingActionButton
+    android:id="@+id/fab_action_go"
+    style="@style/ActionGoFAB"/>
 
-    </LinearLayout>
+  <View
+    android:id="@+id/dummy_view"
+    android:layout_width="1dp"
+    android:layout_height="16dp"
+    map:layout_anchor="@id/fab_action_go"
+    map:layout_anchorGravity="top|right|end"/>
 
-  </android.support.v4.widget.NestedScrollView>
-
+  <android.support.design.widget.FloatingActionButton
+    android:id="@+id/fab_my_location"
+    style="@style/ActionMyLocation"/>
 </android.support.design.widget.CoordinatorLayout>

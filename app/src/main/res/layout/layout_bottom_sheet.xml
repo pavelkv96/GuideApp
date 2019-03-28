@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/bottom_sheet"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@android:color/white"
+  app:anchorPoint="300dp"
+  app:behavior_peekHeight="?attr/actionBarSize"
+  app:layout_behavior="com.grsu.ui.bottomsheet.BottomSheetBehaviorGoogleMaps">
+
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:paddingBottom="8dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:background="@color/colorPrimary">
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:orientation="vertical">
+
+      <TextView
+        android:paddingTop="8dp"
+        android:id="@+id/bottom_sheet_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Title dummy"
+        android:textColor="@android:color/white"
+        android:textSize="19sp"/>
+    </LinearLayout>
+  </RelativeLayout>
+
+
+</android.support.v4.widget.NestedScrollView>

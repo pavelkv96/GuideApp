@@ -1,8 +1,8 @@
 package com.grsu.guideapp.fragments.test;
 
-import com.grsu.guideapp.fragments.map_preview.MapPreviewContract.MapPreviewInteractor;
-import com.grsu.guideapp.fragments.map_preview.MapPreviewContract.MapPreviewPresenter;
-import com.grsu.guideapp.fragments.map_preview.MapPreviewContract.MapPreviewViews;
+import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewContract.MapPreviewInteractor;
+import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewContract.MapPreviewPresenter;
+import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewContract.MapPreviewViews;
 
 public interface TestContract {
 

@@ -1,4 +1,4 @@
-package com.grsu.guideapp.fragments.map_preview;
+package com.grsu.guideapp.fragments.map_preview_v1;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,23 +11,24 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import butterknife.BindView;
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.maps.model.SquareCap;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.base.BaseMapFragment;
-import com.grsu.guideapp.fragments.map_preview.MapPreviewContract.MapPreviewViews;
+import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewContract.MapPreviewViews;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.CryptoUtils;
+import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.views.dialogs.MultiChoiceItemsDialogFragment;
 import com.grsu.guideapp.views.dialogs.MultiChoiceItemsDialogFragment.OnMultiChoiceItemsListener;
@@ -38,18 +39,16 @@ import java.util.List;
 
 public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
         BaseMapFragment<P, RouteActivity>
-        implements OnChoiceItemListener, MapPreviewViews, OnMultiChoiceItemsListener {
+        implements OnChoiceItemListener, MapPreviewViews, OnMultiChoiceItemsListener,
+        OnMapClickListener {
 
     private static final String TAG = MapPreviewFragment.class.getSimpleName();
     private List<Marker> nearPoi = new ArrayList<>();
-    private List<Marker> turnPoint = new ArrayList<>();
 
     protected int route = -1;
     protected LatLngBounds bounds;
+    protected Polyline polyline;
     Menu menu;
-
-    @BindView(R.id.tv_fragment_map_distance)
-    TextView distanceTextView;
 
     @NonNull
     @Override
@@ -66,15 +65,8 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-
-        setHasOptionsMenu(true);
-
         if (route != -1) {
             mPresenter.getId(route);
-            Integer choiceItem = read(Constants.KEY_SINGLE_CHOICE_ITEM, Integer.class);
-            mPresenter.setRadius(choiceItem);
-            mPresenter.getAllPoi(true);
-            distanceTextView.setText(String.valueOf(choiceItem));
         } else {
             if (getActivity != null) {
                 Toasts.makeL(getActivity, getString(R.string.error_please_refresh_your_database));
@@ -85,30 +77,31 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
         return rootView;
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        super.onMapReady(googleMap);
+    }
+
     //-------------------------------------------
     //	Summary: implements Contracts
     //-------------------------------------------
 
     @Override
-    public void setPolyline(List<LatLng> geoPointList, int id) {
-        PolylineOptions polylineOptions = new PolylineOptions()
-                .color(Color.BLUE)
-                .width(15)
-                .zIndex(1)
-                .startCap(new SquareCap()).endCap(new SquareCap())
-                .addAll(geoPointList);
-        mMap.addPolyline(polylineOptions).setTag(id);
+    public void setPolyline(final List<LatLng> geoPointList) {
+        PolylineOptions options = new PolylineOptions();
+        options.color(Color.BLUE);
+        options.width(20);
+        options.zIndex(1);
+        options.addAll(geoPointList);
+        polyline = mMap.addPolyline(options);
     }
 
     @Override
     public void setPointsTurn(LatLng latLng, int icon) {
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.visible(false);
-        if (icon != -1) {
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(icon));
-        }
-        turnPoint.add(mMap.addMarker(markerOptions));
+        MarkerOptions options = new MarkerOptions();
+        options.position(latLng);
+        options.icon(BitmapDescriptorFactory.fromResource(icon));
+        mMap.addMarker(options);
     }
 
     @Override
@@ -131,15 +124,13 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
 
     @Override
     public void onOk() {
-        MenuItem item = menu.findItem(R.id.menu_fragment_map_get_all);
-        mPresenter.onOk(item);
+        mPresenter.onOk(menu.findItem(R.id.menu_fragment_map_get_all));
     }
 
     @Override
     public void choiceItem(String itemValue) {
         Integer choiceItem = Integer.valueOf(itemValue);
         save(Constants.KEY_SINGLE_CHOICE_ITEM, choiceItem);
-        distanceTextView.setText(itemValue);
         mPresenter.setRadius(choiceItem);
         mPresenter.getAllPoi(menu.findItem(R.id.menu_fragment_map_get_all).isChecked());
     }
@@ -184,12 +175,12 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
             }
             break;
 
-            case R.id.menu_fragment_map_hide_turn_point: {
+            /*case R.id.menu_fragment_map_hide_turn_point: {
                 boolean checkedTurn = !item.isChecked();
                 item.setChecked(checkedTurn);
                 mPresenter.hideTurn(checkedTurn);
             }
-            break;
+            break;*/
         }
 
         return super.onOptionsItemSelected(item);
@@ -197,20 +188,41 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        mPresenter.onMarkerClick(getActivity, marker);
-        return super.onMarkerClick(marker);
-    }
-
-    @Override
-    public void moveToStart(LatLng latLng) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
-    }
-
-    @Override
-    public void showTurn(boolean visibility) {
-        for (Marker marker : turnPoint) {
-            marker.setVisible(visibility);
+        if (mMap.getUiSettings().isTiltGesturesEnabled()) {
+            mPresenter.onMarkerClick(getActivity, marker);
+            return super.onMarkerClick(marker);
         }
+        return true;
+    }
+
+    @Override
+    public void initData() {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+        Integer choiceItem = read(Constants.KEY_SINGLE_CHOICE_ITEM, Integer.class);
+        mPresenter.setRadius(choiceItem);
+        mPresenter.getAllPoi(true);
+    }
+
+    protected void setUI(boolean flag) {
+        if (flag) {
+            mMap.setOnMapClickListener(this);
+        } else {
+            mMap.setOnMapClickListener(null);
+        }
+        mMap.getUiSettings().setScrollGesturesEnabled(flag);
+        mMap.getUiSettings().setAllGesturesEnabled(flag);
+        mMap.getUiSettings().setTiltGesturesEnabled(flag);
+    }
+
+    @Override
+    public void onDestroyView() {
+        Logs.e(TAG, "onDestroyView");
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onCameraIdle() {
+        super.onCameraIdle();
+        polyline.setWidth(mMap.getCameraPosition().zoom + 5);
     }
 }

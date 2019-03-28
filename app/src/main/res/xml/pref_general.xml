@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <android.support.v7.preference.PreferenceCategory
+    android:title="@string/app_name">
+
+    <android.support.v7.preference.ListPreference
+      android:entries="@array/pref_languages_titles"
+      android:entryValues="@array/pref_languages_values"
+      android:key="language"
+      android:negativeButtonText="@android:string/cancel"
+      android:title="pref_title_languages"/>
+
+  </android.support.v7.preference.PreferenceCategory>
+</android.support.v7.preference.PreferenceScreen>

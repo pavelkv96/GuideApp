@@ -13,7 +13,7 @@ import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.MapUtils;
 import java.util.List;
 
-public class MapPresenter extends MapPreviewPresenter implements MapContract.MapPresenter,
+public class MapPresenter extends MapPreviewPresenter implements MapContract.MapsPresenter,
         OnChangePolyline, OnNotFound {
 
     private MapViews mapViews;
@@ -84,8 +84,6 @@ public class MapPresenter extends MapPreviewPresenter implements MapContract.Map
                 }
             }
         });
-
-
     }
 
     @Override
@@ -96,7 +94,7 @@ public class MapPresenter extends MapPreviewPresenter implements MapContract.Map
 
     @Override
     public void onChange(Integer previous, Integer current) {
-        mapViews.showT("Previous polyline: " + previous + ";\nCurrent: " + current);
+        mapViews.showToast("Previous polyline: " + previous + ";\nCurrent: " + current);
     }
 
     @Override
