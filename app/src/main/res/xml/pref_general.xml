@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <android.support.v7.preference.PreferenceCategory
-    android:title="@string/app_name">
-
-    <android.support.v7.preference.ListPreference
+  <PreferenceCategory
+    android:divider="@android:drawable/divider_horizontal_dark">
+    <ListPreference
       android:entries="@array/pref_languages_titles"
       android:entryValues="@array/pref_languages_values"
       android:key="language"
       android:negativeButtonText="@android:string/cancel"
-      android:title="pref_title_languages"/>
+      android:title="@string/language"/>
 
-  </android.support.v7.preference.PreferenceCategory>
-</android.support.v7.preference.PreferenceScreen>
+    <Preference
+      android:key="content"
+      android:title="@string/view_delete_database"/>
+    <Preference
+      android:key="map_content"
+      android:title="@string/view_clean_map"/>
+    <Preference
+      android:key="delete_content"
+      android:title="@string/view_delete_content_folder"/>
+    <Preference
+      android:key="map_delete_file"
+      android:title="@string/view_refresh_map_file"/>
+
+  </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">Августовский путеводитель</string>
+  <string name="app_name">Веломаршруты Августовского канала</string>
   <string name="title_activity_home">Главная</string>
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
-  <string name="nav_header_title">Официальный сайт ГрГУ</string>
-  <string name="nav_header_subtitle">grsu.by</string>
+  <string name="nav_header_title">Официальный сайт ГрГУ имени Янки Купалы</string>
+  <string name="nav_header_subtitle">http://www.grsu.by</string>
   <string name="nav_header_desc">Navigation header</string>
 
   <!--VIEW TEXT-->
@@ -32,11 +32,15 @@
   <string name="details_fragment">Детали</string>
   <string name="settings_fragment">Настройки</string>
   <string name="list_routes_fragment">Список маршрутов</string>
+  <string name="about_fragment">Инфо</string>
 
+
+  <!--SCREEN SETTINGS-->
+  <string name="language">Язык</string>
 
   <!--ERRORS MESSAGES-->
   <string name="error_snackbar_open_settings">Настройки</string>
-  <string name="error_snackbar_do_not_have_permission_access_fine_location">Требуется разрешение для работы с GPS</string>
+  <string name="error_snackbar_do_not_have_permission_access_location">Требуется разрешение для работы с GPS</string>
   <string name="error_snackbar_do_not_have_permission_write_on_the_storage">Нет разрешения для записи на локальное хранилище</string>
   <string name="error_copy_data_error">Ошибка копирования данных</string>
   <string name="error_please_refresh_your_database">Нет данных, пожалуйста обновите вашу базу данных</string>
@@ -61,4 +65,17 @@
     <item>100</item>
   </string-array>
 
+
+  <!--NEED SORT BY GROUP (IT'S STACK)-->
+  <string name="action_about_openURL">Открыть в браузере</string>
+  <string name="title_about_contact_developer">Связаться с разработчиком</string>
+  <string name="action_about_contact_developer">Написать Email</string>
+  <string name="title_about_rate_app">Оценить приложение</string>
+  <string name="action_about_rate_app">Открыть в Play Маркет</string>
+  <string name="distance">Протяжённость</string>
+  <string name="duration">Продолжительность</string>
+  <string name="short_kilometers">км</string>
+  <string name="short_meters">м</string>
+  <string name="short_hour">ч</string>
+  <string name="short_minute">мин</string>
 </resources>

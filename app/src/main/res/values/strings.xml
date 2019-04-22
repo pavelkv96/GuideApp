@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">GuideApp</string>
+  <string name="app_name">Guide app</string>
   <string name="title_activity_home">HomeActivity</string>
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
-  <string name="nav_header_title">Official site GrSU</string>
-  <string name="nav_header_subtitle">grsu.by</string>
+  <string name="nav_header_title">GrSU official website</string>
+  <string name="nav_header_subtitle">http://www.grsu.by</string>
   <string name="nav_header_desc">Navigation header</string>
 
   <!--VIEW TEXT-->
@@ -32,11 +32,16 @@
   <string name="details_fragment">Details</string>
   <string name="settings_fragment">Settings</string>
   <string name="list_routes_fragment">List routes</string>
+  <string name="about_fragment">About</string>
+
+
+  <!--SCREEN SETTINGS-->
+  <string name="language">Language</string>
 
 
   <!--ERRORS MESSAGES-->
   <string name="error_snackbar_open_settings">Open settings</string>
-  <string name="error_snackbar_do_not_have_permission_access_fine_location">Don`t have permission access fine location</string>
+  <string name="error_snackbar_do_not_have_permission_access_location">Don`t have permission access fine location</string>
   <string name="error_snackbar_do_not_have_permission_write_on_the_storage">Don`t have permission write on the storage</string>
   <string name="error_copy_data_error">Copy data error</string>
   <string name="error_please_refresh_your_database">"Empty data, please refresh your database"</string>
@@ -76,4 +81,19 @@
     <item>100</item>
   </string-array>
 
+
+<!--NEED SORT BY GROUP (IT'S STACK)-->
+  <string name="email_address_iac" translatable="false">iac@grsu.by</string>
+  <string name="email_subject_feedback" translatable="false">Feedback: Class Schedule for Android</string>
+  <string name="action_about_openURL">Open in browser</string>
+  <string name="title_about_contact_developer">Contact developer</string>
+  <string name="action_about_contact_developer">Write an Email</string>
+  <string name="title_about_rate_app">Rate this app</string>
+  <string name="action_about_rate_app">Open in Play Store</string>
+  <string name="duration">Duration</string>
+  <string name="distance">Distance</string>
+  <string name="short_kilometers">km</string>
+  <string name="short_meters">m</string>
+  <string name="short_hour">h</string>
+  <string name="short_minute">min</string>
 </resources>
