@@ -11,7 +11,6 @@ public class Line implements Serializable {
     private String startPoint;
     private String endPoint;
     private String polyline;
-    private String audioReference;
     private final static long serialVersionUID = 1137436432272859182L;
 
     /**
@@ -26,14 +25,12 @@ public class Line implements Serializable {
      * @param idLine
      * @param startPoint
      */
-    public Line(Integer idLine, String startPoint, String endPoint, String polyline,
-            String audioReference) {
+    public Line(Integer idLine, String startPoint, String endPoint, String polyline) {
         super();
         this.idLine = idLine;
         this.startPoint = startPoint;
         this.endPoint = endPoint;
         this.polyline = polyline;
-        this.audioReference = audioReference;
     }
 
     public Integer getIdLine() {
@@ -68,21 +65,7 @@ public class Line implements Serializable {
         this.polyline = polyline;
     }
 
-    public String getAudioReference() {
-        return audioReference;
-    }
-
-    public void setAudioReference(String audioReference) {
-        this.audioReference = audioReference;
-    }
-
-    public static Line fromCursor(Cursor cursor) {
-        return new Line(
-                cursor.getInt(0),
-                cursor.getString(1),
-                cursor.getString(2),
-                cursor.getString(3),
-                cursor.getString(4)
-        );
+    public static Line fromCursor(Cursor cur) {
+        return new Line(cur.getInt(0), cur.getString(1), cur.getString(2), cur.getString(3));
     }
 }

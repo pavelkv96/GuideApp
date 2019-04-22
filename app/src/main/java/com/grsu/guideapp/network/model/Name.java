@@ -1,8 +1,8 @@
 package com.grsu.guideapp.network.model;
 
-import java.io.Serializable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 
 public class Name implements Serializable {
 

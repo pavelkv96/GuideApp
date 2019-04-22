@@ -3,20 +3,19 @@ package com.grsu.guideapp.models;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.grsu.guideapp.utils.CryptoUtils;
 import java.io.Serializable;
 
 public class Poi implements Serializable {
 
     private String id;
-    private String name;
+    private String location;
     private Bitmap icon;
 
-    public Poi() {
-    }
-
-    public Poi(String id, String name, Bitmap icon) {
+    public Poi(String id, String location, Bitmap icon) {
         this.id = id;
-        this.name = name;
+        this.location = location;
         this.icon = icon;
     }
 
@@ -24,24 +23,12 @@ public class Poi implements Serializable {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public LatLng getLocation() {
+        return CryptoUtils.decodeP(location);
     }
 
     public Bitmap getIcon() {
         return icon;
-    }
-
-    public void setIcon(Bitmap icon) {
-        this.icon = icon;
     }
 
     public static Poi fromCursor(Cursor cursor) {

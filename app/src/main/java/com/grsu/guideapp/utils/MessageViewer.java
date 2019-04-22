@@ -98,7 +98,7 @@ public class MessageViewer {
             return new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    CheckSelfPermission.settingsIntent(context);
+                    CheckPermission.settingsIntent(context);
                 }
             };
         }

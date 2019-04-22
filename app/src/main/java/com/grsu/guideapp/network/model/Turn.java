@@ -1,43 +1,47 @@
 package com.grsu.guideapp.network.model;
 
+import android.support.annotation.NonNull;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import java.util.List;
+import java.io.Serializable;
 
-public class Turn extends LatLong {
+public class Turn implements Serializable {
 
-    @SerializedName("objects")
+    @SerializedName("polyline")
     @Expose
-    private List<String> objects = null;
+    private String polyline;
+
+    @SerializedName("start")
+    @Expose
+    private Point start;
+
+    @SerializedName("end")
+    @Expose
+    private Point end;
+
     private final static long serialVersionUID = 9098352641873441351L;
 
-    /**
-     * No args constructor for use in serialization
-     */
-    public Turn() {
+    public Turn(String polyline, Point start, Point end) {
+        this.polyline = polyline;
+        this.start = start;
+        this.end = end;
     }
 
-    /**
-     *
-     * @param objects
-     * @param y
-     * @param x
-     */
-    public Turn(String x, String y, List<String> objects) {
-        super(x, y);
-        this.objects = objects;
+    public String getPolyline() {
+        return polyline;
     }
 
-    public List<String> getObjects() {
-        return objects;
+    public Point getStart() {
+        return start;
     }
 
+    public Point getEnd() {
+        return end;
+    }
+
+    @NonNull
     @Override
     public String toString() {
-        return "Turn{" +
-                "objects=" + objects +
-                ", x='" + x + '\'' +
-                ", y='" + y + '\'' +
-                '}';
+        return "Turn1{" + "polyline='" + polyline + "\', start=" + start + ", end=" + end + '}';
     }
 }

@@ -1,17 +1,21 @@
 package com.grsu.guideapp.models;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class InfoAboutPoi implements Serializable {
 
     //POJO model
     private String type;
-    private String name_locale;
-    private String shortDescriptionPoint;
+    private Names name_locale;
     private String audioReference;
     private String photoReference;
     private String link;
+    private long last_update;
 
     private final static long serialVersionUID = -6094752779573843057L;
 
@@ -24,32 +28,27 @@ public class InfoAboutPoi implements Serializable {
     /**
      * @param type
      * @param name_locale
-     * @param shortDescriptionPoint
      * @param audioReference
      * @param photoReference
      * @param link
      */
 
-    public InfoAboutPoi(String type, String name_locale, String shortDescriptionPoint,
-            String audioReference, String photoReference, String link) {
+    public InfoAboutPoi(String type, Names name_locale, String audioReference,
+            String photoReference, String link, long last_update) {
         this.type = type;
         this.name_locale = name_locale;
-        this.shortDescriptionPoint = shortDescriptionPoint;
         this.audioReference = audioReference;
         this.photoReference = photoReference;
         this.link = link;
+        this.last_update = last_update;
     }
 
     public String getType() {
         return type;
     }
 
-    public String getNameLocale() {
+    public Names getNameLocale() {
         return name_locale;
-    }
-
-    public String getShortDescriptionPoint() {
-        return shortDescriptionPoint;
     }
 
     public String getAudioReference() {
@@ -64,20 +63,29 @@ public class InfoAboutPoi implements Serializable {
         return link;
     }
 
+    public String getLast_update() {
+        return new SimpleDateFormat("dd-MM-yyyy", Locale.US).format(new Date(last_update*1000));
+    }
+
+    @NonNull
     @Override
     public String toString() {
         return "InfoAboutPoi{" +
                 "type='" + type + '\'' +
                 ", name_locale='" + name_locale + '\'' +
-                ", shortDescriptionPoint='" + shortDescriptionPoint + '\'' +
                 ", audioReference='" + audioReference + '\'' +
                 ", photoReference='" + photoReference + '\'' +
                 ", link='" + link + "\'}";
     }
 
-    public static InfoAboutPoi fromCursor(Cursor cursor) {
+    public static InfoAboutPoi fromCursor(Cursor cursor, Names names) {
         return new InfoAboutPoi(
-                cursor.getString(0), cursor.getString(1), cursor.getString(2),
-                cursor.getString(3), cursor.getString(4), cursor.getString(5));
+                cursor.getString(1),
+                names,
+                cursor.getString(2),
+                cursor.getString(3),
+                cursor.getString(4),
+                cursor.getLong(5)
+        );
     }
 }

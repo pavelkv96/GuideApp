@@ -38,7 +38,7 @@ public class MultiChoiceItemsDialogFragment extends DialogFragment implements On
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        cur = helper.getAllTypes();
+        cur = helper.getAllTypes(getResources().getString(R.string.locale));
         Builder builder = new Builder(getActivity());
         builder.setTitle(getResources().getString(R.string.dialog_types_objects));
         builder.setMultiChoiceItems(cur, cur.getColumnName(1), cur.getColumnName(2), this);
@@ -56,7 +56,10 @@ public class MultiChoiceItemsDialogFragment extends DialogFragment implements On
 
     @Override
     public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-        helper.changeRec(which, isChecked);
+        //long[] ids = ((AlertDialog) dialog).getListView().getCheckedItemIds();
+        cur.moveToFirst();
+        cur.move(which);
+        helper.changeRec(cur.getInt(0), isChecked);
         cur.requery();
         /*ListView list = ((AlertDialog) dialog).getListView();
 

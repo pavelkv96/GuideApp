@@ -16,9 +16,9 @@ android {
         multiDexEnabled true
     }
     buildTypes {
-        /*debug {
-            minifyEnabled true
-            shrinkResources true
+        debug {
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField 'String', "ApiKey", GuideApp_ApiKey
             resValue 'string', "api_key", GuideApp_ApiKey

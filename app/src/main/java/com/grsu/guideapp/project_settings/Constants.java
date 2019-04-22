@@ -15,6 +15,7 @@ public class Constants {
     public static final String KEY_NAME_ROUTE = "name_route";
     public static final String KEY_SOUTHWEST = "southwest";
     public static final String KEY_NORTHEAST = "northeast";
+    public static final String KEY_IS_FULL = "is_full";
     public static final String KEY_CHECKED_ITEM = "checked_item";
     public static final String KEY_SELECTED_ITEM = "selected_item";
     public static final String KEY_ID_ROUTE = "id_route";

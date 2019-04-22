@@ -2,6 +2,7 @@
 <android.support.v4.widget.NestedScrollView
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/bottom_sheet"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
@@ -12,27 +13,74 @@
 
   <RelativeLayout
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:paddingBottom="8dp"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
-    android:background="@color/colorPrimary">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <TextView
+      android:id="@+id/tv_bottom_sheet_title"
+      android:textStyle="bold"
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      android:paddingTop="4dp"
+      android:paddingStart="12dp"
+      android:paddingEnd="12dp"
+      android:background="@color/colorPrimary"
+      android:maxLines="2"
+      android:textColor="@android:color/white"
+      android:textSize="20sp"
+      app:autoSizeMaxTextSize="20sp"
+      app:autoSizeMinTextSize="14sp"
+      app:autoSizeStepGranularity="1sp"
+      app:autoSizeTextType="uniform"
+      tools:text="Полное наименование маршрута содержащее 50 символа"/>
+
+    <ImageView
+      android:id="@+id/iv_bottom_sheet_route_image"
+      android:layout_width="400dp"
+      android:layout_height="300dp"
+      android:layout_marginTop="20dp"
+      android:layout_below="@+id/tv_bottom_sheet_title"
+      android:layout_centerInParent="true"
+      android:layout_gravity="center"
+      android:contentDescription="@null"
+      tools:src="@color/colorAccent"/>
+
+    <TextView
+      android:id="@+id/tv_bottom_sheet_route_distance"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:layout_marginStart="50dp"
+      android:layout_below="@+id/iv_bottom_sheet_route_image"
+      android:textColor="@android:color/black"
+      tools:text="Протяжённость: "/>
+
+    <TextView
+      android:id="@+id/tv_bottom_sheet_route_duration"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="50dp"
+      android:layout_below="@+id/tv_bottom_sheet_route_distance"
+      android:textColor="@android:color/black"
+      tools:text="Продолжительность: "/>
+
+    <TextView
+      android:id="@+id/tv_bottom_sheet_description"
       android:layout_width="wrap_content"
-      android:layout_height="match_parent"
-      android:orientation="vertical">
-
-      <TextView
-        android:paddingTop="8dp"
-        android:id="@+id/bottom_sheet_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Title dummy"
-        android:textColor="@android:color/white"
-        android:textSize="19sp"/>
-    </LinearLayout>
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:layout_marginBottom="10dp"
+      android:layout_marginStart="10dp"
+      android:layout_marginEnd="10dp"
+      android:layout_alignParentStart="true"
+      android:layout_below="@+id/tv_bottom_sheet_route_duration"
+      android:gravity="center"
+      android:textColor="@android:color/black"
+      tools:text="Специальная погрешность
+Данный фактор представляет собой искусственную погрешность, намеренное искажение времени сигнала, посылаемого спутником, в результате чего точность определения местоположения объекта прибором GPS снижается до 50-150 метров. Погрешность искусственно вносилась в сигналы спутников в соответствии с требованиями режима SA - selective availability (селективного доступа), задачей которого было ограничить точность измерений для гражданских GPS-приемников. Режим селективного доступа все-таки был отключен вследствие широкой распространенности системы глобального позиционирования, произошло это в мае 2000 года.
+Качество геометрии спутников.\n
+Очередным фактором, влияющим на точность показаний GPS-приемника, является качество геометрии спутников – характер взаимного расположения спутников относительно приемника. Точность определения местоположения напрямую зависит от количества спутников в «зоне видимости» прибора, а также от того, как эти спутники распределены на небосводе. Все расчеты построены не столько на определении расстояния как такового, но и на пересечении прямых, образованных расстояниями от приемника GPS до каждого из видимых спутников. Именно эти пересечения формируют зону вероятного нахождения объекта, и чем обширнее зона, тем ниже точность определения.
+"/>
   </RelativeLayout>
-
 
 </android.support.v4.widget.NestedScrollView>

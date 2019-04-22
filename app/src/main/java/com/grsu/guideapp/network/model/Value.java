@@ -1,11 +1,9 @@
 package com.grsu.guideapp.network.model;
 
-import com.grsu.guideapp.network.model.LatLong;
-import com.grsu.guideapp.network.model.Turn;
-import java.io.Serializable;
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
+import java.util.List;
 
 public class Value implements Serializable {
 
@@ -20,7 +18,7 @@ public class Value implements Serializable {
     private List<Turn> points = null;
     @SerializedName("objects")
     @Expose
-    private List<Object> objects = null;
+    private List<Objects> objects = null;
     private final static long serialVersionUID = 1820689508389648513L;
 
     /**
@@ -36,7 +34,7 @@ public class Value implements Serializable {
      * @param limLeft
      * @param objects
      */
-    public Value(LatLong limLeft, LatLong limRight, List<Turn> points, List<Object> objects) {
+    public Value(LatLong limLeft, LatLong limRight, List<Turn> points, List<Objects> objects) {
         super();
         this.limLeft = limLeft;
         this.limRight = limRight;
@@ -56,7 +54,7 @@ public class Value implements Serializable {
         return points;
     }
 
-    public List<Object> getObjects() {
+    public List<Objects> getObjects() {
         return objects;
     }
 }

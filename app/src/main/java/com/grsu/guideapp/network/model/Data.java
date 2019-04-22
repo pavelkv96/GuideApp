@@ -19,6 +19,10 @@ public class Data implements Serializable {
     @SerializedName("route")
     @Expose
     private Route route;
+    @SerializedName("category")
+    @Expose
+    private List<Category> category;
+
     private final static long serialVersionUID = -2713204178998794488L;
 
     /**
@@ -34,12 +38,13 @@ public class Data implements Serializable {
      * @param about
      * @param images
      */
-    public Data(Name name, List<Image> images, About about, Route route) {
+    public Data(Name name, List<Image> images, About about, Route route, List<Category> category) {
         super();
         this.name = name;
         this.images = images;
         this.about = about;
         this.route = route;
+        this.category = category;
     }
 
     public Name getName() {
@@ -56,5 +61,9 @@ public class Data implements Serializable {
 
     public Route getRoute() {
         return route;
+    }
+
+    public Category getCategory() {
+        return category.get(0);
     }
 }

@@ -1,12 +1,10 @@
-
 package com.grsu.guideapp.network.model;
 
-import java.io.Serializable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 
-public class Language implements Serializable
-{
+public class Language implements Serializable {
 
     @SerializedName("ru")
     @Expose
@@ -27,13 +25,12 @@ public class Language implements Serializable
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public Language() {
     }
 
     /**
-     * 
+     *
      * @param cn
      * @param pl
      * @param en

@@ -22,18 +22,16 @@
       app:srcCompat="@android:color/background_light"/>
 
     <TextView
-      android:id="@+id/tv_fragment_details_id_point"
+      android:id="@+id/tv_fragment_details_last_update"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="Nothing"
-      android:visibility="gone"/>
+      android:text="Nothing"/>
 
     <TextView
       android:id="@+id/tv_fragment_details_type"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="Nothing"
-      android:visibility="gone"/>
+      android:text="Nothing"/>
 
     <TextView
       android:id="@+id/tv_fragment_details_name_locale"

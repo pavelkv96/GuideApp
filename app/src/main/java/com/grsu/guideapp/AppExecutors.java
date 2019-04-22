@@ -30,16 +30,16 @@ public enum AppExecutors {
         this.mMainThread = new MainExecutor();
     }
 
-    public Executor diskIO() {
-        return mDiskIO;
+    public void diskIO(Runnable runnable) {
+        mDiskIO.execute(runnable);
     }
 
     public APIService networkIO() {
         return mNetworkIO;
     }
 
-    public Executor mainThread() {
-        return mMainThread;
+    public void mainThread(Runnable runnable) {
+        mMainThread.execute(runnable);
     }
 
     private static class MainExecutor implements Executor {

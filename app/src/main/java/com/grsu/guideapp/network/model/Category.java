@@ -3,13 +3,16 @@ package com.grsu.guideapp.network.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
-import java.util.List;
 
 public class Category implements Serializable {
 
-    @SerializedName("data")
+    @SerializedName("id")
     @Expose
-    private List<Datum> data = null;
+    private Integer id;
+    @SerializedName("name")
+    @Expose
+    private Language name;
+
     private final static long serialVersionUID = 2853086861039255112L;
 
     /**
@@ -19,15 +22,19 @@ public class Category implements Serializable {
     }
 
     /**
-     *
-     * @param data
+     * @param id
+     * @param name
      */
-    public Category(List<Datum> data) {
-        super();
-        this.data = data;
+    public Category(Integer id, Language name) {
+        this.id = id;
+        this.name = name;
     }
 
-    public List<Datum> getData() {
-        return data;
+    public Integer getId() {
+        return id;
+    }
+
+    public Language getName() {
+        return name;
     }
 }

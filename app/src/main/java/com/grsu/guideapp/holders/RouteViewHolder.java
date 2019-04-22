@@ -1,5 +1,6 @@
 package com.grsu.guideapp.holders;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.View;
@@ -7,7 +8,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.utils.StorageUtils;
+import com.grsu.guideapp.project_settings.Settings;
+import com.grsu.guideapp.utils.CryptoUtils;
+import com.squareup.picasso.Picasso;
+import java.io.File;
 
 public class RouteViewHolder extends ViewHolder {
 
@@ -25,31 +29,33 @@ public class RouteViewHolder extends ViewHolder {
         tv_item_routes_name_route = pView.findViewById(R.id.tv_item_routes_name_route);
     }
 
-    public void bind(final Route route) {
-        tv_item_routes_duration.setText(toDuration(route.getDuration()));
-        tv_item_routes_distance.setText(toDistance(route.getDistance()));
+    public void bind(final Route route, final Context context) {
+        tv_item_routes_duration.setText(toDuration(route.getDuration(), context));
+        tv_item_routes_distance.setText(toDistance(route.getDistance(), context));
         tv_item_routes_name_route.setText(String.valueOf(route.getNameRoute()));
 
-        String photo = route.getReferencePhotoRoute();
+        String photo = CryptoUtils.hash(route.getReferencePhotoRoute());
+        File file = new File(Settings.CONTENT, photo);
 
-        try {
-            iv_item_preview_photo_route.setImageBitmap(StorageUtils.getImageFromFile(photo));
-        } catch (NullPointerException e) {
-            iv_item_preview_photo_route.setImageResource(R.drawable.ic_launcher_background);
-        }
+        Picasso.get().load(file)
+                .placeholder(R.drawable.my_location)
+                .error(R.drawable.ic_launcher_background)
+                .into(iv_item_preview_photo_route);
     }
 
-    private String toDistance(Integer distance) {
+    private String toDistance(Integer distance, Context context) {
+        String pattern = "%s %s";
         if (distance > 900) {
-            return String.format("%s km", distance / 1000);
+            return String.format(pattern, distance / 1000, context.getString(R.string.short_kilometers));
         }
-        return String.format("%s m", distance);
+        return String.format(pattern, distance, context.getString(R.string.short_meters));
     }
 
-    private String toDuration(Integer distance) {
+    private String toDuration(Integer distance, Context context) {
+        String pattern = "%s %s";
         if (distance > 60) {
-            return String.format("%s h %s min", distance / 60, distance % 60);
+            return String.format("%s %s " + pattern, distance / 60, context.getString(R.string.short_hour), distance % 60, context.getString(R.string.short_minute));
         }
-        return String.format("%s min", distance);
+        return String.format(pattern, distance, context.getString(R.string.short_minute));
     }
 }

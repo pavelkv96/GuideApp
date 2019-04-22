@@ -9,9 +9,9 @@ import com.grsu.guideapp.database.CacheDBHelper;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
+import com.grsu.guideapp.utils.StorageUtils;
 import com.grsu.guideapp.utils.StreamUtils;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.concurrent.Executors;
 import org.mapsforge.core.model.BoundingBox;
@@ -79,7 +79,7 @@ public class TileAdapter {
         }
 
         try {
-            Tile tile = MapUtils.getTile(pMapTileIndex, 600);
+            Tile tile = MapUtils.getTile(pMapTileIndex, 512);
             RendererJob job = new RendererJob(tile, mapDatabase, theme, model, scale, false, false);
             AndroidTileBitmap bmp = (AndroidTileBitmap) renderer.executeJob(job);
             if (bmp != null) {
@@ -102,13 +102,10 @@ public class TileAdapter {
         Bitmap image = renderTile(pMapTileIndex);
 
         if (image != null) {
-            ByteArrayOutputStream stream = null;
+            image = Bitmap.createScaledBitmap(image, 256,256, false);
             ByteArrayInputStream bais = null;
             try {
-                stream = new ByteArrayOutputStream();
-                image.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byte[] bitmapdata = stream.toByteArray();
-
+                byte[] bitmapdata = StorageUtils.toByteArray(image);
                 //Set image in database
                 bais = new ByteArrayInputStream(bitmapdata);
                 CacheDBHelper.saveTile(pMapTileIndex, mProvider, bais, null);
@@ -118,7 +115,6 @@ public class TileAdapter {
                 Logs.e(TAG, "forge error storing tile cache", ex);
             } finally {
                 StreamUtils.closeStream(bais);
-                StreamUtils.closeStream(stream);
             }
         }
         return null;

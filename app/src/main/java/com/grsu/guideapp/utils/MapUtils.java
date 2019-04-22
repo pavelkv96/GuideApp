@@ -76,4 +76,30 @@ public class MapUtils {
         return bounds.contains(latLng) ? bounds : bounds.including(latLng);
     }
 
+    public static double distanceTo(LatLng from, LatLng to) {
+        return  computeAngleBetween(from, to) * 6371009;
+    }
+
+    private static double computeAngleBetween(LatLng from, LatLng to) {
+        return distanceRadians(Math.toRadians(from.latitude), Math.toRadians(from.longitude),
+                Math.toRadians(to.latitude), Math.toRadians(to.longitude));
+    }
+
+    private static double distanceRadians(double lat1, double lng1, double lat2, double lng2) {
+        return arcHav(havDistance(lat1, lat2, lng1 - lng2));
+    }
+
+    private static double arcHav(double x) {
+        return 2 * Math.asin(Math.sqrt(x));
+    }
+
+    private static double havDistance(double lat1, double lat2, double dLng) {
+        return hav(lat1 - lat2) + hav(dLng) * Math.cos(lat1) * Math.cos(lat2);
+    }
+
+    private static double hav(double x) {
+        double sinHalf = Math.sin(x * 0.5);
+        return sinHalf * sinHalf;
+    }
+
 }

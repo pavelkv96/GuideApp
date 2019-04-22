@@ -5,32 +5,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build.VERSION;
 import android.support.v4.content.ContextCompat;
 import com.grsu.guideapp.project_settings.Constants;
 
-public class CheckSelfPermission {
+public class CheckPermission {
 
-    public static final String[] groupExternalStorage = new String[]{
+    public static final String[] groupStorage = new String[]{
             permission.WRITE_EXTERNAL_STORAGE,
             permission.READ_EXTERNAL_STORAGE
     };
 
-    public static final String[] groupAccessLocation = new String[]{
+    public static final String[] groupLocation = new String[]{
             permission.ACCESS_FINE_LOCATION,
-            permission.ACCESS_COARSE_LOCATION
     };
 
-    public static boolean writeExternalStorageIsGranted(Context context) {
-        return ContextCompat.checkSelfPermission(context, permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED;
+    public static boolean canWriteStorage(Context context) {
+        return ContextCompat.checkSelfPermission(context, groupStorage[0]) == 0 &&
+                ContextCompat.checkSelfPermission(context, groupStorage[1]) == 0;
     }
 
-    public static boolean getAccessLocationIsGranted(Context context) {
-        return ContextCompat.checkSelfPermission(context, permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(context, permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED;
+    public static boolean canGetLocation(Context context) {
+        return ContextCompat.checkSelfPermission(context, groupLocation[0]) == 0;
     }
 
 
@@ -47,10 +42,6 @@ public class CheckSelfPermission {
         }
 
         return true;
-    }
-
-    public static boolean checkVersionSdk(int version) {
-        return VERSION.SDK_INT >= version;
     }
 
     public static void settingsIntent(Context context) {

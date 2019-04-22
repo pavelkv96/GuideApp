@@ -1,4 +1,3 @@
-
 package com.grsu.guideapp.network.model;
 
 import android.support.annotation.NonNull;
@@ -6,29 +5,29 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.grsu.guideapp.utils.CryptoUtils;
-import java.io.Serializable;
 import java.util.List;
 
-public class LatLong implements Serializable {
+public class Point extends LatLong {
 
-    @SerializedName("lat")
+    @SerializedName("objects")
     @Expose
-    protected Double lat;
-    @SerializedName("lng")
-    @Expose
-    protected Double lng;
+    protected List<Integer> objects = null;
 
-    private final static long serialVersionUID = 9098352641873441350L;
+    private final static long serialVersionUID = 9094352641873441350L;
 
     /**
      * No args constructor for use in serialization
      */
-    public LatLong() {
+    public Point() {
     }
 
-    public LatLong(Double lat, Double lng) {
-        this.lat = lat;
-        this.lng = lng;
+    public Point(Double lat, Double lng, List<Integer> objects) {
+        super(lat, lng);
+        this.objects = objects;
+    }
+
+    public List<Integer> getObjects() {
+        return objects;
     }
 
     public LatLng getLatLng() {
@@ -42,6 +41,6 @@ public class LatLong implements Serializable {
     @NonNull
     @Override
     public String toString() {
-        return "LatLong{lat=" + lat + ", lng=" + lng + '}';
+        return "LatLong{lat=" + lat + ", lng=" + lng + ", objects=" + objects + '}';
     }
 }

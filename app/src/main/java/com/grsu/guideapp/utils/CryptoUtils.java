@@ -2,6 +2,8 @@ package com.grsu.guideapp.utils;
 
 import android.support.annotation.NonNull;
 import com.google.android.gms.maps.model.LatLng;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,5 +96,18 @@ public class CryptoUtils {
             v >>= 5;
         }
         result.append(Character.toChars((int) (v + 63)));
+    }
+
+    public static String hash(String value) {
+        try {
+            byte[] array = MessageDigest.getInstance("MD5").digest(value.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte anArray : array) {
+                sb.append(Integer.toHexString((anArray & 0xFF) | 0x100).substring(1, 3));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException ignore) {
+        }
+        return value;
     }
 }
