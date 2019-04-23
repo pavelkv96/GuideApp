@@ -24,7 +24,7 @@ public class SplashInteractor implements SplashContract.SplashInteractor {
 
     @Override
     public void copy(final OnUpdatedListener updated, final File path, final String name) {
-        App.getThread().diskIO().execute(new Runnable() {
+        App.getThread().diskIO(new Runnable() {
             @Override
             public void run() {
                 copyFile(path, name);

@@ -1,14 +1,18 @@
 package com.grsu.guideapp.base;
 
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.grsu.guideapp.App;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 
 public abstract class BaseActivity<P extends BasePresenter>
@@ -18,6 +22,7 @@ public abstract class BaseActivity<P extends BasePresenter>
     private Unbinder mUnBinder;
 
     private ProgressDialog mProgressDialog = null;
+    protected SharedPreferences preferences;
 
     protected @NonNull
     abstract P getPresenterInstance();
@@ -27,6 +32,8 @@ public abstract class BaseActivity<P extends BasePresenter>
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        App.setLocale(preferences, getResources());
         mPresenter = getPresenterInstance();
         mPresenter.attachView(this);
     }
@@ -48,7 +55,7 @@ public abstract class BaseActivity<P extends BasePresenter>
     @Override
     public void showProgress(String title, String message) {
         if (mProgressDialog == null || !mProgressDialog.isShowing()) {
-            mProgressDialog = new ProgressDialog(BaseActivity.this);
+            mProgressDialog = new ProgressDialog(this);
             if (title != null) {
                 mProgressDialog.setTitle(title);
             }
@@ -68,6 +75,11 @@ public abstract class BaseActivity<P extends BasePresenter>
 
     @Override
     public void showToast(String message) {
+        Toasts.makeL(this, message);
+    }
+
+    @Override
+    public void showToast(@StringRes int message) {
         Toasts.makeL(this, message);
     }
 

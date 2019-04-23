@@ -25,9 +25,6 @@ public abstract class BaseSettingsFragment<P extends BasePresenter, A extends Fr
     protected abstract @NonNull
     P getPresenterInstance();
 
-    /*protected abstract @LayoutRes
-    int getLayout();*/
-
     protected abstract String getTitle();
 
     private ProgressDialog mProgressDialog = null;
@@ -78,6 +75,11 @@ public abstract class BaseSettingsFragment<P extends BasePresenter, A extends Fr
 
     @Override
     public void showToast(String message) {
+        Toasts.makeL(getActivity, message);
+    }
+
+    @Override
+    public void showToast(int message) {
         Toasts.makeL(getActivity, message);
     }
 

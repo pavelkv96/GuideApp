@@ -1,65 +1,60 @@
 package com.grsu.guideapp.fragments.map;
 
 import android.annotation.SuppressLint;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition.Builder;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.fragments.map.MapContract.MapViews;
 import com.grsu.guideapp.fragments.map_preview.MapPreviewFragment;
-import com.grsu.guideapp.fragments.maps.MapsContract.MapViews;
 import com.grsu.guideapp.models.Point;
 import com.grsu.guideapp.project_settings.Constants;
-import com.grsu.guideapp.utils.CheckSelfPermission;
+import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.CryptoUtils;
-import com.grsu.guideapp.utils.DataUtils;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
-import com.grsu.guideapp.utils.StorageUtils;
+import com.grsu.service.Listener;
+import com.grsu.service.LocationClient;
 import java.util.List;
 
-public class MapsFragment extends MapPreviewFragment<MapsPresenter>
-        implements MapViews, OnMyLocationChangeListener {
+public class MapFragment extends MapPreviewFragment<MapPresenter>
+        implements MapViews, Listener, OnSeekBarChangeListener {
 
-    private static final String TAG = MapsFragment.class.getSimpleName();
-    private List<LatLng> myMovement;//deleting
+    private static final String TAG = MapFragment.class.getSimpleName();
+    //private List<LatLng> myMovement;//deleting
 
-    //private Marker marker;//deleting
-    private Marker current;
-    private Circle circle;
+    private LocationClient client;
     int i = 0;
     Animator animator;
+
+    @BindView(R.id.sb)
+    SeekBar seekBar;
 
     @BindView(R.id.fragment_map_indicator)
     ImageView found;
 
     @NonNull
     @Override
-    protected MapsPresenter getPresenterInstance() {
-        return new MapsPresenter(this, new MapsInteractor(new DatabaseHelper(getContext())));
+    protected MapPresenter getPresenterInstance() {
+        return new MapPresenter(this, new MapInteractor(new DatabaseHelper(getContext())));
     }
 
     @Override
@@ -72,6 +67,7 @@ public class MapsFragment extends MapPreviewFragment<MapsPresenter>
         return getString(R.string.map_fragment);
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
@@ -87,15 +83,25 @@ public class MapsFragment extends MapPreviewFragment<MapsPresenter>
 
         super.onCreateView(inflater, container, savedInstanceState);
 
+        client = new LocationClient.Builder(getActivity).setInterval(2000).addListener(this)
+                .build();
+
+        seekBar.setMax(68);
+        seekBar.setOnSeekBarChangeListener(this);
+
         getActivity.setTitleToolbar(name);
 
-        return rootView;
-    }
+        //myMovement = DataUtils.getList2();
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        myMovement = DataUtils.getList2();
-        super.onMapReady(googleMap);
+        if (savedInstanceState != null) {
+            i = savedInstanceState.getInt("int", 0);
+
+            if (CheckPermission.canGetLocation(getActivity)) {
+                client.connect();
+            }
+        }
+
+        return rootView;
     }
 
     @Override
@@ -110,13 +116,8 @@ public class MapsFragment extends MapPreviewFragment<MapsPresenter>
 
     @Override
     public void setCurrentPoint(LatLng latLng) {
-        if (current == null) {
-            MarkerOptions markerOptions = new MarkerOptions().position(latLng);
-            current = mMap.addMarker(markerOptions);
-        }
         float zoom = mMap.getCameraPosition().zoom;
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-        current.setPosition(latLng);
     }
 
     @Override
@@ -135,18 +136,19 @@ public class MapsFragment extends MapPreviewFragment<MapsPresenter>
 
     @OnClick(R.id.btn_fragment_map_stop)
     public void stopService(View view) {
-        mMap.setOnMyLocationChangeListener(null);
+        client.disconnect();
     }
 
     @SuppressLint("MissingPermission")
     @OnClick(R.id.btn_fragment_map_start)
     public void startService(View view) {
-        if (!CheckSelfPermission.getAccessLocationIsGranted(getContext())) {
-            mMap.setMyLocationEnabled(true);
-            mMap.setOnMyLocationChangeListener(this);
+        if (CheckPermission.canGetLocation(getActivity)) {
+            mMap.setMyLocationEnabled(false);
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            client.connect();
         } else {
             MySnackbar.makeL(view,
-                    R.string.error_snackbar_do_not_have_permission_access_fine_location,
+                    R.string.error_snackbar_do_not_have_permission_access_location,
                     getActivity);
         }
     }
@@ -165,17 +167,25 @@ public class MapsFragment extends MapPreviewFragment<MapsPresenter>
             tilt = 0f;
         } else {
             button.setText("2D");
-            tilt = 67.5f;
+            tilt = 54f;
         }
 
-        mMap.moveCamera(createCamera(current.getPosition(), tilt));
+        mMap.moveCamera(createCamera(myLocation.getMyLocation(), tilt));
         animator.setTilt(tilt);
     }
 
-    public CameraUpdate createCamera(LatLng target, float tilt) {
+    public CameraUpdate createCamera(Location target, float tilt) {
         float zoom = mMap.getCameraPosition().zoom;
         Builder builder = new Builder();
-        builder.target(target).tilt(tilt).zoom(zoom);
+        builder.target(MapUtils.toLatLng(target)).tilt(tilt).zoom(zoom);
+        return CameraUpdateFactory.newCameraPosition(builder.build());
+    }
+
+    public CameraUpdate createCamera(Location target, Location next, float tilt) {
+        float zoom = mMap.getCameraPosition().zoom;
+        Builder builder = new Builder();
+        builder.target(MapUtils.toLatLng(target)).tilt(tilt).zoom(zoom);
+        builder.bearing(target.bearingTo(next));
         return CameraUpdateFactory.newCameraPosition(builder.build());
     }
 
@@ -191,54 +201,72 @@ public class MapsFragment extends MapPreviewFragment<MapsPresenter>
         mPresenter.getPoi();
     }
 
-    @Override
-    public void onMyLocationChange(Location location) {
-        if (i < myMovement.size() - 1) {
-
-            LatLng position = myMovement.get(i);
-            if (i == 0) {
-                CircleOptions options = new CircleOptions();
-                options.center(position);
-                options.radius(5);
-                options.strokeColor(Color.BLUE);
-                options.fillColor(Color.GRAY);
-                options.strokeWidth(5);
-                options.zIndex(0.1f);
-
-                circle = mMap.addCircle(options);
-                MarkerOptions markerOptions = new MarkerOptions().position(position);
-                Bitmap hueGreen = StorageUtils.getBitmap(getResources(), R.drawable.ic_my_location);
-                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(hueGreen));
-                markerOptions.anchor(0.5f, 0.5f);
-                markerOptions.flat(true);
-                //marker = mMap.addMarker(markerOptions);
-                current = mMap.addMarker(markerOptions);
-                animator = new Animator(mMap, current, circle);
-            }
-            //marker.setPosition(position);
-            //mPresenter.getProjectionLocation(MapUtils.toLocation(position));
-            update(MapUtils.toLocation(position));
-            i++;
-        } else {
-            Location currentLocation = MapUtils.toLocation(myMovement.get(myMovement.size() - 1));
-            //mPresenter.getProjectionLocation(currentLocation);
-            update(currentLocation);
-            mMap.setOnMyLocationChangeListener(null);
-        }
-    }
-
     private void update(Location currentLocation) {
         List<Point> list = mPresenter.getList(currentLocation);
         LatLng start = list.get(2).getPosition();
         LatLng end = list.get(3).getPosition();
-        circle.setCenter(start);
-        circle.setRadius(MapUtils.getDistanceBetween(currentLocation, MapUtils.toLocation(start)));
+
+        Location location = MapUtils.toLocation(start);
+        float accuracy = MapUtils.getDistanceBetween(currentLocation, MapUtils.toLocation(start));
+        location.setAccuracy(accuracy);
+
+        myLocation.setLocation(location);
+
         animator.startAnimation(start, end);
     }
 
-    public static MapsFragment newInstance(Bundle args) {
-        MapsFragment fragment = new MapsFragment();
+    public static MapFragment newInstance(Bundle args) {
+        MapFragment fragment = new MapFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onChangedLocation(Location location) {
+        if (animator == null){
+            animator = new Animator(mMap, myLocation);
+        }
+
+        update(location);
+        /*if (i < myMovement.size() - 1) {
+
+            LatLng position = myMovement.get(i);
+            update(MapUtils.toLocation(position));
+            i++;
+        } else {
+            update(MapUtils.toLocation(myMovement.get(myMovement.size() - 1)));
+            client.disconnect();
+        }*/
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("int", i);
+        outState.putFloat("zoom", mMap.getCameraPosition().zoom);
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+        List<Point> list = mPresenter.getList(myLocation.getMyLocation());
+        mMap.moveCamera(createCamera(MapUtils.toLocation(list.get(2).getPosition()),
+                MapUtils.toLocation(list.get(3).getPosition()), i));
+        Log.e(TAG, "onProgressChanged: " + i);
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        client.disconnect();
+        super.onDestroy();
     }
 }

@@ -19,7 +19,7 @@ public class SplashPresenter extends BasePresenterImpl<SplashView> implements On
     }
 
     @Override
-    public void copyInAssets(File path, String name) {
+    public void copyFromAssets(File path, String name) {
         splashInteractor.copy(this, path, name);
     }
 

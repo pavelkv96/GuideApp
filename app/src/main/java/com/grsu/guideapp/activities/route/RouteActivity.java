@@ -11,7 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.listeners.OnFragmentReplace;
-import com.grsu.guideapp.fragments.map.MapFragment;
+import com.grsu.guideapp.fragments.test.TestFragment;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
@@ -40,7 +40,7 @@ public class RouteActivity extends AppCompatActivity implements OnFragmentReplac
             finish();
         } else {
             if (savedInstanceState == null) {
-                onReplace(MapFragment.newInstance(args));
+                onReplace(TestFragment.newInstance(args));
             }
         }
 
@@ -53,6 +53,7 @@ public class RouteActivity extends AppCompatActivity implements OnFragmentReplac
         bundle.putString(Constants.KEY_NAME_ROUTE, route.getNameRoute());
         bundle.putString(Constants.KEY_SOUTHWEST, route.getSouthwest());
         bundle.putString(Constants.KEY_NORTHEAST, route.getNortheast());
+        bundle.putBoolean(Constants.KEY_IS_FULL, route.getIsFull());
         intent.putExtra(Constants.KEY_BUNDLE_ROUTE, bundle);
         return intent;
     }

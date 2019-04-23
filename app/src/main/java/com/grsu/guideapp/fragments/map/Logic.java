@@ -5,25 +5,24 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.base.listeners.OnChangePolyline;
 import com.grsu.guideapp.base.listeners.OnNotFound;
-import com.grsu.guideapp.models.DecodeLine;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Point;
 import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.MapUtils;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 class Logic {
 
-    private static Logic logic = null;
     private static final String TAG = Logic.class.getSimpleName();
-    private List<Point> latLngs;
+    private static Logic logic = null;
     private Point currentPosition;
-    private ArrayList<DecodeLine> decodeLines;
+    private int currentIndex;
+    private List<Point> fivePoint;
+    private List<Point> turnPoint;
+    private List<Point> allPoint;
     private static OnChangePolyline onChangePolyline;
     private static OnNotFound onNotFound;
-    private int count = 0;
 
     static Logic getInstance(MapPresenter mapPresenter) {
         if (logic == null) {
@@ -38,39 +37,31 @@ class Logic {
         logic = null;
         onChangePolyline = null;
         onNotFound = null;
-        latLngs = null;
         currentPosition = null;
-        decodeLines = null;
     }
 
     void initialData(List<Line> encodePolylines) {
-        latLngs = new ArrayList<>();
-        decodeLines = (ArrayList<DecodeLine>) getDecodeLine(encodePolylines);
+        allPoint = getDecodeLine(encodePolylines);
+        turnPoint = getTurnsList(encodePolylines);
+        fivePoint = getNearestPoint();
 
-        latLngs.addAll(getNearestPoint(decodeLines));
-        currentPosition = new Point(latLngs.get(2));
+        currentPosition = new Point(fivePoint.get(2));
+        currentIndex = 2;
     }
 
     Point findNearestPointInPolyline(Location currentLocation) {
-        Point shortestDistance = getShortestDistance(latLngs, currentLocation);
+        Point shortestDistance = getShortestDistance(fivePoint, currentLocation);
         onNotFound.onNotFound(null);
 
         Location endLocation = MapUtils.toLocation(shortestDistance.getPosition());
         if (MapUtils.getDistanceBetween(currentLocation, endLocation) > 25) {
-            List<Point> shortestPointsEveryPolyline = new ArrayList<>();
-            for (DecodeLine decodeLine : decodeLines) {
-                List<Point> latLngList = DecodeLine.toPointList(decodeLine);
-                Point shortest = getShortestDistance(latLngList, currentLocation);
-                shortestPointsEveryPolyline.add(shortest);
-            }
-
-            shortestDistance = Point.getShortestPoint(shortestPointsEveryPolyline);
+            shortestDistance = getShortestDistance(allPoint, currentLocation);
 
             if (shortestDistance.getDistance() <= 25) {
                 setChange(shortestDistance.getNumber());
                 currentPosition = shortestDistance;
-                latLngs = getNewList(shortestDistance);
-                for (Point latLng : latLngs) {
+                fivePoint = getNewList(shortestDistance);
+                for (Point latLng : fivePoint) {
                     Log.e(TAG, "findNearestPointInPolyline: " + latLng.getPosition());
                 }
                 Log.e(TAG, "findNearestPointInPolyline: -----------------------------------");
@@ -79,48 +70,27 @@ class Logic {
                 onNotFound.onNotFound(shortestDistance.getDistance());
             }
         } else {
-            if (latLngs.indexOf(shortestDistance) != latLngs.indexOf(currentPosition)) {
+            if (fivePoint.indexOf(shortestDistance) != fivePoint.indexOf(currentPosition)) {
                 setChange(shortestDistance.getNumber());
                 currentPosition = shortestDistance;
-                latLngs = getNewList(shortestDistance);
-                for (Point latLng : latLngs) {
+                fivePoint = getNewList(shortestDistance);
+                for (Point latLng : fivePoint) {
                     Log.e(TAG, "findNearestPointInPolyline1: " + latLng.getPosition());
                 }
                 Log.e(TAG, "findNearestPointInPolyline1: -----------------------------------");
+
             }
         }
         return currentPosition;
     }
 
+    ///
     private List<Point> getNewList(Point point) {
-        List<Point> list = new ArrayList<>();
-
-        DecodeLine decodeLine = decodeLines.get(point.getNumber() - 1);
-        for (LatLng latLng : decodeLine.getPolyline()) {
-            list.add(new Point(decodeLine.getIdLine(), latLng, -1f));
-        }
-
-        if (decodeLines.size() > point.getNumber()) {
-            decodeLine = decodeLines.get(point.getNumber());
-            for (LatLng latLng : decodeLine.getPolyline()) {
-                list.add(new Point(decodeLine.getIdLine(), latLng, -1f));
-            }
-        }
-
-        if (list.get(0).getPosition() == point.getPosition() || list.get(1).getPosition() == point
-                .getPosition()) {
-            decodeLine = decodeLines.get(point.getNumber() - 2);
-            List<LatLng> latLngList = new ArrayList<>(decodeLine.getPolyline());
-            Collections.reverse(latLngList);
-            for (LatLng latLng : latLngList) {
-                list.add(0, new Point(decodeLine.getIdLine(), latLng, -1f));
-            }
-        }
-
-        int index = list.indexOf(point);
-        return list.subList(index - 2, index + 3);
+        int index = allPoint.indexOf(point);
+        return allPoint.subList(index - 2, index + 3);
     }
 
+    ///
     Point getShortestDistance(List<Point> latLngList, Location currentLocation) {
         Location endLocation = MapUtils.toLocation(latLngList.get(0).getPosition());
         float distance = MapUtils.getDistanceBetween(currentLocation, endLocation);
@@ -138,56 +108,64 @@ class Logic {
         return startPoint;
     }
 
-    private List<DecodeLine> getDecodeLine(List<Line> lines) {
-        List<DecodeLine> decodeLines = new ArrayList<>();
+    ///
+    private List<Point> getDecodeLine(List<Line> lines) {
+        boolean flag = true;
+
+        List<Point> allPoint = new ArrayList<>();
         for (Line line : lines) {
-            List<LatLng> polyline = CryptoUtils.decodeL(line.getPolyline());
-            count += polyline.size();
-            decodeLines.add(new DecodeLine(
-                    line.getIdLine(),
-                    CryptoUtils.decodeP(line.getStartPoint()),
-                    CryptoUtils.decodeP(line.getEndPoint()),
-                    polyline,
-                    line.getAudioReference())
-            );
-        }
+            List<LatLng> polyline;
 
-        decodeLines.get(0).getPolyline().add(0, new LatLng(-181, -181));
-        decodeLines.get(0).getPolyline().add(0, new LatLng(-181, -181));
-        int index = decodeLines.size() - 1;
-        decodeLines.get(index).getPolyline().add(new LatLng(-181, -181));
-        decodeLines.get(index).getPolyline().add(new LatLng(-181, -181));
-
-        return decodeLines;
-    }
-
-    List<Point> getTurnsList() {
-        List<Point> latLngs = new ArrayList<>();
-
-        for (DecodeLine decodeLine : decodeLines) {
-            if (latLngs.isEmpty()) {
-                latLngs.add(new Point(decodeLine.getIdLine(), decodeLine.getStartPoint(), -1f));
+            if (flag) {
+                polyline = CryptoUtils.decodeL(line.getPolyline());
+                flag = false;
+            } else {
+                polyline = CryptoUtils.decodeL(line.getPolyline());
+                polyline.remove(0);
             }
-            latLngs.add(new Point(decodeLine.getIdLine(), decodeLine.getEndPoint(), -1f));
+
+            for (LatLng latLng : polyline) {
+                allPoint.add(new Point(line.getIdLine(), latLng, -1f));
+            }
         }
 
-        return latLngs;
+        LatLng position = new LatLng(-181, -181);
+        int index = allPoint.size() - 1;
+        allPoint.add(0, new Point(1, position, -1f));
+        allPoint.add(0, new Point(1, position, -1f));
+        allPoint.add(new Point(index + 1, position, -1f));
+        allPoint.add(new Point(index + 1, position, -1f));
+
+        return allPoint;
     }
 
-    private List<Point> getNearestPoint(List<DecodeLine> decodeLines) {
-        List<Point> points = new ArrayList<>();
-        DecodeLine decodeLine = decodeLines.get(0);
-        for (LatLng latLng : decodeLine.getPolyline().subList(0, 5)) {
-            points.add(new Point(decodeLine.getIdLine(), latLng, -1f));
+    ///
+    private List<Point> getTurnsList(List<Line> lines) {
+        turnPoint = new ArrayList<>(lines.size() + 1);
+        for (Line decodeLine : lines) {
+            if (turnPoint.isEmpty()) {
+                turnPoint.add(new Point(1, CryptoUtils.decodeP(decodeLine.getStartPoint()), -1f));
+            }
+            Integer id = decodeLine.getIdLine();
+            turnPoint.add(new Point(id, CryptoUtils.decodeP(decodeLine.getEndPoint()), -1f));
         }
 
+        return turnPoint;
+    }
+
+    ///
+    private List<Point> getNearestPoint() {
+        List<Point> points = new ArrayList<>(5);
+        points.addAll(allPoint.subList(0, 5));
         return points;
     }
 
+    ///
     Point getCurrentPosition() {
         return currentPosition;
     }
 
+    ///
     private void setChange(Integer shortestDistance) {
         if (currentPosition.getNumber() > shortestDistance) {
             onChangePolyline.onChange(currentPosition.getNumber(), shortestDistance);
@@ -197,16 +175,19 @@ class Logic {
         }
     }
 
+    List<Point> getTurnsList() {
+        return turnPoint;
+    }
+
     List<Point> getList() {
-        return latLngs;
+        return fivePoint;
     }
 
     public int getCount() {
-        return count;
+        return allPoint.size() - 4;
     }
 
     public float getProgress() {
-
-        return 0;
+        return currentIndex - 2;
     }
 }

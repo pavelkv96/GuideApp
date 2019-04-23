@@ -1,41 +1,68 @@
 package com.grsu.guideapp.fragments.test;
 
-import android.annotation.SuppressLint;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
-import android.util.Log;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.FrameLayout;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
+import android.widget.ImageView;
+import android.widget.TextView;
+import butterknife.BindView;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewFragment;
 import com.grsu.guideapp.fragments.test.TestContract.TestViews;
+import com.grsu.guideapp.models.Route1;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.CryptoUtils;
+import com.grsu.service.Listener;
+import com.grsu.service.LocationClient;
 import com.grsu.ui.bottomsheet.BottomSheetBehaviorGoogleMaps;
-import com.grsu.ui.bottomsheet.BottomSheetCallback;
+import com.squareup.picasso.Picasso;
 
-public class TestFragment extends MapPreviewFragment<TestPresenter> implements BottomSheetCallback,
-        TestContract.TestViews {
+public class TestFragment extends MapPreviewFragment<TestPresenter> implements TestViews,
+        OnClickListener, Listener, OnGlobalLayoutListener {
 
     private static final String TAG = TestFragment.class.getSimpleName();
     private BottomSheetBehaviorGoogleMaps behavior;
     private CoordinatorLayout coordinatorLayout;
     private FrameLayout fragment;
+    private FloatingActionButton fabMyLocation;
+    private FloatingActionButton fabActionGo;
+    private LocationClient client;
+    private Bundle bundle;
+
+    @BindView(R.id.tv_bottom_sheet_title)
+    TextView tv_bottom_sheet_title;
+
+    @BindView(R.id.tv_bottom_sheet_description)
+    TextView tv_bottom_sheet_description;
+
+    @BindView(R.id.tv_bottom_sheet_route_distance)
+    TextView tv_bottom_sheet_route_distance;
+
+    @BindView(R.id.tv_bottom_sheet_route_duration)
+    TextView tv_bottom_sheet_route_duration;
+
+    @BindView(R.id.iv_bottom_sheet_route_image)
+    ImageView iv_bottom_sheet_route_image;
 
     @NonNull
     @Override
     protected TestPresenter getPresenterInstance() {
-        return new TestPresenter(this, new TestInteractor(new DatabaseHelper(getContext())));
+        return new TestPresenter(this,
+                new TestInteractor(new DatabaseHelper(getContext()), getActivity));
     }
 
     @Override
@@ -54,10 +81,10 @@ public class TestFragment extends MapPreviewFragment<TestPresenter> implements B
             @Nullable Bundle savedInstanceState) {
 
         String name = getTitle();
-        Bundle bundle = getArguments();
+        bundle = getArguments();
         if (bundle != null) {
-            route = bundle.getInt(Constants.KEY_ID_ROUTE, -1);
-            //name = bundle.getString(Constants.KEY_NAME_ROUTE);
+            route = bundle.getInt(Constants.KEY_ID_ROUTE);
+            name = bundle.getString(Constants.KEY_NAME_ROUTE);
             LatLng southwest = CryptoUtils.decodeP(bundle.getString(Constants.KEY_SOUTHWEST));
             LatLng northeast = CryptoUtils.decodeP(bundle.getString(Constants.KEY_NORTHEAST));
             bounds = new LatLngBounds(southwest, northeast);
@@ -65,28 +92,129 @@ public class TestFragment extends MapPreviewFragment<TestPresenter> implements B
 
         super.onCreateView(inflater, container, savedInstanceState);
 
+        initViews();
+        mPresenter.isDownLoad(route, getString(R.string.locale));
+        //mPresenter.isLoadRoute(flag);
         getActivity.setTitleToolbar(name);
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+        client = new LocationClient.Builder(getContext()).addListener(this).build();
 
-        coordinatorLayout = rootView.findViewById(R.id.coordinator_layout);
-        fragment = rootView.findViewById(R.id.map_include);
-        View bottomSheet = rootView.findViewById(R.id.bottom_sheet);
-        behavior = BottomSheetBehaviorGoogleMaps.from(bottomSheet);
-        behavior.setHideable(false);
-        behavior.addBottomSheetCallback(this);
-        behavior.setState(BottomSheetBehaviorGoogleMaps.STATE_ANCHOR_POINT);
         return rootView;
     }
 
-    private void updateViewSize(float offset) {
+    @Override
+    public void onResume() {
+        super.onResume();
+        //getActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    @Override
+    public void onPause() {
+        //getActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        super.onPause();
+    }
+
+    void initViews() {
+        coordinatorLayout = rootView.findViewById(R.id.coordinator_layout);
+
+        fabMyLocation = rootView.findViewById(R.id.fab_my_location);
+        fabMyLocation.setOnClickListener(this);
+        fabActionGo = rootView.findViewById(R.id.fab_action_go);
+        fabActionGo.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mPresenter.actionGoClick(getActivity, route);
+            }
+        });
+
+        fragment = rootView.findViewById(R.id.map_include);
+
+        View bottomSheet = rootView.findViewById(R.id.bottom_sheet);
+        behavior = BottomSheetBehaviorGoogleMaps.from(bottomSheet);
+        behavior.addBottomSheetCallback(mPresenter);
+        behavior.setState(BottomSheetBehaviorGoogleMaps.STATE_ANCHOR_POINT);
+    }
+
+    @Override
+    public void updateViewSize(float offset) {
         LayoutParams params = fragment.getLayoutParams();
-        int max = coordinatorLayout.getHeight();
-        params.height = (int) (max - max * offset - behavior.getPeekHeight() * (1 - offset));
+        params.height = mPresenter.updateViewSize(offset, bounds);
         fragment.setLayoutParams(params);
     }
 
-//    private int convertToPixels(float value) {
-//        return (int) (coordinatorLayout.getHeight() * value - behavior.getPeekHeight() * (value));
-//    }
+    @Override
+    public void showBehavior() {
+        behavior.setHideable(false);
+        behavior.setState(BottomSheetBehaviorGoogleMaps.STATE_COLLAPSED);
+    }
+
+    @Override
+    public void hideBehavior() {
+        behavior.setHideable(true);
+        behavior.setState(BottomSheetBehaviorGoogleMaps.STATE_HIDDEN);
+    }
+
+    @Override
+    public int getBehaviorState() {
+        return behavior.getState();
+    }
+
+    @Override
+    public void updateMyLocationOverlay(Location location) {
+        myLocation.setLocation(location);
+    }
+
+    @Override
+    public void getSingleMyLocation() {
+        client.singleConnection();
+    }
+
+    @Override
+    public int getBehaviorAnchorPoint() {
+        return behavior.getAnchorPoint();
+    }
+
+    @Override
+    public void fabMyLocationScale(float scale) {
+        fabMyLocation.setScaleX(scale);
+        fabMyLocation.setScaleY(scale);
+    }
+
+    @Override
+    public void fabActionGoScale(float scale) {
+        fabActionGo.setScaleX(scale);
+        fabActionGo.setScaleY(scale);
+    }
+
+    @Override
+    public void fabMyLocationEnabled(boolean isEnabled) {
+        fabMyLocation.setEnabled(isEnabled);
+    }
+
+    @Override
+    public void mapMoveCamera(CameraUpdate cameraUpdate) {
+        mMap.moveCamera(cameraUpdate);
+    }
+
+    @Override
+    public int getCoordinatorLayoutHeight() {
+        return coordinatorLayout.getHeight();
+    }
+
+    @Override
+    public void setFabActionGoImage(int drawable) {
+        fabActionGo.setImageResource(drawable);
+    }
+
+    @Override
+    public float getActionBarSize() {
+        return getResources().getDimension(R.dimen.actionBarSize);
+    }
+
+    @Override
+    public int getBehaviorPeekHeight() {
+        return behavior.getPeekHeight();
+    }
 
     public static TestFragment newInstance(Bundle args) {
         TestFragment fragment = new TestFragment();
@@ -95,53 +223,84 @@ public class TestFragment extends MapPreviewFragment<TestPresenter> implements B
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        //behavior.setAnchorPoint(convertToPixels(.5f));
-        //updateViewSize(.5f);
-        super.onMapReady(googleMap);
-        setUI(false);
-    }
-
-    void setUI(boolean flag) {
-        mMap.getUiSettings().setScrollGesturesEnabled(flag);
-        mMap.getUiSettings().setAllGesturesEnabled(flag);
-        mMap.getUiSettings().setTiltGesturesEnabled(flag);
-        if (flag) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20));
-        }
-    }
-
-    @SuppressLint("SwitchIntDef")
-    @Override
-    public void onStateChanged(@NonNull View bottomSheet, int newState) {
-        switch (newState) {
-            case BottomSheetBehaviorGoogleMaps.STATE_DRAGGING: {
-                Log.e(TAG, "onStateChanged: dragging");
-            }
-            break;
-            case BottomSheetBehaviorGoogleMaps.STATE_ANCHOR_POINT: {
-                Log.e(TAG, "onStateChanged: anchor_point");
-                setUI(false);
-            }
-            break;
-            case BottomSheetBehaviorGoogleMaps.STATE_EXPANDED: {
-                Log.e(TAG, "onStateChanged: expanded");
-            }
-            break;
-            case BottomSheetBehaviorGoogleMaps.STATE_COLLAPSED: {
-                Log.e(TAG, "onStateChanged: collapsed");
-                setUI(true);
-            }
-            break;
-        }
+    public void onClick(View view) {
+        mPresenter.myLocationClick(getActivity);
     }
 
     @Override
-    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-        if (slideOffset <= .36f) {
-            Log.e(TAG, "onSlide: " + slideOffset);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20));
-            updateViewSize(slideOffset);
+    public void onChangedLocation(Location location) {
+        mPresenter.onChangedLocation(location, bounds, getBorders());
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mPresenter.onRequestPermissionsResult(requestCode, grantResults);
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        mPresenter.onMapClick(latLng);
+    }
+
+    @Override
+    public void onGlobalLayout() {
+        LayoutParams params = fragment.getLayoutParams();
+        params.height = mPresenter.fragmentChangeSize();
+        fragment.setLayoutParams(params);
+        rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    }
+
+    @Override
+    public void mapSettings(boolean flag) {
+        if (mMap != null) {
+            if (flag) {
+                mMap.setOnMapClickListener(this);
+            } else {
+                mMap.setOnMapClickListener(null);
+            }
+            mMap.getUiSettings().setScrollGesturesEnabled(flag);
+            mMap.getUiSettings().setAllGesturesEnabled(flag);
+            mMap.getUiSettings().setTiltGesturesEnabled(flag);
         }
+    }
+
+    @Override
+    public Bundle getBundle() {
+        return bundle;
+    }
+
+    @Override
+    public void setContent(Route1 content) {
+        Picasso.get().load(content.getPhotoPath())
+                .placeholder(R.drawable.my_location)
+                .error(R.drawable.ic_launcher_background)
+                .into(iv_bottom_sheet_route_image);
+
+        tv_bottom_sheet_title.setText(content.getNameRoute().getFullName());
+        tv_bottom_sheet_route_distance.setText(toDistance(content.getDistance()));
+        tv_bottom_sheet_route_duration.setText(toDuration(content.getDuration()));
+        tv_bottom_sheet_description.setText(content.getNameRoute().getFullDescription());
+    }
+
+    private String toDistance(Integer distance) {
+        String pattern = "%s: %s %s";
+        if (distance > 900) {
+            return String.format(pattern, getString(R.string.distance), distance / 1000,
+                    getString(R.string.short_kilometers));
+        }
+        return String.format(pattern, getString(R.string.distance), distance,
+                getString(R.string.short_meters));
+    }
+
+    private String toDuration(Integer distance) {
+        String pattern = "%s: %s %s %s %s";
+        if (distance > 60) {
+            return String.format(pattern, getString(R.string.duration), distance / 60,
+                    getString(R.string.short_hour), distance % 60, getString(R.string.short_minute));
+        }
+        return String.format(pattern, getString(R.string.duration), distance,
+                getString(R.string.short_minute), "", "");
     }
 }

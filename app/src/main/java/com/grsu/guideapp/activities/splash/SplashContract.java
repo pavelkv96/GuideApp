@@ -14,7 +14,7 @@ public interface SplashContract {
     }
 
     interface SplashPresenter extends BasePresenter<SplashView> {
-        void copyInAssets(File path, String name);
+        void copyFromAssets(File path, String name);
     }
 
     interface SplashInteractor {

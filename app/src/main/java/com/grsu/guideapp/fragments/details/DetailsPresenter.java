@@ -64,7 +64,7 @@ public class DetailsPresenter extends BasePresenterImpl<DetailsView> implements
     public void onFinished(InfoAboutPoi poi) {
         Logs.e(TAG, poi.toString());
         detailsView.setContent(poi);
-        getImageByName(poi.getPhotoReference());
+        //getImageByName(poi.getPhotoReference());
         getAudio(poi.getAudioReference());
     }
 }

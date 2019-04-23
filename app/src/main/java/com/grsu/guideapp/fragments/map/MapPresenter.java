@@ -45,7 +45,7 @@ public class MapPresenter extends MapPreviewPresenter implements MapContract.Map
     public void getProjectionLocation(Location currentLocation) {
         Point point = logic.findNearestPointInPolyline(currentLocation);
 
-        mapViews.setCurrentPoint(point.getPosition());
+        //mapViews.setCurrentPoint(point.getPosition());
 
         getCurrentTurn(MapUtils.toLocation(point.getPosition()));
     }
@@ -78,7 +78,7 @@ public class MapPresenter extends MapPreviewPresenter implements MapContract.Map
                 if (MapUtils.isMoreDistance(RADIUS, currentLocation, shortestDistance)
                         && count != 0) {
                     String point = CryptoUtils.encodeP(shortestDistance);
-                    mapInteractor.getListPoi(MapPresenter.this, null, point, radius);
+                    mapInteractor.getListPoi(MapPresenter.this, id, point, radius);
                 } else {
                     mapViews.removePoi();
                 }
@@ -104,5 +104,11 @@ public class MapPresenter extends MapPreviewPresenter implements MapContract.Map
         } else {
             mapViews.hide();
         }
+    }
+
+    public List<Point> getList(Location currentLocation) {
+        getProjectionLocation(currentLocation);
+
+        return logic.getList();
     }
 }

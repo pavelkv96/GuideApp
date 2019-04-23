@@ -1,23 +1,32 @@
 package com.grsu.guideapp.fragments.setting;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.Preference.OnPreferenceClickListener;
+import android.support.v7.widget.DividerItemDecoration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
+import com.grsu.guideapp.database.CacheDBHelper;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.fragments.setting.SettingContract.SettingView;
+import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.project_settings.SharedPref;
+import com.grsu.guideapp.utils.MessageViewer.Toasts;
+import com.grsu.guideapp.utils.StorageUtils;
+import java.io.File;
 
 public class SettingFragment extends
         BaseSettingsFragment<SettingPresenter, NavigationDrawerActivity>
-        implements SettingView {
+        implements SettingView, OnPreferenceClickListener {
 
     private ListPreference prefLang;
 
@@ -33,8 +42,9 @@ public class SettingFragment extends
     }
 
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
-        addPreferencesFromResource(R.xml.pref_general);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getListView().addItemDecoration(new DividerItemDecoration(getActivity, 1));
     }
 
     @Nullable
@@ -44,66 +54,19 @@ public class SettingFragment extends
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
         getActivity.setTitleToolbar(getTitle());
         prefLang = (ListPreference) findPreference(SharedPref.KEY_LANGUAGE);
+        prefLang.setSummary(prefLang.getEntry());
+
+        findPreference(SharedPref.KEY_CONTENT).setOnPreferenceClickListener(this);
+        findPreference(SharedPref.KEY_MAP_CONTENT).setOnPreferenceClickListener(this);
+        findPreference(SharedPref.KEY_DELETE_CONTENT).setOnPreferenceClickListener(this);
+        findPreference(SharedPref.KEY_MAP_DELETE_FILE).setOnPreferenceClickListener(this);
         return rootView;
     }
 
-   /* @OnClick(R.id.btn_fragment_settings_clear_content)
-    public void deleteContentCache(View view) {
-        if (getActivity != null) {
-            if (StorageUtils.deleteDatabase(getActivity)) {
-                Toasts.makeS(getActivity, R.string.success_database_deleted);
-            } else {
-                Toasts.makeS(getActivity, R.string.error_database_not_found);
-            }
-        }
+    @Override
+    public void onCreatePreferences(Bundle bundle, String key) {
+        addPreferencesFromResource(R.xml.pref_general);
     }
-
-    @OnClick(R.id.btn_fragment_settings_clear_map_cache)
-    public void deleteMapCache(View view) {
-        File file = new File(Settings.CACHE, Settings.CACHE_DATABASE_NAME);
-        if (file.exists()) {
-            CacheDBHelper.clearCache();
-            Toasts.makeS(getActivity, R.string.success_database_deleted);
-        } else {
-            Toasts.makeS(getActivity, R.string.error_database_not_found);
-        }
-    }
-
-    @OnClick(R.id.btn_fragment_settings_delete_content)
-    public void deleteContent(View view) {
-        final File file = new File(Settings.CONTENT);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                StorageUtils.deleteRecursive(file);
-            }
-        }).start();
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity);
-        preferences.edit().putBoolean(SharedPref.KEY_CONTENT, false).apply();
-        Toasts.makeS(getActivity, R.string.success_deleted_content_folder);
-    }
-
-    @OnClick(R.id.btn_fragment_settings_delete_map_file)
-    public void deleteMapFile(View view) {
-        final File file = new File(StorageUtils.getDatabasePath(getActivity), Settings.MAP_FILE);
-        mPresenter.deleteMapFile(file);
-    }
-
-    @OnClick(R.id.btn_fragment_settings_change_language)
-    public void onChecked(View view) {
-        String s = preference.getString(SharedPref.KEY_LANGUAGE, "en");
-        if (s.equals("en")) {
-            s = "ru";
-            preference.edit().putString(SharedPref.KEY_LANGUAGE, s).apply();
-        } else {
-            s = "en";
-            preference.edit().putString(SharedPref.KEY_LANGUAGE, s).apply();
-        }
-
-        App.setLocale(preference, getResources());
-        getActivity.recreate();
-    }*/
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPref, String key) {
@@ -117,7 +80,53 @@ public class SettingFragment extends
                 getActivity.recreate();
             }
             break;
+            default: break;
         }
         editor.apply();
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        switch (preference.getKey()) {
+            case SharedPref.KEY_CONTENT: {
+                Context context = getContext();
+                if (context != null) {
+                    if (StorageUtils.deleteDatabase(context)) {
+                        Toasts.makeS(context, R.string.success_database_deleted);
+                    } else {
+                        Toasts.makeS(context, R.string.error_database_not_found);
+                    }
+                }
+            }
+            break;
+            case SharedPref.KEY_MAP_CONTENT: {
+                File file = new File(Settings.CACHE, Settings.CACHE_DATABASE_NAME);
+                if (file.exists()) {
+                    CacheDBHelper.clearCache();
+                    Toasts.makeS(getActivity, R.string.success_database_deleted);
+                } else {
+                    Toasts.makeS(getActivity, R.string.error_database_not_found);
+                }
+            }
+            break;
+            case SharedPref.KEY_DELETE_CONTENT: {
+                final File file = new File(Settings.CONTENT);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        StorageUtils.deleteRecursive(file);
+                    }
+                }).start();
+                Toasts.makeS(getActivity, R.string.success_deleted_content_folder);
+            }
+            break;
+            case SharedPref.KEY_MAP_DELETE_FILE: {
+                final File file = new File(StorageUtils.getDatabasePath(getActivity),
+                        Settings.MAP_FILE);
+                mPresenter.deleteMapFile(file);
+            }
+            break;
+        }
+        return false;
     }
 }

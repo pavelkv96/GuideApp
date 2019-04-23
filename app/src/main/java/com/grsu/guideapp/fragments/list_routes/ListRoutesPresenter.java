@@ -32,13 +32,10 @@ public class ListRoutesPresenter extends BasePresenterImpl<ListRoutesViews> impl
         if (!database.exists()) {
             new DatabaseHelper(context);
             if (StorageUtils.copyDatabase(context)) {
-                listRoutesViews.showMessage(R.string.success_copy_database_success);
-                listRoutesViews.initial();
+                listRoutesViews.showToast(R.string.success_copy_database_success);
             } else {
-                listRoutesViews.showMessage(R.string.error_copy_data_error);
+                listRoutesViews.showToast(R.string.error_copy_data_error);
             }
-        } else {
-            listRoutesViews.initial();
         }
     }
 

@@ -59,7 +59,7 @@ public class NavigationDrawerDelegate
                 mPresenter.getView().openSettingsFragment();
                 break;
             case R.id.nav_share:
-                //mPresenter.getView().openTrackerFragment();
+                mPresenter.getView().openAboutFragment();
                 break;
             case R.id.nav_send:
 

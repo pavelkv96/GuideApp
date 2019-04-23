@@ -19,7 +19,9 @@ import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.details.DetailsContract.DetailsView;
 import com.grsu.guideapp.models.InfoAboutPoi;
 import com.grsu.guideapp.project_settings.Constants;
-import com.grsu.guideapp.utils.MessageViewer.Toasts;
+import com.grsu.guideapp.project_settings.Settings;
+import com.grsu.guideapp.utils.CryptoUtils;
+import com.squareup.picasso.Picasso;
 import java.io.File;
 
 public class DetailsFragment extends BaseFragment<DetailsPresenter, RouteActivity>
@@ -27,7 +29,7 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter, RouteActivit
 
     private Intent intent;
 
-    @BindView(R.id.tv_fragment_details_id_point)
+    @BindView(R.id.tv_fragment_details_last_update)
     TextView textView;
     @BindView(R.id.tv_fragment_details_type)
     TextView textView1;
@@ -69,15 +71,19 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter, RouteActivit
         Bundle bundle = getArguments();
 
         if (bundle != null) {
-            String idPoint = bundle.getString(Constants.KEY_ID_POINT);
-            intent = new Intent(getActivity, DetailsPlayerService.class);
+            String idPoint = bundle.getString(Constants.KEY_ID_POINT, "");
+            if (!idPoint.equals("")) {
+                intent = new Intent(getActivity, DetailsPlayerService.class);
 
-            textView.setText(idPoint);
+                textView.setText(idPoint);
 
-            mPresenter.getById(idPoint, getString(R.string.locale));
-
+                mPresenter.getById(idPoint, getString(R.string.locale));
+            } else {
+                showToast("Error get data");
+                getActivity.getSupportFragmentManager().popBackStack();
+            }
         } else {
-            Toasts.makeS(getActivity, "Error get data");
+            showToast("Error get data");
         }
     }
 
@@ -94,12 +100,17 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter, RouteActivit
 
     @Override
     public void setContent(InfoAboutPoi content) {
-        getActivity.setTitleToolbar(content.getNameLocale());
+        getActivity.setTitleToolbar(content.getNameLocale().getShortName());
+
+        textView.setText(content.getLast_update());
         textView1.setText(content.getType());
-        textView2.setText(content.getNameLocale());
-        textView3.setText(content.getShortDescriptionPoint());
+        textView2.setText(content.getNameLocale().getFullName());
+        textView3.setText(content.getNameLocale().getFullDescription());
         textView4.setText(content.getAudioReference());
         textView5.setText(content.getLink());
+        String photo = CryptoUtils.hash(content.getPhotoReference());
+        File file = new File(Settings.CONTENT, photo);
+        Picasso.get().load(file).into(iv_fragment_details_content);
     }
 
     @Override

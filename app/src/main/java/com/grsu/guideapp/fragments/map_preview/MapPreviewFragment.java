@@ -27,7 +27,6 @@ import com.grsu.guideapp.base.BaseMapFragment;
 import com.grsu.guideapp.fragments.map_preview.MapPreviewContract.MapPreviewViews;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.project_settings.Constants;
-import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import com.grsu.guideapp.views.dialogs.MultiChoiceItemsDialogFragment;
 import com.grsu.guideapp.views.dialogs.MultiChoiceItemsDialogFragment.OnMultiChoiceItemsListener;
@@ -114,7 +113,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     @Override
     public void setPoi(Poi poi) {
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(CryptoUtils.decodeP(poi.getId()));
+        markerOptions.position(poi.getLocation());
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(poi.getIcon()));
         Marker marker = mMap.addMarker(markerOptions);
         marker.setTag(true);
@@ -198,7 +197,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     @Override
     public boolean onMarkerClick(Marker marker) {
         mPresenter.onMarkerClick(getActivity, marker);
-        return super.onMarkerClick(marker);
+        return true;
     }
 
     @Override

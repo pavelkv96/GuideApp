@@ -4,11 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -27,20 +23,13 @@ import com.grsu.guideapp.base.BaseMapFragment;
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewContract.MapPreviewViews;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.project_settings.Constants;
-import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
-import com.grsu.guideapp.views.dialogs.MultiChoiceItemsDialogFragment;
-import com.grsu.guideapp.views.dialogs.MultiChoiceItemsDialogFragment.OnMultiChoiceItemsListener;
-import com.grsu.guideapp.views.dialogs.SingleChoiceItemsDialogFragment;
-import com.grsu.guideapp.views.dialogs.SingleChoiceItemsDialogFragment.OnChoiceItemListener;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
-        BaseMapFragment<P, RouteActivity>
-        implements OnChoiceItemListener, MapPreviewViews, OnMultiChoiceItemsListener,
-        OnMapClickListener {
+        BaseMapFragment<P, RouteActivity> implements MapPreviewViews, OnMapClickListener {
 
     private static final String TAG = MapPreviewFragment.class.getSimpleName();
     private List<Marker> nearPoi = new ArrayList<>();
@@ -48,7 +37,6 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     protected int route = -1;
     protected LatLngBounds bounds;
     protected Polyline polyline;
-    Menu menu;
 
     @NonNull
     @Override
@@ -82,6 +70,11 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
         super.onMapReady(googleMap);
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return true;
+    }
+
     //-------------------------------------------
     //	Summary: implements Contracts
     //-------------------------------------------
@@ -107,10 +100,9 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     @Override
     public void setPoi(Poi poi) {
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(CryptoUtils.decodeP(poi.getId()));
+        markerOptions.position(poi.getLocation());
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(poi.getIcon()));
         Marker marker = mMap.addMarker(markerOptions);
-        marker.setTag(true);
         nearPoi.add(marker);
     }
 
@@ -120,79 +112,6 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
             marker.remove();
         }
         nearPoi.clear();
-    }
-
-    @Override
-    public void onOk() {
-        mPresenter.onOk(menu.findItem(R.id.menu_fragment_map_get_all));
-    }
-
-    @Override
-    public void choiceItem(String itemValue) {
-        Integer choiceItem = Integer.valueOf(itemValue);
-        save(Constants.KEY_SINGLE_CHOICE_ITEM, choiceItem);
-        mPresenter.setRadius(choiceItem);
-        mPresenter.getAllPoi(menu.findItem(R.id.menu_fragment_map_get_all).isChecked());
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        this.menu = menu;
-        inflater.inflate(R.menu.menu_fragment_map, menu);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-
-        MenuItem item = menu.findItem(R.id.menu_fragment_map_get_all);
-        mPresenter.onPrepareOptionsMenu(item);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        FragmentManager manager = getChildFragmentManager();
-
-        switch (item.getItemId()) {
-            case R.id.menu_fragment_map_settings: {
-                String tag = MultiChoiceItemsDialogFragment.getTags();
-                MultiChoiceItemsDialogFragment.newInstance().show(manager, tag);
-            }
-            break;
-
-            case R.id.menu_fragment_map_distance: {
-                Integer read = read(Constants.KEY_SINGLE_CHOICE_ITEM, Integer.class);
-                String tag = SingleChoiceItemsDialogFragment.getTags();
-                SingleChoiceItemsDialogFragment.newInstance(read).show(manager, tag);
-            }
-            break;
-
-            case R.id.menu_fragment_map_get_all: {
-                boolean checked = !item.isChecked();
-                item.setChecked(checked);
-                mPresenter.getAllPoi(checked);
-            }
-            break;
-
-            /*case R.id.menu_fragment_map_hide_turn_point: {
-                boolean checkedTurn = !item.isChecked();
-                item.setChecked(checkedTurn);
-                mPresenter.hideTurn(checkedTurn);
-            }
-            break;*/
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        if (mMap.getUiSettings().isTiltGesturesEnabled()) {
-            mPresenter.onMarkerClick(getActivity, marker);
-            return super.onMarkerClick(marker);
-        }
-        return true;
     }
 
     @Override

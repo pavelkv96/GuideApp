@@ -30,7 +30,7 @@ import com.grsu.guideapp.adapters.TileAdapter;
 import com.grsu.guideapp.views.overlay.MyLocationOverlay;
 import com.grsu.guideapp.views.overlay.MyLocationOverlay.Builder;
 import com.grsu.guideapp.project_settings.Settings;
-import com.grsu.guideapp.utils.CheckSelfPermission;
+import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.ui.scale.MapScaleView;
 import java.io.File;
@@ -94,7 +94,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
     public void onStart() {
         super.onStart();
         File file = getActivity.getDatabasePath(Settings.MAP_FILE);
-        if (CheckSelfPermission.writeExternalStorageIsGranted(getContext()) || !file.exists()) {
+        if (!CheckPermission.canWriteStorage(getContext()) || !file.exists()) {
             getActivity.finish();
             return;
         }

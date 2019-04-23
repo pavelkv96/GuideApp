@@ -12,7 +12,7 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.holders.RouteViewHolder;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.utils.CheckSelfPermission;
+import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class RoutesListAdapter extends RecyclerView.Adapter<RouteViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RouteViewHolder holder, int position) {
         final Route route = routesList.get(position);
-        holder.bind(route);
+        holder.bind(route, activity);
 
         holder.itemView.setOnClickListener(new OnClickListener() {
             @Override
@@ -53,11 +53,16 @@ public class RoutesListAdapter extends RecyclerView.Adapter<RouteViewHolder> {
     }
 
     private void openActivity(View view, Route route) {
-        if (CheckSelfPermission.writeExternalStorageIsGranted(activity)) {
+        if (CheckPermission.canWriteStorage(activity)) {
+            activity.startActivity(RouteActivity.newIntent(activity, route));
+        } else {
             int message = R.string.error_snackbar_do_not_have_permission_write_on_the_storage;
             MySnackbar.makeL(view, message, activity);
-        } else {
-            activity.startActivity(RouteActivity.newIntent(activity, route));
         }
+    }
+
+    public void setRoutesList(List<Route> routesList) {
+        this.routesList = routesList;
+        notifyDataSetChanged();
     }
 }

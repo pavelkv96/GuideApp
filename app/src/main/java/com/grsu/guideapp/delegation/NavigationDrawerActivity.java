@@ -10,9 +10,9 @@ import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseDelegationActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
-import com.grsu.guideapp.fragments.Tracker;
+import com.grsu.guideapp.fragments.about.AboutFragment;
 import com.grsu.guideapp.fragments.list_routes.ListRoutesFragment;
-import com.grsu.guideapp.fragments.setting.SettingsFragment;
+import com.grsu.guideapp.fragments.setting.SettingFragment;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 
 public class NavigationDrawerActivity
@@ -70,13 +70,13 @@ public class NavigationDrawerActivity
     }
 
     @Override
-    public void openTrackerFragment() {
-        mPresenter.replaceFragment(Tracker.newInstance());
+    public void openAboutFragment() {
+        mPresenter.replaceFragment(new AboutFragment());
     }
 
     @Override
     public void openSettingsFragment() {
-        mPresenter.replaceFragment(new SettingsFragment());
+        mPresenter.replaceFragment(new SettingFragment());
     }
 
     @Override
