@@ -8,9 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v4.util.ArraySet;
 import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.App;
-import com.grsu.guideapp.R;
 import com.grsu.guideapp.adapters.RoutesListAdapter;
 import com.grsu.guideapp.adapters.SaveAdapter;
+import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.database.Table.Lines;
 import com.grsu.guideapp.database.Table.ListLines;
 import com.grsu.guideapp.database.Table.ListPoi;
@@ -19,7 +19,6 @@ import com.grsu.guideapp.database.Table.PoiLanguage;
 import com.grsu.guideapp.database.Table.Routes;
 import com.grsu.guideapp.database.Table.RoutesLanguage;
 import com.grsu.guideapp.database.Table.Types;
-import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.network.model.About;
 import com.grsu.guideapp.network.model.Category;
 import com.grsu.guideapp.network.model.Data;
@@ -91,7 +90,7 @@ public class Test extends SQLiteOpenHelper {
             }
         });
     }
-    public void loadRoute(final List<Datum> list, final RoutesListAdapter adapter) {
+    public void loadRoute(final OnFinishedListener<Integer> listener, final List<Datum> list, final RoutesListAdapter adapter) {
         App.getThread().diskIO(new Runnable() {
             @Override
             public void run() {
@@ -109,16 +108,7 @@ public class Test extends SQLiteOpenHelper {
                             insertTypesAndPoi(value.getObjects());
                             insertPoiList(turns, id_route, value.getObjects());
                             SaveAdapter.saveImage(url);
-                            App.getThread().mainThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toasts.makeL(context,"loadRoute: OK ");
-                                    List<Route> listRoutes = new DatabaseHelper(context)
-                                            .getListRoutes(context.getString(
-                                                    R.string.locale));
-                                    adapter.setRoutesList(listRoutes);
-                                }
-                            });
+                            listener.onFinished(android.R.string.ok);
                         }
                     }
                 }

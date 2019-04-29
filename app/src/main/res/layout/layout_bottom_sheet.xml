@@ -68,13 +68,14 @@
       android:id="@+id/tv_bottom_sheet_description"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:textSize="18sp"
       android:layout_marginTop="16dp"
       android:layout_marginBottom="10dp"
       android:layout_marginStart="10dp"
       android:layout_marginEnd="10dp"
       android:layout_alignParentStart="true"
       android:layout_below="@+id/tv_bottom_sheet_route_duration"
-      android:gravity="center"
+      android:gravity="start"
       android:textColor="@android:color/black"
       tools:text="Специальная погрешность
 Данный фактор представляет собой искусственную погрешность, намеренное искажение времени сигнала, посылаемого спутником, в результате чего точность определения местоположения объекта прибором GPS снижается до 50-150 метров. Погрешность искусственно вносилась в сигналы спутников в соответствии с требованиями режима SA - selective availability (селективного доступа), задачей которого было ограничить точность измерений для гражданских GPS-приемников. Режим селективного доступа все-таки был отключен вследствие широкой распространенности системы глобального позиционирования, произошло это в мае 2000 года.

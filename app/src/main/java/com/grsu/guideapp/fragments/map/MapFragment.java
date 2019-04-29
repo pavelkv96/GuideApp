@@ -51,6 +51,9 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     @BindView(R.id.fragment_map_indicator)
     ImageView found;
 
+    @BindView(R.id.btn_fragment_map_tilt)
+    Button btn_fragment_map_tilt;
+
     @NonNull
     @Override
     protected MapPresenter getPresenterInstance() {
@@ -224,6 +227,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     @Override
     public void onChangedLocation(Location location) {
         if (animator == null){
+            btn_fragment_map_tilt.setVisibility(View.VISIBLE);
             animator = new Animator(mMap, myLocation);
         }
 

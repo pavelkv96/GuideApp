@@ -278,9 +278,33 @@ public class TestFragment extends MapPreviewFragment<TestPresenter> implements T
                 .error(R.drawable.ic_launcher_background)
                 .into(iv_bottom_sheet_route_image);
 
+        String duration;
+        String distance;
+        switch (content.getIdRoute()) {
+            case 627: {
+                distance = String.format("%s: 3.1 %s", getString(R.string.distance),getString(R.string.short_kilometers));
+                duration = String.format("%s: 15 %s",  getString(R.string.duration),getString(R.string.short_minute));
+            }
+            break;
+            case 630: {
+                distance = String.format("%s: 49.9 %s",getString(R.string.distance), getString(R.string.short_kilometers));
+                duration = String.format("%s: 5 %s"   ,getString(R.string.duration), getString(R.string.short_hour));
+            }
+            break;
+            case 504: {
+                distance = String.format("%s: 12 %s",getString(R.string.distance), getString(R.string.short_kilometers));
+                duration = String.format("%s: 3 %s" ,getString(R.string.duration), getString(R.string.short_hour));
+            }
+            break;
+            default: {
+                duration = toDuration(content.getDuration());
+                distance = toDistance(content.getDistance());
+            }
+        }
+
         tv_bottom_sheet_title.setText(content.getNameRoute().getFullName());
-        tv_bottom_sheet_route_distance.setText(toDistance(content.getDistance()));
-        tv_bottom_sheet_route_duration.setText(toDuration(content.getDuration()));
+        tv_bottom_sheet_route_distance.setText(distance);
+        tv_bottom_sheet_route_duration.setText(duration);
         tv_bottom_sheet_description.setText(content.getNameRoute().getFullDescription());
     }
 

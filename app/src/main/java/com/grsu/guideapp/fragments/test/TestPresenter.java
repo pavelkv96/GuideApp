@@ -134,13 +134,17 @@ public class TestPresenter extends MapPreviewPresenter implements TestContract.T
                 if (App.isOnline()) {
                     onStartLoad(id_route);
                 } else {
-                    testViews.showToast("Нет доступа к интернету");
+                    testViews.showToast(context.getString(R.string.no_internet_connection));
                 }
             } else {
                 testViews.requestPermissions(CheckPermission.groupStorage, 2);
             }
         } else {
-            ((RouteActivity) context).onReplace(MapFragment.newInstance(testViews.getBundle()));
+            if (CheckPermission.canGetLocation(context)) {
+                ((RouteActivity) context).onReplace(MapFragment.newInstance(testViews.getBundle()));
+            }else {
+                testViews.requestPermissions(CheckPermission.groupLocation, 3);
+            }
         }
     }
 
@@ -250,11 +254,11 @@ public class TestPresenter extends MapPreviewPresenter implements TestContract.T
 
     @Override
     public void onSuccess(final String s) {
-        hideProgress();
         isLoadRoute = true;
         App.getThread().mainThread(new Runnable() {
             @Override
             public void run() {
+                hideProgress();
                 testViews.setFabActionGoImage(R.drawable.ic_action_go);
                 testViews.showToast(s);
             }
@@ -269,10 +273,10 @@ public class TestPresenter extends MapPreviewPresenter implements TestContract.T
 
     @Override
     public void onFailure(final Throwable throwable) {
-        hideProgress();
         App.getThread().mainThread(new Runnable() {
             @Override
             public void run() {
+                hideProgress();
                 testViews.showToast(throwable.getMessage() + "\nRetry again later");
             }
         });

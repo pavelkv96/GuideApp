@@ -19,6 +19,12 @@ public class CheckPermission {
             permission.ACCESS_FINE_LOCATION,
     };
 
+    public static final String[] groupStorageAndLocation = new String[]{
+            permission.WRITE_EXTERNAL_STORAGE,
+            permission.READ_EXTERNAL_STORAGE,
+            permission.ACCESS_FINE_LOCATION,
+    };
+
     public static boolean canWriteStorage(Context context) {
         return ContextCompat.checkSelfPermission(context, groupStorage[0]) == 0 &&
                 ContextCompat.checkSelfPermission(context, groupStorage[1]) == 0;

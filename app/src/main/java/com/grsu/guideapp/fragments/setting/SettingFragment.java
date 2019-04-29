@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.Preference.OnPreferenceClickListener;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.DividerItemDecoration;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,6 +94,7 @@ public class SettingFragment extends
                 if (context != null) {
                     if (StorageUtils.deleteDatabase(context)) {
                         Toasts.makeS(context, R.string.success_database_deleted);
+                        PreferenceManager.getDefaultSharedPreferences(context).edit().remove("load").apply();
                     } else {
                         Toasts.makeS(context, R.string.error_database_not_found);
                     }

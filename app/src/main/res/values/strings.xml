@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">Guide app</string>
-  <string name="title_activity_home">HomeActivity</string>
+  <string name="app_name">Cycling routes of the Awgustow Canal</string>
+  <string name="title_activity_home">Home</string>
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
-  <string name="nav_header_title">GrSU official website</string>
-  <string name="nav_header_subtitle">http://www.grsu.by</string>
+  <string name="nav_header_title">Grodno Visa Free official website</string>
+  <string name="nav_header_subtitle">https://grodnovisafree.by</string>
   <string name="nav_header_desc">Navigation header</string>
 
   <!--VIEW TEXT-->
@@ -84,7 +84,7 @@
 
 <!--NEED SORT BY GROUP (IT'S STACK)-->
   <string name="email_address_iac" translatable="false">iac@grsu.by</string>
-  <string name="email_subject_feedback" translatable="false">Feedback: Class Schedule for Android</string>
+  <string name="email_subject_feedback" translatable="false">Feedback: Cycling routes for Android</string>
   <string name="action_about_openURL">Open in browser</string>
   <string name="title_about_contact_developer">Contact developer</string>
   <string name="action_about_contact_developer">Write an Email</string>
@@ -96,4 +96,9 @@
   <string name="short_meters">m</string>
   <string name="short_hour">h</string>
   <string name="short_minute">min</string>
+  <string name="load_more">Load more</string>
+  <string name="download_route">Download route</string>
+  <string name="about_route">About route</string>
+  <string name="download">Download</string>
+  <string name="no_internet_connection">No internet connection</string>
 </resources>

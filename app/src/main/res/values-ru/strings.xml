@@ -4,8 +4,8 @@
   <string name="title_activity_home">Главная</string>
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
-  <string name="nav_header_title">Официальный сайт ГрГУ имени Янки Купалы</string>
-  <string name="nav_header_subtitle">http://www.grsu.by</string>
+  <string name="nav_header_title">Официальный сайт Grodno Visa Free</string>
+  <string name="nav_header_subtitle">https://grodnovisafree.by</string>
   <string name="nav_header_desc">Navigation header</string>
 
   <!--VIEW TEXT-->
@@ -78,4 +78,9 @@
   <string name="short_meters">м</string>
   <string name="short_hour">ч</string>
   <string name="short_minute">мин</string>
+  <string name="load_more">Загрузить больше</string>
+  <string name="download_route">Скачивание маршрута</string>
+  <string name="about_route">О маршруте</string>
+  <string name="download">Скачать</string>
+  <string name="no_internet_connection">Нет доступа в интернет</string>
 </resources>

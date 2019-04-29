@@ -1,6 +1,7 @@
 package com.grsu.guideapp.fragments.list_routes;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
@@ -10,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.grsu.guideapp.App;
@@ -17,6 +20,7 @@ import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.adapters.RoutesListAdapter;
 import com.grsu.guideapp.base.BaseFragment;
+import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
@@ -30,7 +34,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, NavigationDrawerActivity>
-        implements ListRoutesViews, Callback<List<Datum>> {
+        implements ListRoutesViews, Callback<List<Datum>>, OnFinishedListener<Integer> {
 
     private static final String TAG = ListRoutesFragment.class.getSimpleName();
 
@@ -41,12 +45,31 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
     @BindView(R.id.cv_fragment_list_routes_load_more)
     CardView cv_fragment_list_routes_load_more;
 
+    @BindView(R.id.pb_fragment_list_routes_progress)
+    ProgressBar pb_fragment_list_routes_progress;
+
+    @BindView(R.id.tv_fragment_list_routes_more)
+    TextView tv_fragment_list_routes_more;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        String locale = getString(R.string.locale);
+        List<Route> routes = new DatabaseHelper(getActivity).getListRoutes(locale);
+        if (adapter != null) {
+            adapter.setRoutesList(routes);
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        if (App.isOnline()) {
+        if (App.isOnline() && !PreferenceManager.getDefaultSharedPreferences(getActivity)
+                .contains("load")) {
+            tv_fragment_list_routes_more.setVisibility(View.VISIBLE);
             cv_fragment_list_routes_load_more.setVisibility(View.VISIBLE);
         } else {
+            tv_fragment_list_routes_more.setVisibility(View.GONE);
             cv_fragment_list_routes_load_more.setVisibility(View.GONE);
         }
     }
@@ -101,10 +124,11 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
         if (App.isOnline()) {
             Call<List<Datum>> routes = App.getThread().networkIO().getRoutes(BuildConfig.ApiKey);
             routes.enqueue(this);
+            tv_fragment_list_routes_more.setVisibility(View.GONE);
+            pb_fragment_list_routes_progress.setVisibility(View.VISIBLE);
         } else {
-            showToast("Нет интернет соединения");
+            showToast(getString(R.string.no_internet_connection));
         }
-        cv_fragment_list_routes_load_more.setVisibility(View.GONE);
     }
 
     @Override
@@ -113,17 +137,35 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
         Log.e("TAG", "onResponse: ");
         if (response.isSuccessful()) {
             if (adapter != null) {
-                new Test(getActivity).loadRoute(response.body(), adapter);
+                new Test(getActivity).loadRoute(this, response.body(), adapter);
             }
         }
     }
 
     @Override
     public void onFailure(@NonNull Call<List<Datum>> call, @NonNull Throwable t) {
+        pb_fragment_list_routes_progress.setVisibility(View.GONE);
+        cv_fragment_list_routes_load_more.setVisibility(View.GONE);
         if (!call.isCanceled()) {
             Log.e("TAG", "onFailure: ", t);
         } else {
             Log.e("TAG", "onFailure: IS CANCELED");
         }
+        pb_fragment_list_routes_progress.setVisibility(View.GONE);
+        cv_fragment_list_routes_load_more.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onFinished(final Integer integer) {
+        App.getThread().mainThread(new Runnable() {
+            @Override
+            public void run() {
+                showToast(integer);
+                List<Route> listRoutes = new DatabaseHelper(getActivity).getListRoutes(getString(R.string.locale));
+                pb_fragment_list_routes_progress.setVisibility(View.GONE);
+                cv_fragment_list_routes_load_more.setVisibility(View.GONE);
+                adapter.setRoutesList(listRoutes);
+            }
+        });
     }
 }

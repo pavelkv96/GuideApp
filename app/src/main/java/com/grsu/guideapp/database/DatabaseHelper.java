@@ -58,7 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Table {
         openDatabase();
 
         String select = "select c1.id_route, c2.language_%s, c1.duration, c1.distance, c1.reference_photo_route, c1.southwest, c1.northeast, c1.is_full\n";
-        String from = "from routes c1, routes_language c2 where c1.id_route=c2.id_route and c2.type = 1 order by c1.is_full desc";
+        String from = "from routes c1, routes_language c2 where c1.id_route=c2.id_route and c2.type = 1 and c1.id_route<>1 order by c1.is_full desc";
 
         String query = String.format(select + from, locale);
         Cursor cursor = mDatabase.rawQuery(query, null);

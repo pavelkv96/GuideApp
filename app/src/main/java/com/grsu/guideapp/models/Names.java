@@ -1,6 +1,7 @@
 package com.grsu.guideapp.models;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import java.io.Serializable;
 
 public class Names implements Serializable {
@@ -52,6 +53,17 @@ public class Names implements Serializable {
 
     public void setFullDescription(String full_description) {
         this.full_desc = full_description;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Names{" +
+                "short_name='" + short_name + '\'' +
+                ", full_name='" + full_name + '\'' +
+                ", short_desc='" + short_desc + '\'' +
+                ", full_desc='" + full_desc + '\'' +
+                '}';
     }
 
     public static Names fromCursor(Cursor cur) {

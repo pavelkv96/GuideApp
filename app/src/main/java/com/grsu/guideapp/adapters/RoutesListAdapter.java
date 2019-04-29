@@ -1,19 +1,16 @@
 package com.grsu.guideapp.adapters;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.holders.RouteViewHolder;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.utils.CheckPermission;
-import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
 import java.util.List;
 
 public class RoutesListAdapter extends RecyclerView.Adapter<RouteViewHolder> {
@@ -37,14 +34,7 @@ public class RoutesListAdapter extends RecyclerView.Adapter<RouteViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RouteViewHolder holder, int position) {
         final Route route = routesList.get(position);
-        holder.bind(route, activity);
-
-        holder.itemView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openActivity(view, route);
-            }
-        });
+        holder.bind(route, activity, this);
     }
 
     @Override
@@ -52,16 +42,8 @@ public class RoutesListAdapter extends RecyclerView.Adapter<RouteViewHolder> {
         return routesList != null ? routesList.size() : 0;
     }
 
-    private void openActivity(View view, Route route) {
-        if (CheckPermission.canWriteStorage(activity)) {
-            activity.startActivity(RouteActivity.newIntent(activity, route));
-        } else {
-            int message = R.string.error_snackbar_do_not_have_permission_write_on_the_storage;
-            MySnackbar.makeL(view, message, activity);
-        }
-    }
-
     public void setRoutesList(List<Route> routesList) {
+        PreferenceManager.getDefaultSharedPreferences(activity).edit().putBoolean("load", true).apply();
         this.routesList = routesList;
         notifyDataSetChanged();
     }
