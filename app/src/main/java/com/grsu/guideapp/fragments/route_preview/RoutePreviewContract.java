@@ -1,8 +1,7 @@
-package com.grsu.guideapp.fragments.test;
+package com.grsu.guideapp.fragments.route_preview;
 
 import android.content.Context;
 import android.location.Location;
-import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.model.LatLng;
@@ -14,7 +13,7 @@ import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewContract.MapPreviewP
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewContract.MapPreviewViews;
 import com.grsu.guideapp.models.Route1;
 
-public interface TestContract {
+public interface RoutePreviewContract {
 
     interface TestViews extends MapPreviewViews {
 
@@ -52,9 +51,9 @@ public interface TestContract {
 
         void mapSettings(boolean isUsable);
 
-        Bundle getBundle();
-
         void setContent(Route1 content);
+
+        void openMapFragment();
     }
 
     interface TestPresenter extends MapPreviewPresenter {

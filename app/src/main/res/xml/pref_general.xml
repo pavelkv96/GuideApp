@@ -18,9 +18,6 @@
       android:key="map_content"
       android:title="@string/view_clean_map"/>
     <Preference
-      android:key="delete_content"
-      android:title="@string/view_delete_content_folder"/>
-    <Preference
       android:key="map_delete_file"
       android:title="@string/view_refresh_map_file"/>
 

@@ -1,6 +1,7 @@
 package com.grsu.guideapp.holders;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
@@ -20,6 +21,7 @@ import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.network.model.Datum;
 import com.grsu.guideapp.project_settings.Settings;
+import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
@@ -139,6 +141,9 @@ public class RouteViewHolder extends ViewHolder {
                                 App.getThread().mainThread(new Runnable() {
                                     @Override
                                     public void run() {
+
+                                        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(
+                                                SharedPref.KEY_LOAD, true).apply();
                                         adapter.setRoutesList(routes);
                                     }
                                 });

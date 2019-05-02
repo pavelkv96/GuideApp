@@ -1,4 +1,4 @@
-package com.grsu.guideapp.fragments.test;
+package com.grsu.guideapp.fragments.route_preview;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -21,8 +21,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.fragments.map.MapFragment;
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewFragment;
-import com.grsu.guideapp.fragments.test.TestContract.TestViews;
+import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.TestViews;
 import com.grsu.guideapp.models.Route1;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.CryptoUtils;
@@ -31,10 +32,10 @@ import com.grsu.service.LocationClient;
 import com.grsu.ui.bottomsheet.BottomSheetBehaviorGoogleMaps;
 import com.squareup.picasso.Picasso;
 
-public class TestFragment extends MapPreviewFragment<TestPresenter> implements TestViews,
+public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresenter> implements TestViews,
         OnClickListener, Listener, OnGlobalLayoutListener {
 
-    private static final String TAG = TestFragment.class.getSimpleName();
+    private static final String TAG = RoutePreviewFragment.class.getSimpleName();
     private BottomSheetBehaviorGoogleMaps behavior;
     private CoordinatorLayout coordinatorLayout;
     private FrameLayout fragment;
@@ -60,9 +61,10 @@ public class TestFragment extends MapPreviewFragment<TestPresenter> implements T
 
     @NonNull
     @Override
-    protected TestPresenter getPresenterInstance() {
-        return new TestPresenter(this,
-                new TestInteractor(new DatabaseHelper(getContext()), getActivity));
+    protected RoutePreviewPresenter getPresenterInstance() {
+        DatabaseHelper helper = new DatabaseHelper(getActivity);
+        RoutePreviewInteractor interactor = new RoutePreviewInteractor(helper, getActivity);
+        return new RoutePreviewPresenter(this, interactor);
     }
 
     @Override
@@ -72,7 +74,7 @@ public class TestFragment extends MapPreviewFragment<TestPresenter> implements T
 
     @Override
     protected int getLayout() {
-        return R.layout.fragment_test;
+        return R.layout.fragment_route_preview;
     }
 
     @Nullable
@@ -216,8 +218,8 @@ public class TestFragment extends MapPreviewFragment<TestPresenter> implements T
         return behavior.getPeekHeight();
     }
 
-    public static TestFragment newInstance(Bundle args) {
-        TestFragment fragment = new TestFragment();
+    public static RoutePreviewFragment newInstance(Bundle args) {
+        RoutePreviewFragment fragment = new RoutePreviewFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -267,11 +269,6 @@ public class TestFragment extends MapPreviewFragment<TestPresenter> implements T
     }
 
     @Override
-    public Bundle getBundle() {
-        return bundle;
-    }
-
-    @Override
     public void setContent(Route1 content) {
         Picasso.get().load(content.getPhotoPath())
                 .placeholder(R.drawable.my_location)
@@ -306,6 +303,11 @@ public class TestFragment extends MapPreviewFragment<TestPresenter> implements T
         tv_bottom_sheet_route_distance.setText(distance);
         tv_bottom_sheet_route_duration.setText(duration);
         tv_bottom_sheet_description.setText(content.getNameRoute().getFullDescription());
+    }
+
+    @Override
+    public void openMapFragment() {
+        getActivity.onReplace(MapFragment.newInstance(bundle));
     }
 
     private String toDistance(Integer distance) {

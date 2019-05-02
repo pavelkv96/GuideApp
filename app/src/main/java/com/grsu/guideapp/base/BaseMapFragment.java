@@ -27,11 +27,11 @@ import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.adapters.TileAdapter;
-import com.grsu.guideapp.views.overlay.MyLocationOverlay;
-import com.grsu.guideapp.views.overlay.MyLocationOverlay.Builder;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.MapUtils;
+import com.grsu.guideapp.views.overlay.MyLocationLayer;
+import com.grsu.guideapp.views.overlay.MyLocationLayer.Builder;
 import com.grsu.ui.scale.MapScaleView;
 import java.io.File;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
@@ -43,7 +43,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
 
     protected GoogleMap mMap;
     protected TileOverlay overlay;
-    protected MyLocationOverlay myLocation;
+    protected MyLocationLayer myLocation;
     private LatLngBounds borders;
     private float previousZoom = -1.0f;
     private Handler handler;
@@ -87,7 +87,8 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
         mMap.setOnMarkerClickListener(this);
 
         overlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(this));
-        myLocation = new Builder(mMap).addResource(getResources()).build();
+        myLocation = new Builder().addResource(getResources()).build();
+        myLocation.setMap(mMap);
     }
 
     @Override
@@ -130,6 +131,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
         if (overlay != null) {
             overlay.remove();
         }
+        myLocation.clear();
         super.onDestroyView();
     }
 

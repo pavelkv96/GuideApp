@@ -1,4 +1,4 @@
-package com.grsu.guideapp.fragments.test;
+package com.grsu.guideapp.fragments.route_preview;
 
 import android.content.Context;
 import android.util.Log;
@@ -14,16 +14,16 @@ import com.grsu.guideapp.network.model.Datum;
 import java.util.List;
 import retrofit2.Response;
 
-public class TestInteractor extends MapPreviewInteractor implements TestContract.TestInteractor {
+public class RoutePreviewInteractor extends MapPreviewInteractor implements RoutePreviewContract.TestInteractor {
 
     private Test test;
 
-    public TestInteractor(DatabaseHelper pDbHelper, Context context) {
+    public RoutePreviewInteractor(DatabaseHelper pDbHelper, Context context) {
         super(pDbHelper);
         test = new Test(context);
     }
 
-    private static final String TAG = TestInteractor.class.getSimpleName();
+    private static final String TAG = RoutePreviewInteractor.class.getSimpleName();
     private boolean flag = false;
     private int progress;
     private int max_progress = 100;

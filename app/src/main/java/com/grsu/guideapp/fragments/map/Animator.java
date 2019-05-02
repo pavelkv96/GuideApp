@@ -9,20 +9,20 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CameraPosition.Builder;
 import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.utils.MapUtils;
-import com.grsu.guideapp.views.overlay.MyLocationOverlay;
+import com.grsu.guideapp.views.overlay.MyLocationLayer;
 
 public class Animator implements Runnable {
 
     private static final int ANIMATE_SPEED = 500;
     private final Handler mHandler;
     private long startTime;
-    private MyLocationOverlay overlay;
+    private MyLocationLayer overlay;
     private LatLng beginLatLng;
     private LatLng endLatLng;
     private GoogleMap map;
     private float tilt = 54f;
 
-    Animator(GoogleMap map, MyLocationOverlay overlay) {
+    Animator(GoogleMap map, MyLocationLayer overlay) {
         this.map = map;
         this.overlay = overlay;
         mHandler = new Handler();
@@ -52,7 +52,9 @@ public class Animator implements Runnable {
         double lng = t * endLatLng.longitude + (1 - t) * beginLatLng.longitude;
         LatLng newPosition = new LatLng(lat, lng);
 
-        overlay.setLocation(MapUtils.toLocation(newPosition));
+        Location location = MapUtils.toLocation(newPosition);
+        location.setBearing(bearingBetweenLatLngs(beginLatLng, newPosition));
+        overlay.setLocation(location);
 
         if (t < 1) {
             float bearing = bearingBetweenLatLngs(beginLatLng, newPosition);

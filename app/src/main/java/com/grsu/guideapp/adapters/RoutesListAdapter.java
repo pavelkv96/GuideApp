@@ -1,7 +1,6 @@
 package com.grsu.guideapp.adapters;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
@@ -43,7 +42,6 @@ public class RoutesListAdapter extends RecyclerView.Adapter<RouteViewHolder> {
     }
 
     public void setRoutesList(List<Route> routesList) {
-        PreferenceManager.getDefaultSharedPreferences(activity).edit().putBoolean("load", true).apply();
         this.routesList = routesList;
         notifyDataSetChanged();
     }

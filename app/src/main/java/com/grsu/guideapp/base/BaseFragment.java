@@ -81,6 +81,10 @@ public abstract class BaseFragment<P extends BasePresenter, A extends FragmentAc
         if (data instanceof Integer) {
             preferences.edit().putInt(key, (Integer) data).apply();
         }
+
+        if (data instanceof Boolean){
+            preferences.edit().putBoolean(key, (Boolean) data).apply();
+        }
     }
 
     protected <T> T read(String key, Class<T> clazz) {
@@ -101,6 +105,10 @@ public abstract class BaseFragment<P extends BasePresenter, A extends FragmentAc
             return (T) (Integer) preferences.getInt(key, 1000);
         }
 
+        if (clazz.isAssignableFrom(Boolean.class)){
+            return (T)((Boolean)preferences.getBoolean(key, false));
+        }
+
         return null;
     }
 
@@ -112,7 +120,7 @@ public abstract class BaseFragment<P extends BasePresenter, A extends FragmentAc
     @Override
     public void showProgress(String title, String message) {
         if (mProgressDialog == null || !mProgressDialog.isShowing()) {
-            mProgressDialog = new ProgressDialog(getActivity());
+            mProgressDialog = new ProgressDialog(getActivity);
             if (title != null) {
                 mProgressDialog.setTitle(title);
             }

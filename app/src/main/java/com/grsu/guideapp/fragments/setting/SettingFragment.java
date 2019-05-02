@@ -59,7 +59,6 @@ public class SettingFragment extends
 
         findPreference(SharedPref.KEY_CONTENT).setOnPreferenceClickListener(this);
         findPreference(SharedPref.KEY_MAP_CONTENT).setOnPreferenceClickListener(this);
-        findPreference(SharedPref.KEY_DELETE_CONTENT).setOnPreferenceClickListener(this);
         findPreference(SharedPref.KEY_MAP_DELETE_FILE).setOnPreferenceClickListener(this);
         return rootView;
     }
@@ -94,7 +93,7 @@ public class SettingFragment extends
                 if (context != null) {
                     if (StorageUtils.deleteDatabase(context)) {
                         Toasts.makeS(context, R.string.success_database_deleted);
-                        PreferenceManager.getDefaultSharedPreferences(context).edit().remove("load").apply();
+                        PreferenceManager.getDefaultSharedPreferences(context).edit().remove(SharedPref.KEY_LOAD).apply();
                     } else {
                         Toasts.makeS(context, R.string.error_database_not_found);
                     }
@@ -109,17 +108,6 @@ public class SettingFragment extends
                 } else {
                     Toasts.makeS(getActivity, R.string.error_database_not_found);
                 }
-            }
-            break;
-            case SharedPref.KEY_DELETE_CONTENT: {
-                final File file = new File(Settings.CONTENT);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        StorageUtils.deleteRecursive(file);
-                    }
-                }).start();
-                Toasts.makeS(getActivity, R.string.success_deleted_content_folder);
             }
             break;
             case SharedPref.KEY_MAP_DELETE_FILE: {

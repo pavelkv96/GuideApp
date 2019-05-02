@@ -52,7 +52,6 @@
   <string name="success_copy_database_success">Copy database success</string>
   <string name="success_database_deleted">Database deleted</string>
   <string name="success_map_file_updated">Map file updated</string>
-  <string name="success_deleted_content_folder">Deleted content folder</string>
 
   <string name="dialog_types_objects">Types objects</string>
   <string name="dialog_radius_in_meters">Radius (in meters)</string>

@@ -5,7 +5,7 @@ import com.grsu.guideapp.utils.StorageUtils;
 public class Settings {
 
     private static final String DEFAULT_PATH = StorageUtils.getStorage() + "/";
-    private static final String APP_FOLDER = "osmdroid/";
+    private static final String APP_FOLDER = "cache/";
 
     //-------------------------------------------
     //	Summary: settings map database
@@ -13,7 +13,7 @@ public class Settings {
 
     public static final Integer CACHE_DATABASE_VERSION = 1;
     public static final String CACHE_DATABASE_NAME = "cache.db";
-    private static final String CACHE_FOLDER = "cache/";
+    private static final String CACHE_FOLDER = "mapCache/";
     public static final String CACHE = DEFAULT_PATH + APP_FOLDER + CACHE_FOLDER;
 
 

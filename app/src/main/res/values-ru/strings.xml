@@ -51,7 +51,6 @@
   <string name="success_copy_database_success">База данных скопирована успешно</string>
   <string name="success_database_deleted">База данных была удалена</string>
   <string name="success_map_file_updated">Файл карт обнавлён</string>
-  <string name="success_deleted_content_folder">Удалена папка с контентом</string>
 
   <string name="dialog_types_objects">Типы объектов</string>
   <string name="dialog_radius_in_meters">Радиус (в метрах)</string>

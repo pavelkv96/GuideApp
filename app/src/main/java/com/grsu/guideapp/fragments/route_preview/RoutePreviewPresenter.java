@@ -1,4 +1,4 @@
-package com.grsu.guideapp.fragments.test;
+package com.grsu.guideapp.fragments.route_preview;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -16,33 +16,31 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.base.listeners.OnLoadRoute;
-import com.grsu.guideapp.fragments.map.MapFragment;
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewPresenter;
-import com.grsu.guideapp.fragments.test.TestContract.TestViews;
+import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.TestViews;
 import com.grsu.guideapp.models.Route1;
 import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.ui.bottomsheet.BottomSheetBehaviorGoogleMaps;
 import com.grsu.ui.bottomsheet.BottomSheetCallback;
 
-public class TestPresenter extends MapPreviewPresenter implements TestContract.TestPresenter,
+public class RoutePreviewPresenter extends MapPreviewPresenter implements RoutePreviewContract.TestPresenter,
         BottomSheetCallback, OnLoadRoute<String> {
 
-    private static final String TAG = TestPresenter.class.getSimpleName();
+    private static final String TAG = RoutePreviewPresenter.class.getSimpleName();
     private boolean flag = false;
     private boolean isLoadRoute = false;
     private ProgressDialog mProgressDialog;
 
     private TestViews testViews;
-    private TestInteractor testInteractor;
+    private RoutePreviewInteractor routePreviewInteractor;
 
-    TestPresenter(TestViews mapViews, TestInteractor mapInteractor) {
+    RoutePreviewPresenter(TestViews mapViews, RoutePreviewInteractor mapInteractor) {
         super(mapViews, mapInteractor);
         testViews = mapViews;
-        testInteractor = mapInteractor;
+        routePreviewInteractor = mapInteractor;
     }
 
     @SuppressLint("SwitchIntDef")
@@ -141,7 +139,7 @@ public class TestPresenter extends MapPreviewPresenter implements TestContract.T
             }
         } else {
             if (CheckPermission.canGetLocation(context)) {
-                ((RouteActivity) context).onReplace(MapFragment.newInstance(testViews.getBundle()));
+                testViews.openMapFragment();
             }else {
                 testViews.requestPermissions(CheckPermission.groupLocation, 3);
             }
@@ -155,7 +153,9 @@ public class TestPresenter extends MapPreviewPresenter implements TestContract.T
                 testViews.fabMyLocationEnabled(false);
                 testViews.getSingleMyLocation();
             }
-            //if (requestCode == 2) {}
+            if (requestCode == 3) {
+                testViews.openMapFragment();
+            }
         } else {
             testViews.showToast(R.string.error_snackbar_do_not_have_permission_access_location);
         }
@@ -200,7 +200,7 @@ public class TestPresenter extends MapPreviewPresenter implements TestContract.T
 
     @Override
     public void isDownLoad(int id_route, String locale) {
-        testInteractor.isDownLoad(new OnFinishedListener<Route1>() {
+        routePreviewInteractor.isDownLoad(new OnFinishedListener<Route1>() {
             @Override
             public void onFinished(final Route1 route) {
                 App.getThread().mainThread(new Runnable() {
@@ -233,7 +233,7 @@ public class TestPresenter extends MapPreviewPresenter implements TestContract.T
                         public void onClick(View view) {
                             dialog.setMessage("Сanceled download...");
                             button.setVisibility(View.GONE);
-                            testInteractor.setFlag(false);
+                            routePreviewInteractor.setFlag(false);
                         }
                     });
                 }
@@ -267,7 +267,7 @@ public class TestPresenter extends MapPreviewPresenter implements TestContract.T
 
     @Override
     public void onStartLoad(int id_route) {
-        testInteractor.loadRoute(this, id_route);
+        routePreviewInteractor.loadRoute(this, id_route);
         showProgress("Load route", "Pleas wait...");
     }
 

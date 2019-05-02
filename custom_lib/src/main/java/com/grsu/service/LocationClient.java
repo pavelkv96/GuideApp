@@ -23,15 +23,14 @@ public class LocationClient implements LocationListener {
         this.listener = listener;
     }
 
-    @RequiresPermission(anyOf = {"android.permission.ACCESS_COARSE_LOCATION",
-            "android.permission.ACCESS_FINE_LOCATION"})
+    @RequiresPermission("android.permission.ACCESS_FINE_LOCATION")
     public void connect() {
         //ContextCompat.startForegroundService(context, new Intent(context, MyService.class));
         if (ContextCompat.checkSelfPermission(context, permission.ACCESS_FINE_LOCATION) == 0) {
             //Location location = getLastLocation();
             //if (location == null) {
-                context.startService(new Intent(context, MyService.class));
-                Class.getInstance.registerCallback(this);
+            context.startService(new Intent(context, MyService.class));
+            Class.getInstance.registerCallback(this);
             /*} else {
                 listener.onChangedLocation(location);
             }*/
@@ -48,8 +47,7 @@ public class LocationClient implements LocationListener {
         context.stopService(new Intent(context, MyService.class));
     }
 
-    @RequiresPermission(anyOf = {"android.permission.ACCESS_COARSE_LOCATION",
-            "android.permission.ACCESS_FINE_LOCATION"})
+    @RequiresPermission("android.permission.ACCESS_FINE_LOCATION")
     public Location getLastLocation() {
         LocationManager manager = ContextCompat.getSystemService(context, LocationManager.class);
         if (manager == null) {
@@ -107,18 +105,27 @@ public class LocationClient implements LocationListener {
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle bundle) {
-
+        try {
+            ((OnLocationListener) listener).onStatusChanged(provider, status, bundle);
+        } catch (ClassCastException ignore) {
+        }
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-
+        try {
+            ((OnLocationListener) listener).onProviderDisabled(provider);
+        } catch (ClassCastException ignore) {
+        }
     }
 
     @SuppressLint("MissingPermission")
     @Override
     public void onProviderEnabled(String provider) {
-        Log.e(TAG, "onProviderEnabled: ");
+        try {
+            ((OnLocationListener) listener).onProviderEnabled(provider);
+        } catch (ClassCastException ignore) {
+        }
     }
 
     public static final class Builder {

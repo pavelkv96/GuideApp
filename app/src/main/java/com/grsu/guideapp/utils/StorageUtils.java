@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
@@ -30,7 +32,8 @@ public class StorageUtils {
     private static final String TAG = StorageUtils.class.getSimpleName();
 
     public static File getStorage() {
-        return Environment.getExternalStorageDirectory();
+        File parent = Environment.getExternalStoragePublicDirectory("Android/data");
+        return new File(parent, BuildConfig.APPLICATION_ID);
     }
 
     public static File getDatabasePath(Context context) {
@@ -196,7 +199,7 @@ public class StorageUtils {
         Canvas canvas = new Canvas();
         Bitmap bitmap = Bitmap
                 .createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(),
-                        Bitmap.Config.ARGB_8888);
+                        Config.ARGB_8888);
         canvas.setBitmap(bitmap);
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         drawable.draw(canvas);

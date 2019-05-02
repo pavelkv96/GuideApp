@@ -9,25 +9,18 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.grsu.guideapp.App;
-import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.splash.SplashContract.SplashView;
 import com.grsu.guideapp.base.BaseActivity;
-import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
-import com.grsu.guideapp.network.model.Datum;
 import com.grsu.guideapp.project_settings.Settings;
+import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.StorageUtils;
 import com.grsu.ui.progress.CustomProgressBar;
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import retrofit2.Call;
-import retrofit2.Response;
 
-public class SplashActivity extends BaseActivity<SplashPresenter> implements SplashView,
-        View.OnClickListener {
+public class SplashActivity extends BaseActivity<SplashPresenter> implements SplashView {
 
     @BindView(R.id.current_progress)
     CustomProgressBar progress_view;
@@ -54,7 +47,8 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        if (preferences.contains("splash")&&CheckPermission.canWriteStorage(this)) {
+        boolean isContains = preferences.contains(SharedPref.KEY_SPLASH);
+        if (isContains && CheckPermission.canWriteStorage(this)) {
             openActivity();
         }
     }
@@ -119,8 +113,8 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
 
     @Override
     public void openActivity() {
-        if (!preferences.contains("splash")) {
-            preferences.edit().putBoolean("splash", true).apply();
+        if (!preferences.contains(SharedPref.KEY_SPLASH)) {
+            preferences.edit().putBoolean(SharedPref.KEY_SPLASH, true).apply();
         }
         startActivity(NavigationDrawerActivity.newIntent(this));
         finish();
@@ -135,35 +129,8 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
         File file = new File(getFilesDir(), Settings.ZOOM_TABLE);
         File map = new File(StorageUtils.getDatabasePath(this), Settings.MAP_FILE);
         StorageUtils.copyAssetsFolder(photos, "photo", getAssets());
-//        check();
 
         mPresenter.copyFromAssets(file, Settings.ZOOM_TABLE);
         mPresenter.copyFromAssets(map, Settings.MAP_FILE);
-    }
-
-    private void check() {
-        App.getThread().diskIO(new Runnable() {
-            @Override
-            public void run() {
-                if (App.isOnline()) {
-                    Call<List<Datum>> routes = App.getThread().networkIO()
-                            .getRoutes(BuildConfig.ApiKey);
-                    try {
-                        Response<List<Datum>> response = routes.execute();
-                        if (response.isSuccessful()) {
-                            new Test(SplashActivity.this).loadRoute(response.body());
-                        }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onClick(View view) {
-        check();
     }
 }

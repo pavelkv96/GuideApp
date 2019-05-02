@@ -26,7 +26,8 @@ import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.fragments.list_routes.ListRoutesContract.ListRoutesViews;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.network.model.Datum;
+import com.grsu.guideapp.network.model.Root;
+import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.util.List;
 import retrofit2.Call;
@@ -34,7 +35,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, NavigationDrawerActivity>
-        implements ListRoutesViews, Callback<List<Datum>>, OnFinishedListener<Integer> {
+        implements ListRoutesViews, Callback<Root>, OnFinishedListener<Integer> {
 
     private static final String TAG = ListRoutesFragment.class.getSimpleName();
 
@@ -65,7 +66,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
     public void onResume() {
         super.onResume();
         if (App.isOnline() && !PreferenceManager.getDefaultSharedPreferences(getActivity)
-                .contains("load")) {
+                .contains(SharedPref.KEY_LOAD)) {
             tv_fragment_list_routes_more.setVisibility(View.VISIBLE);
             cv_fragment_list_routes_load_more.setVisibility(View.VISIBLE);
         } else {
@@ -122,8 +123,8 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
     @OnClick(R.id.cv_fragment_list_routes_load_more)
     public void loadMore() {
         if (App.isOnline()) {
-            Call<List<Datum>> routes = App.getThread().networkIO().getRoutes(BuildConfig.ApiKey);
-            routes.enqueue(this);
+            Call<Root> root = App.getThread().networkIO().getRoutes(BuildConfig.ApiKey);
+            root.enqueue(this);
             tv_fragment_list_routes_more.setVisibility(View.GONE);
             pb_fragment_list_routes_progress.setVisibility(View.VISIBLE);
         } else {
@@ -132,18 +133,17 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
     }
 
     @Override
-    public void onResponse(@NonNull Call<List<Datum>> call,
-            @NonNull Response<List<Datum>> response) {
+    public void onResponse(@NonNull Call<Root> call, @NonNull Response<Root> response) {
         Log.e("TAG", "onResponse: ");
         if (response.isSuccessful()) {
-            if (adapter != null) {
-                new Test(getActivity).loadRoute(this, response.body(), adapter);
+            if (response.body() != null && adapter != null) {
+                new Test(getActivity).loadRoute(this, response.body().getDatums(), adapter);
             }
         }
     }
 
     @Override
-    public void onFailure(@NonNull Call<List<Datum>> call, @NonNull Throwable t) {
+    public void onFailure(@NonNull Call<Root> call, @NonNull Throwable t) {
         pb_fragment_list_routes_progress.setVisibility(View.GONE);
         cv_fragment_list_routes_load_more.setVisibility(View.GONE);
         if (!call.isCanceled()) {
@@ -161,7 +161,9 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
             @Override
             public void run() {
                 showToast(integer);
-                List<Route> listRoutes = new DatabaseHelper(getActivity).getListRoutes(getString(R.string.locale));
+                List<Route> listRoutes = new DatabaseHelper(getActivity)
+                        .getListRoutes(getString(R.string.locale));
+                save(SharedPref.KEY_LOAD, true);
                 pb_fragment_list_routes_progress.setVisibility(View.GONE);
                 cv_fragment_list_routes_load_more.setVisibility(View.GONE);
                 adapter.setRoutesList(listRoutes);

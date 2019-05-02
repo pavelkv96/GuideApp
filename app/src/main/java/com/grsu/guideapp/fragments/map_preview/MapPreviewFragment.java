@@ -203,7 +203,6 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     @Override
     public void moveToStart(LatLng latLng) {
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
     }
 
     @Override
