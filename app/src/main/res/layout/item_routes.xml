@@ -70,7 +70,22 @@
         android:drawableTint="#4c84ff"
         android:text="@string/about_route"
         android:textColor="#4c84ff"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+      <ImageButton
+        android:id="@+id/ib_item_routes_download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/tv_item_routes_name_route"
+        android:layout_centerHorizontal="true"
+        android:background="#fff"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_download"
+        android:tint="@color/blue"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
       <Button
         android:id="@+id/btn_item_routes_download"
@@ -84,7 +99,8 @@
         android:drawableTint="#4c84ff"
         android:text="@string/download"
         android:textColor="#4c84ff"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
     </RelativeLayout>
 
   </LinearLayout>

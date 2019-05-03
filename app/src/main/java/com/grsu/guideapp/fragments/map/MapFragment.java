@@ -21,7 +21,7 @@ import com.google.android.gms.maps.model.CameraPosition.Builder;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
 import com.grsu.guideapp.fragments.map_preview.MapPreviewFragment;
 import com.grsu.guideapp.models.Point;
@@ -57,7 +57,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     @NonNull
     @Override
     protected MapPresenter getPresenterInstance() {
-        return new MapPresenter(this, new MapInteractor(new DatabaseHelper(getContext())));
+        return new MapPresenter(this, new MapInteractor(new Test(getContext())));
     }
 
     @Override

@@ -40,6 +40,7 @@ class Content {
         values.put(Routes.southwest, CryptoUtils.encodeP(value.getLimLeft().getLatLng()));
         values.put(Routes.northeast, CryptoUtils.encodeP(value.getLimRight().getLatLng()));
         values.put(Routes.last_update, date);
+        values.put(Routes.last_download, System.currentTimeMillis() / 1000);
         return values;
     }
 

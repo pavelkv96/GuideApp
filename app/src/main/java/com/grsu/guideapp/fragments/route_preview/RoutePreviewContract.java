@@ -58,7 +58,7 @@ public interface RoutePreviewContract {
 
     interface TestPresenter extends MapPreviewPresenter {
 
-        void isLoadRoute(boolean isLoad);
+        void isLoadRoute(int isLoad);
 
         void onMapClick(LatLng latLng);
 

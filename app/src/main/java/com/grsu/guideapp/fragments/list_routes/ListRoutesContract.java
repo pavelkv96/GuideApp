@@ -1,6 +1,5 @@
 package com.grsu.guideapp.fragments.list_routes;
 
-import android.content.Context;
 import com.grsu.guideapp.base.BasePresenter;
 import com.grsu.guideapp.base.BaseView;
 import com.grsu.guideapp.base.listeners.OnSuccessListener;
@@ -17,8 +16,6 @@ public interface ListRoutesContract extends OnSuccessListener<List<Route>> {
     }
 
     interface ListRoutesPresenter extends BasePresenter<ListRoutesViews> {
-
-        void createDBIfNeed(Context context);
 
         void getListRoutes(String locale);
     }

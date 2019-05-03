@@ -14,7 +14,9 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.support.v4.content.ContextCompat;
 import com.grsu.guideapp.project_settings.Constants;
+import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.project_settings.SharedPref;
+import com.grsu.guideapp.utils.StorageUtils;
 import java.util.Locale;
 
 public class App extends Application {
@@ -27,6 +29,7 @@ public class App extends Application {
         super.onCreate();
         app = this;
         createNotificationChannel();
+        createDBIfNeed();
     }
 
     private void createNotificationChannel() {
@@ -80,5 +83,11 @@ public class App extends Application {
         }
 
         return isConnected;
+    }
+
+    private void createDBIfNeed() {
+        if (!getDatabasePath(Settings.DATABASE_INFORMATION_NAME).exists()) {
+            StorageUtils.copyDatabase(this);
+        }
     }
 }

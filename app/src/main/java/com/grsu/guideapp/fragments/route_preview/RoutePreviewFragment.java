@@ -20,7 +20,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.fragments.map.MapFragment;
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewFragment;
 import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.TestViews;
@@ -62,7 +62,7 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
     @NonNull
     @Override
     protected RoutePreviewPresenter getPresenterInstance() {
-        DatabaseHelper helper = new DatabaseHelper(getActivity);
+        Test helper = new Test(getActivity);
         RoutePreviewInteractor interactor = new RoutePreviewInteractor(helper, getActivity);
         return new RoutePreviewPresenter(this, interactor);
     }

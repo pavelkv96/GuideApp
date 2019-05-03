@@ -18,6 +18,7 @@ import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.base.listeners.OnLoadRoute;
+import com.grsu.guideapp.database.Table;
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewPresenter;
 import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.TestViews;
 import com.grsu.guideapp.models.Route1;
@@ -26,12 +27,13 @@ import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.ui.bottomsheet.BottomSheetBehaviorGoogleMaps;
 import com.grsu.ui.bottomsheet.BottomSheetCallback;
 
-public class RoutePreviewPresenter extends MapPreviewPresenter implements RoutePreviewContract.TestPresenter,
+public class RoutePreviewPresenter extends MapPreviewPresenter implements
+        RoutePreviewContract.TestPresenter,
         BottomSheetCallback, OnLoadRoute<String> {
 
     private static final String TAG = RoutePreviewPresenter.class.getSimpleName();
     private boolean flag = false;
-    private boolean isLoadRoute = false;
+    private int isLoadRoute = 0;
     private ProgressDialog mProgressDialog;
 
     private TestViews testViews;
@@ -78,9 +80,9 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements RouteP
     }
 
     @Override
-    public void isLoadRoute(boolean isLoad) {
+    public void isLoadRoute(int isLoad) {
         isLoadRoute = isLoad;
-        int imageRes = isLoadRoute ? R.drawable.ic_action_go : R.drawable.ic_download;
+        int imageRes = isLoadRoute > 0 ? R.drawable.ic_action_go : R.drawable.ic_download;
         testViews.setFabActionGoImage(imageRes);
     }
 
@@ -127,7 +129,7 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements RouteP
 
     @Override
     public void actionGoClick(Context context, int id_route) {
-        if (!isLoadRoute) {
+        if (isLoadRoute == Table.NOT_DOWNLOAD) {
             if (CheckPermission.canWriteStorage(context)) {
                 if (App.isOnline()) {
                     onStartLoad(id_route);
@@ -140,7 +142,7 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements RouteP
         } else {
             if (CheckPermission.canGetLocation(context)) {
                 testViews.openMapFragment();
-            }else {
+            } else {
                 testViews.requestPermissions(CheckPermission.groupLocation, 3);
             }
         }
@@ -254,7 +256,7 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements RouteP
 
     @Override
     public void onSuccess(final String s) {
-        isLoadRoute = true;
+        isLoadRoute = Table.DOWNLOAD;
         App.getThread().mainThread(new Runnable() {
             @Override
             public void run() {

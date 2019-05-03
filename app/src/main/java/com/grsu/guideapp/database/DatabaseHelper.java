@@ -16,12 +16,11 @@ import com.grsu.guideapp.project_settings.Settings;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseHelper extends SQLiteOpenHelper implements Table {
+class DatabaseHelper extends SQLiteOpenHelper implements Table {
 
-    private static final String TAG = DatabaseHelper.class.getSimpleName();
-    private final Context mContext;
-    private static final String DB_NAME = Settings.DATABASE_INFORMATION_NAME;
-    private SQLiteDatabase mDatabase;
+    protected final Context mContext;
+    protected static final String DB_NAME = Settings.DATABASE_INFORMATION_NAME;
+    protected SQLiteDatabase mDatabase;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, Settings.DATABASE_INFORMATION_VERSION);
@@ -93,12 +92,12 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Table {
         return route;
     }
 
-    public Route setDownload(Integer id_route) {
+    public void setDownload(Integer id_route, int is_full) {
         ContentValues values = new ContentValues();
-        values.put(Routes.is_full, 1);
+        values.put(Routes.is_full, is_full);
         String[] args = {String.valueOf(id_route)};
         getWritableDatabase().update(Routes.table_name, values, "id_route = ?", args);
-        return new Route();
+        //return new Route();
     }
 
     public List<Line> getRouteById(Integer id_route) {

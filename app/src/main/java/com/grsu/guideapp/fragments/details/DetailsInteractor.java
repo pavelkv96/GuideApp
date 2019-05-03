@@ -5,16 +5,16 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.base.listeners.OnSuccessListener;
-import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.models.InfoAboutPoi;
 import com.grsu.guideapp.utils.StorageUtils;
 import java.io.File;
 
 public class DetailsInteractor implements DetailsContract.DetailsInteractor {
 
-    private DatabaseHelper helper;
+    private Test helper;
 
-    public DetailsInteractor(@NonNull DatabaseHelper pDbHelper) {
+    public DetailsInteractor(@NonNull Test pDbHelper) {
         helper = pDbHelper;
     }
 

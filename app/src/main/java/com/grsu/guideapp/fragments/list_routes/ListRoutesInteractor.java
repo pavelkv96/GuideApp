@@ -2,15 +2,15 @@ package com.grsu.guideapp.fragments.list_routes;
 
 import android.os.Handler;
 import com.grsu.guideapp.base.listeners.OnSuccessListener;
-import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.models.Route;
 import java.util.List;
 
 public class ListRoutesInteractor implements ListRoutesContract.ListRoutesInteractor {
 
-    private DatabaseHelper helper;
+    private Test helper;
 
-    public ListRoutesInteractor(DatabaseHelper databaseHelper) {
+    public ListRoutesInteractor(Test databaseHelper) {
         this.helper = databaseHelper;
     }
 

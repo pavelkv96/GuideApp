@@ -15,7 +15,7 @@ import butterknife.OnClick;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.base.BaseFragment;
-import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.fragments.details.DetailsContract.DetailsView;
 import com.grsu.guideapp.models.InfoAboutPoi;
 import com.grsu.guideapp.project_settings.Constants;
@@ -51,7 +51,7 @@ public class DetailsFragment extends BaseFragment<DetailsPresenter, RouteActivit
     @NonNull
     @Override
     protected DetailsPresenter getPresenterInstance() {
-        return new DetailsPresenter(this, new DetailsInteractor(new DatabaseHelper(getContext())));
+        return new DetailsPresenter(this, new DetailsInteractor(new Test(getContext())));
     }
 
     @Override

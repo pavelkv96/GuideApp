@@ -4,21 +4,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v4.util.ArraySet;
 import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.App;
-import com.grsu.guideapp.adapters.RoutesListAdapter;
 import com.grsu.guideapp.adapters.SaveAdapter;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
-import com.grsu.guideapp.database.Table.Lines;
-import com.grsu.guideapp.database.Table.ListLines;
-import com.grsu.guideapp.database.Table.ListPoi;
-import com.grsu.guideapp.database.Table.POI;
-import com.grsu.guideapp.database.Table.PoiLanguage;
-import com.grsu.guideapp.database.Table.Routes;
-import com.grsu.guideapp.database.Table.RoutesLanguage;
-import com.grsu.guideapp.database.Table.Types;
 import com.grsu.guideapp.network.model.About;
 import com.grsu.guideapp.network.model.Category;
 import com.grsu.guideapp.network.model.Data;
@@ -28,9 +18,7 @@ import com.grsu.guideapp.network.model.Objects;
 import com.grsu.guideapp.network.model.Point;
 import com.grsu.guideapp.network.model.Turn;
 import com.grsu.guideapp.network.model.Value;
-import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MapUtils;
-import com.grsu.guideapp.utils.MessageViewer.Toasts;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,15 +27,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class Test extends SQLiteOpenHelper {
+public class Test extends DatabaseHelper {
 
     private static final String TAG = Test.class.getSimpleName();
-    private static final String DB_NAME = Settings.DATABASE_INFORMATION_NAME;
-    private Context context;
 
     public Test(Context context) {
-        super(context, DB_NAME, null, Settings.DATABASE_INFORMATION_VERSION);
-        this.context = context;
+        super(context);
     }
 
     @Override
@@ -60,37 +45,7 @@ public class Test extends SQLiteOpenHelper {
 
     }
 
-    public void loadRoute(final List<Datum> list) {
-        App.getThread().diskIO(new Runnable() {
-            @Override
-            public void run() {
-                for (Datum datum : list) {
-                    Data data = datum.getData();
-                    if (data != null) {
-                        if (data.getRoute() != null) {
-                            Value value = data.getRoute().getValue();
-                            List<Turn> turns = value.getPoints();
-                            List<Long> polylinesIds = insertPolyline(turns);
-
-                            int id_route = datum.getId();
-                            insertRoute(data, id_route, polylinesIds);
-                            String url = datum.getData().getImages().get(0).getHref();
-                            insertTypesAndPoi(value.getObjects());
-                            insertPoiList(turns, id_route, value.getObjects());
-                            SaveAdapter.saveImage(url);
-                            App.getThread().mainThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toasts.makeL(context,"loadRoute: OK ");
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        });
-    }
-    public void loadRoute(final OnFinishedListener<Integer> listener, final List<Datum> list, final RoutesListAdapter adapter) {
+    public void loadRoute(final OnFinishedListener<Integer> listener, final List<Datum> list) {
         App.getThread().diskIO(new Runnable() {
             @Override
             public void run() {
@@ -135,7 +90,7 @@ public class Test extends SQLiteOpenHelper {
         String updatedAt = route.getRoute().getTimestamp().getUpdatedAt();
         Date date;
         try {
-            date = new SimpleDateFormat("dd-MM-yyyy_hh:mm:ss", Locale.US).parse(updatedAt);
+            date = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss", Locale.US).parse(updatedAt);
         } catch (ParseException e) {
             date = new Date(0);
         }
@@ -291,5 +246,39 @@ public class Test extends SQLiteOpenHelper {
         values.put(Types.language_lt, category.getName().getLt());
         id = new String[]{String.valueOf(category.getId())};
         getWritableDatabase().update(Types.name_table, values, Types.id_type + " = ?", id);
+    }
+
+    public String getLastCheck() {
+        String query = "SELECT min(last_download) FROM routes where last_download > 0";
+        Cursor cursor = getReadableDatabase().rawQuery(query, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            long date = cursor.getLong(0);
+            if (date != 0) {
+                long time = new Date(date).getTime() * 1000;
+                cursor.close();
+                String pattern = "dd-MM-yyyy_HH:mm:ss";
+                return new SimpleDateFormat(pattern, Locale.US).format(time);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private void haveUpdate(Integer id_route, int is_full) {
+        ContentValues values = new ContentValues();
+        values.put(Routes.is_full, is_full);
+        String[] args = {String.valueOf(id_route)};
+        String whereClause = "id_route = ? and is_full = 2";
+        getWritableDatabase().updateWithOnConflict(Routes.table_name, values, whereClause, args, 5);
+        //return new Route();
+    }
+
+    public void setHaveUpdate(List<Integer> updateIds) {
+        for (Integer id : updateIds) {
+            haveUpdate(id, Table.HAVE_UPDATE);
+        }
     }
 }

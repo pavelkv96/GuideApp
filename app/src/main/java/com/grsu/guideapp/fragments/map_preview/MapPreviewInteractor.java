@@ -1,18 +1,17 @@
 package com.grsu.guideapp.fragments.map_preview;
 
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
-import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import java.util.List;
 
 public class MapPreviewInteractor implements MapPreviewContract.MapPreviewInteractor {
 
-    protected DatabaseHelper helper;
+    protected Test helper;
 
-    public MapPreviewInteractor(DatabaseHelper pDbHelper) {
+    public MapPreviewInteractor(Test pDbHelper) {
         helper = pDbHelper;
     }
 

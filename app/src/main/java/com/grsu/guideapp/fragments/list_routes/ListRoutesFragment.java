@@ -21,7 +21,6 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.adapters.RoutesListAdapter;
 import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
-import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.fragments.list_routes.ListRoutesContract.ListRoutesViews;
@@ -56,7 +55,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
     public void onStart() {
         super.onStart();
         String locale = getString(R.string.locale);
-        List<Route> routes = new DatabaseHelper(getActivity).getListRoutes(locale);
+        List<Route> routes = new Test(getActivity).getListRoutes(locale);
         if (adapter != null) {
             adapter.setRoutesList(routes);
         }
@@ -79,7 +78,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
     @Override
     protected ListRoutesPresenter getPresenterInstance() {
         return new ListRoutesPresenter(this,
-                new ListRoutesInteractor(new DatabaseHelper(getContext())));
+                new ListRoutesInteractor(new Test(getContext())));
     }
 
     @Override
@@ -100,7 +99,6 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
         rw_fragment_list_routes.setHasFixedSize(true);
         rw_fragment_list_routes.setLayoutManager(new LinearLayoutManager(getContext()));
         mPresenter.getListRoutes(getString(R.string.locale));
-        mPresenter.createDBIfNeed(getContext());
         return view;
     }
 
@@ -137,7 +135,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
         Log.e("TAG", "onResponse: ");
         if (response.isSuccessful()) {
             if (response.body() != null && adapter != null) {
-                new Test(getActivity).loadRoute(this, response.body().getDatums(), adapter);
+                new Test(getActivity).loadRoute(this, response.body().getDatums());
             }
         }
     }
@@ -161,7 +159,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
             @Override
             public void run() {
                 showToast(integer);
-                List<Route> listRoutes = new DatabaseHelper(getActivity)
+                List<Route> listRoutes = new Test(getActivity)
                         .getListRoutes(getString(R.string.locale));
                 save(SharedPref.KEY_LOAD, true);
                 pb_fragment_list_routes_progress.setVisibility(View.GONE);

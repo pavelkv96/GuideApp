@@ -1,16 +1,10 @@
 package com.grsu.guideapp.fragments.list_routes;
 
-import android.content.Context;
-import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.base.listeners.OnSuccessListener;
-import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.fragments.list_routes.ListRoutesContract.ListRoutesInteractor;
 import com.grsu.guideapp.fragments.list_routes.ListRoutesContract.ListRoutesViews;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.project_settings.Settings;
-import com.grsu.guideapp.utils.StorageUtils;
-import java.io.File;
 import java.util.List;
 
 public class ListRoutesPresenter extends BasePresenterImpl<ListRoutesViews> implements
@@ -24,19 +18,6 @@ public class ListRoutesPresenter extends BasePresenterImpl<ListRoutesViews> impl
             ListRoutesInteractor listRoutesInteractor) {
         this.listRoutesViews = listRoutesViews;
         this.listRoutesInteractor = listRoutesInteractor;
-    }
-
-    @Override
-    public void createDBIfNeed(Context context) {
-        File database = context.getDatabasePath(Settings.DATABASE_INFORMATION_NAME);
-        if (!database.exists()) {
-            new DatabaseHelper(context);
-            if (StorageUtils.copyDatabase(context)) {
-                listRoutesViews.showToast(R.string.success_copy_database_success);
-            } else {
-                listRoutesViews.showToast(R.string.error_copy_data_error);
-            }
-        }
     }
 
     @Override

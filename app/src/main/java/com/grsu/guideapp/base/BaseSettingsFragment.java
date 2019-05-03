@@ -1,4 +1,4 @@
-package com.grsu.guideapp.fragments.setting;
+package com.grsu.guideapp.base;
 
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
@@ -19,7 +19,7 @@ import com.grsu.guideapp.utils.MessageViewer.Toasts;
 public abstract class BaseSettingsFragment<P extends BasePresenter, A extends FragmentActivity>
         extends PreferenceFragmentCompat implements BaseView, OnSharedPreferenceChangeListener {
 
-    private SharedPreferences sharedPref;
+    protected SharedPreferences preferences;
     protected A getActivity;
 
     protected abstract @NonNull
@@ -40,15 +40,15 @@ public abstract class BaseSettingsFragment<P extends BasePresenter, A extends Fr
         getActivity = (A) getActivity();
         mPresenter = getPresenterInstance();
         mPresenter.attachView(this);
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity);
-        sharedPref.registerOnSharedPreferenceChangeListener(this);
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity);
+        preferences.registerOnSharedPreferenceChangeListener(this);
         return rootView;
     }
 
     @Override
     public void onDestroyView() {
         mPresenter.detachView();
-        sharedPref.unregisterOnSharedPreferenceChangeListener(this);
+        preferences.unregisterOnSharedPreferenceChangeListener(this);
         super.onDestroyView();
     }
 

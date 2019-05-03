@@ -14,7 +14,7 @@ public class Route implements Serializable {
     private String southwest;
     private String northeast;
     private Integer is_full;
-    private final static long serialVersionUID = -4448199344994382402L;
+    private final static long serialVersionUID = -4447199344994382402L;
 
     /**
      * No args constructor for use in serialization
@@ -70,12 +70,12 @@ public class Route implements Serializable {
         return northeast;
     }
 
-    public void setIsFull(boolean is_full) {
-        this.is_full = is_full ? 1 : 0;
+    public void setIsFull(Integer is_full) {
+        this.is_full = is_full;
     }
 
-    public boolean getIsFull() {
-        return is_full == 1;
+    public Integer getIsFull() {
+        return is_full;
     }
 
     public static Route fromCursor(Cursor cur) {

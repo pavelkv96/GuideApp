@@ -6,7 +6,7 @@ import com.grsu.guideapp.App;
 import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.base.listeners.OnLoadRoute;
-import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.database.Table;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewInteractor;
 import com.grsu.guideapp.models.Route1;
@@ -18,7 +18,7 @@ public class RoutePreviewInteractor extends MapPreviewInteractor implements Rout
 
     private Test test;
 
-    public RoutePreviewInteractor(DatabaseHelper pDbHelper, Context context) {
+    public RoutePreviewInteractor(Test pDbHelper, Context context) {
         super(pDbHelper);
         test = new Test(context);
     }
@@ -80,7 +80,7 @@ public class RoutePreviewInteractor extends MapPreviewInteractor implements Rout
                             return;
                         }
                     }*/
-                    helper.setDownload(id_route);
+                    helper.setDownload(id_route, Table.DOWNLOAD);
                     listener.onSuccess("onSuccess");
                 } catch (Exception e) {
                     listener.onFailure(e);

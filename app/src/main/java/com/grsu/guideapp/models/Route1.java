@@ -79,12 +79,12 @@ public class Route1 implements Serializable {
         return last_update;
     }
 
-    public void setIsFull(boolean is_full) {
-        this.is_full = is_full ? 1 : 0;
+    public void setIsFull(Integer is_full) {
+        this.is_full = is_full;
     }
 
-    public boolean getIsFull() {
-        return is_full == 1;
+    public Integer getIsFull() {
+        return is_full;
     }
 
     public File getPhotoPath() {

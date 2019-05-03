@@ -3,7 +3,6 @@ package com.grsu.guideapp.adapters;
 import android.content.ContentValues;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import com.grsu.guideapp.database.DatabaseHelper;
 import com.grsu.guideapp.database.Table.Types;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.project_settings.Settings;
@@ -36,7 +35,7 @@ public class SaveAdapter {
         }
     }
 
-    public static void saveIcon(DatabaseHelper helper, String url, long id) {
+    /*public static void saveIcon(Test helper, String url, long id) {
         try {
             Bitmap bitmap = Picasso.get().load(url).resize(64, 64).get();
             byte[] bytes = StorageUtils.toByteArray(bitmap);
@@ -48,7 +47,7 @@ public class SaveAdapter {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     public static void saveIcon(Test helper, String url, long id) {
 
@@ -73,7 +72,7 @@ public class SaveAdapter {
         helper.getWritableDatabase().insertWithOnConflict(Types.name_table, null, values, 4);
     }
 
-    public static void saveIcon1(DatabaseHelper helper, String url, long id) {
+    public static void saveIcon1(Test helper, String url, long id) {
         try {
             Bitmap bitmap = Picasso.get().load(url).resize(64, 64).get();
             byte[] bytes = StorageUtils.toByteArray(bitmap);

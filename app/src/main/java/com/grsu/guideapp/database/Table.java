@@ -2,6 +2,10 @@ package com.grsu.guideapp.database;
 
 public interface Table {
 
+    int NOT_DOWNLOAD = 0;
+    int HAVE_UPDATE = 1;
+    int DOWNLOAD = 2;
+
     interface Lines {
 
         String table_name = "lines";
@@ -45,6 +49,7 @@ public interface Table {
         String photo_reference = "photo_reference";
         String link = "link";
         String last_update = "last_update";
+        String last_download = "last_download";
     }
 
     interface PoiLanguage {
@@ -72,6 +77,7 @@ public interface Table {
         String southwest = "southwest";
         String northeast = "northeast";
         String last_update = "last_update";
+        String last_download = "last_download";
         String is_full = "is_full";
     }
 

@@ -9,13 +9,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.Preference.OnPreferenceClickListener;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.DividerItemDecoration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
+import com.grsu.guideapp.base.BaseSettingsFragment;
 import com.grsu.guideapp.database.CacheDBHelper;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.fragments.setting.SettingContract.SettingView;
@@ -93,9 +93,14 @@ public class SettingFragment extends
                 if (context != null) {
                     if (StorageUtils.deleteDatabase(context)) {
                         Toasts.makeS(context, R.string.success_database_deleted);
-                        PreferenceManager.getDefaultSharedPreferences(context).edit().remove(SharedPref.KEY_LOAD).apply();
+                        preferences.edit().remove(SharedPref.KEY_LOAD).apply();
                     } else {
                         Toasts.makeS(context, R.string.error_database_not_found);
+                    }
+
+                    File database = context.getDatabasePath(Settings.DATABASE_INFORMATION_NAME);
+                    if (!database.exists()) {
+                        StorageUtils.copyDatabase(context);
                     }
                 }
             }
@@ -111,8 +116,7 @@ public class SettingFragment extends
             }
             break;
             case SharedPref.KEY_MAP_DELETE_FILE: {
-                final File file = new File(StorageUtils.getDatabasePath(getActivity),
-                        Settings.MAP_FILE);
+                File file = new File(StorageUtils.getDatabasePath(getActivity), Settings.MAP_FILE);
                 mPresenter.deleteMapFile(file);
             }
             break;

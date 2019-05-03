@@ -11,13 +11,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.database.Test;
 
 public class MultiChoiceItemsDialogFragment extends DialogFragment implements OnClickListener,
         OnMultiChoiceClickListener {
 
     private OnMultiChoiceItemsListener listener;
-    private DatabaseHelper helper;
+    private Test helper;
     private Cursor cur;
 
     public interface OnMultiChoiceItemsListener {
@@ -27,7 +27,7 @@ public class MultiChoiceItemsDialogFragment extends DialogFragment implements On
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        helper = new DatabaseHelper(context);
+        helper = new Test(context);
         try {
             listener = (OnMultiChoiceItemsListener) getActivity();
         } catch (ClassCastException e) {

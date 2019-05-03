@@ -3,22 +3,33 @@ package com.grsu.guideapp.activities.splash;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
+import com.google.gson.Gson;
 import com.grsu.guideapp.App;
+import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.splash.SplashContract.SplashView;
 import com.grsu.guideapp.base.BaseActivity;
+import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
+import com.grsu.guideapp.network.model.Datum;
+import com.grsu.guideapp.network.model.Root;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.StorageUtils;
 import com.grsu.ui.progress.CustomProgressBar;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SplashActivity extends BaseActivity<SplashPresenter> implements SplashView {
 
@@ -50,6 +61,9 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
         boolean isContains = preferences.contains(SharedPref.KEY_SPLASH);
         if (isContains && CheckPermission.canWriteStorage(this)) {
             openActivity();
+            if (App.isOnline()) {
+                checkUpdate();
+            }
         }
     }
 
@@ -132,5 +146,34 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
 
         mPresenter.copyFromAssets(file, Settings.ZOOM_TABLE);
         mPresenter.copyFromAssets(map, Settings.MAP_FILE);
+    }
+
+    private void checkUpdate() {
+        String apiKey = BuildConfig.ApiKey;
+        String datetime = new Test(this).getLastCheck();
+        if (datetime == null) {
+            return;
+        }
+
+        Call<Root> root = App.getThread().networkIO().checkUpdateRoute(apiKey, datetime);
+        root.enqueue(new Callback<Root>() {
+            @Override
+            public void onResponse(@NonNull Call<Root> call, @NonNull Response<Root> response) {
+                if (response.body() != null) {
+                    List<Integer> updateIds = new ArrayList<>();
+                    for (Datum datum : response.body().getDatums()){
+                        updateIds.add(datum.getId());
+                    }
+                    new Test(SplashActivity.this).setHaveUpdate(updateIds);
+                }
+                Log.e("TAG", "onResponse: " + call.request().url());
+                Log.e("TAG", "onResponse: " + new Gson().toJson(response.body()));
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Root> call, @NonNull Throwable t) {
+                Log.e("TAG", "onFailure: " + t.getMessage(), t);
+            }
+        });
     }
 }

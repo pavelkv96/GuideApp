@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.grsu.guideapp.App;
@@ -15,7 +16,7 @@ import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.adapters.RoutesListAdapter;
-import com.grsu.guideapp.database.DatabaseHelper;
+import com.grsu.guideapp.database.Table;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.models.Route;
@@ -39,6 +40,7 @@ public class RouteViewHolder extends ViewHolder {
     private TextView tv_item_routes_name_route;
     private Button btn_item_routes_about;
     private Button btn_item_routes_download;
+    private ImageButton ib_item_routes_download;
 
     public RouteViewHolder(@NonNull View pView) {
         super(pView);
@@ -49,6 +51,7 @@ public class RouteViewHolder extends ViewHolder {
         tv_item_routes_name_route = pView.findViewById(R.id.tv_item_routes_name_route);
         btn_item_routes_about = pView.findViewById(R.id.btn_item_routes_about);
         btn_item_routes_download = pView.findViewById(R.id.btn_item_routes_download);
+        ib_item_routes_download = pView.findViewById(R.id.ib_item_routes_download);
     }
 
     public void bind(final Route route, final Context context, final RoutesListAdapter adapter) {
@@ -103,73 +106,84 @@ public class RouteViewHolder extends ViewHolder {
 
     private void updateView(final Route route, final Context context,
             final RoutesListAdapter adapter) {
-        if (!route.getIsFull()) {
+        switch (route.getIsFull()) {
+            case Table.NOT_DOWNLOAD: {
 
-            btn_item_routes_about.setVisibility(View.VISIBLE);
-            btn_item_routes_download.setVisibility(View.VISIBLE);
+                btn_item_routes_about.setVisibility(View.VISIBLE);
+                btn_item_routes_download.setVisibility(View.VISIBLE);
 
-            btn_item_routes_about.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openActivity(view, route, context);
-                }
-            });
+                btn_item_routes_about.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openActivity(view, route, context);
+                    }
+                });
 
-            btn_item_routes_download.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    final NavigationDrawerActivity activity = (NavigationDrawerActivity) context;
-                    activity.showProgress("", context.getString(R.string.download_route));
-                    App.getThread().diskIO(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                final DatabaseHelper helper = new DatabaseHelper(context);
-                                List<Integer> poiFromBD = helper
-                                        .getListPoiFromBD(route.getIdRoute());
+                btn_item_routes_download.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final NavigationDrawerActivity activity = (NavigationDrawerActivity) context;
+                        activity.showProgress("", context.getString(R.string.download_route));
+                        App.getThread().diskIO(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    final Test helper = new Test(context);
+                                    List<Integer> poiFromBD = helper
+                                            .getListPoiFromBD(route.getIdRoute());
 
-                                for (Integer id : poiFromBD) {
-                                    Response<Datum> datum = App.getThread().networkIO()
-                                            .getPoi(id, BuildConfig.ApiKey).execute();
-                                    if (datum.isSuccessful()) {
-                                        new Test(context).insertPoiAndTypes(datum.body());
+                                    for (Integer id : poiFromBD) {
+                                        Response<Datum> datum = App.getThread().networkIO()
+                                                .getPoi(id, BuildConfig.ApiKey).execute();
+                                        if (datum.isSuccessful()) {
+                                            new Test(context).insertPoiAndTypes(datum.body());
+                                        }
+
                                     }
+                                    helper.setDownload(route.getIdRoute(), Table.DOWNLOAD);
+                                    final List<Route> routes = helper
+                                            .getListRoutes(context.getString(R.string.locale));
+                                    App.getThread().mainThread(new Runnable() {
+                                        @Override
+                                        public void run() {
 
+                                            PreferenceManager.getDefaultSharedPreferences(context)
+                                                    .edit().putBoolean(
+                                                    SharedPref.KEY_LOAD, true).apply();
+                                            adapter.setRoutesList(routes);
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    Log.e(TAG, "onFailure: ", e);
+                                } finally {
+                                    App.getThread().mainThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            activity.hideProgress();
+                                        }
+                                    });
                                 }
-                                helper.setDownload(route.getIdRoute());
-                                final List<Route> routes = helper.getListRoutes(context.getString(R.string.locale));
-                                App.getThread().mainThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-
-                                        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(
-                                                SharedPref.KEY_LOAD, true).apply();
-                                        adapter.setRoutesList(routes);
-                                    }
-                                });
-                            } catch (Exception e) {
-                                Log.e(TAG, "onFailure: ", e);
-                            } finally {
-                                App.getThread().mainThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        activity.hideProgress();
-                                    }
-                                });
                             }
-                        }
-                    });
-                }
-            });
-        } else {
-            btn_item_routes_about.setVisibility(View.GONE);
-            btn_item_routes_download.setVisibility(View.GONE);
-            itemView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openActivity(view, route, context);
-                }
-            });
+                        });
+                    }
+                });
+            }
+            break;
+            case Table.HAVE_UPDATE: {
+                ib_item_routes_download.setVisibility(View.VISIBLE);
+            }
+            break;
+            case Table.DOWNLOAD: {
+                btn_item_routes_about.setVisibility(View.GONE);
+                btn_item_routes_download.setVisibility(View.GONE);
+                itemView.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openActivity(view, route, context);
+                    }
+                });
+            }
+            break;
         }
     }
 

@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
@@ -33,7 +32,7 @@ public class StorageUtils {
 
     public static File getStorage() {
         File parent = Environment.getExternalStoragePublicDirectory("Android/data");
-        return new File(parent, BuildConfig.APPLICATION_ID);
+        return new File(parent, Constants.PACKAGE_NAME);
     }
 
     public static File getDatabasePath(Context context) {
@@ -108,7 +107,7 @@ public class StorageUtils {
         }
     }
 
-    public static boolean copyDatabase(@NonNull Context context) {
+    public static void copyDatabase(@NonNull Context context) {
         String dbName = Settings.DATABASE_INFORMATION_NAME;
         InputStream inputStream = null;
         OutputStream outputStream = null;
@@ -119,11 +118,7 @@ public class StorageUtils {
 
             StreamUtils.copyFile(inputStream, outputStream);
 
-            return true;
-        } catch (Exception e) {
-            e.getMessage();
-
-            return false;
+        } catch (Exception ignore) {
         } finally {
             StreamUtils.closeStream(inputStream);
             StreamUtils.closeStream(outputStream);
