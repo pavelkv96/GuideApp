@@ -9,7 +9,7 @@ import com.grsu.guideapp.base.listeners.OnLoadRoute;
 import com.grsu.guideapp.database.Table;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewInteractor;
-import com.grsu.guideapp.models.Route1;
+import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.network.model.Datum;
 import java.util.List;
 import retrofit2.Response;
@@ -29,7 +29,7 @@ public class RoutePreviewInteractor extends MapPreviewInteractor implements Rout
     private int max_progress = 100;
 
     @Override
-    public void isDownLoad(final OnFinishedListener<Route1> listener, final int id_route,
+    public void isDownLoad(final OnFinishedListener<Route> listener, final int id_route,
             final String locale) {
         App.getThread().diskIO(new Runnable() {
             @Override

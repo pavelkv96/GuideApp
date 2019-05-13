@@ -25,46 +25,52 @@ public class InfoAboutPoi implements Serializable {
     public InfoAboutPoi() {
     }
 
-    /**
-     * @param type
-     * @param name_locale
-     * @param audioReference
-     * @param photoReference
-     * @param link
-     */
-
-    public InfoAboutPoi(String type, Names name_locale, String audioReference,
-            String photoReference, String link, long last_update) {
-        this.type = type;
-        this.name_locale = name_locale;
-        this.audioReference = audioReference;
-        this.photoReference = photoReference;
-        this.link = link;
-        this.last_update = last_update;
-    }
-
     public String getType() {
         return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Names getNameLocale() {
         return name_locale;
     }
 
+    public void setNameLocale(Names name_locale) {
+        this.name_locale = name_locale;
+    }
+
     public String getAudioReference() {
         return audioReference;
+    }
+
+    public void setAudioReference(String audioReference) {
+        this.audioReference = audioReference;
     }
 
     public String getPhotoReference() {
         return photoReference;
     }
 
+    public void setPhotoReference(String photoReference) {
+        this.photoReference = photoReference;
+    }
+
     public String getLink() {
         return link;
     }
 
+    public void setLink(String link) {
+        this.link = link;
+    }
+
     public String getLast_update() {
-        return new SimpleDateFormat("dd-MM-yyyy", Locale.US).format(new Date(last_update*1000));
+        return new SimpleDateFormat("dd-MM-yyyy", Locale.US).format(new Date(last_update * 1000));
+    }
+
+    public void setLastUpdate(long last_update) {
+        this.last_update = last_update;
     }
 
     @NonNull
@@ -78,14 +84,20 @@ public class InfoAboutPoi implements Serializable {
                 ", link='" + link + "\'}";
     }
 
-    public static InfoAboutPoi fromCursor(Cursor cursor, Names names) {
-        return new InfoAboutPoi(
-                cursor.getString(1),
-                names,
-                cursor.getString(2),
-                cursor.getString(3),
-                cursor.getString(4),
-                cursor.getLong(5)
-        );
+    public static InfoAboutPoi fromCursor(Cursor cur) {
+        Names name = new Names();
+        name.setShortName(cur.getString(1));
+        name.setFullName(cur.getString(2));
+        name.setShortDescription(cur.getString(3));
+        name.setFullDescription(cur.getString(4));
+
+        InfoAboutPoi aboutPoi = new InfoAboutPoi();
+        aboutPoi.setType(cur.getString(0));
+        aboutPoi.setNameLocale(name);
+        aboutPoi.setAudioReference(cur.getString(5));
+        aboutPoi.setPhotoReference(cur.getString(6));
+        aboutPoi.setLink(cur.getString(7));
+        aboutPoi.setLastUpdate(cur.getLong(8));
+        return aboutPoi;
     }
 }

@@ -24,8 +24,6 @@ public interface MapPreviewContract extends OnFinishedListener {
 
         void removePoi();
 
-        void moveToStart(LatLng startPosition);
-
         void showTurn(boolean visibility);
     }
 

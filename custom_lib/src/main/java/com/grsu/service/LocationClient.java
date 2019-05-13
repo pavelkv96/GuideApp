@@ -41,6 +41,7 @@ public class LocationClient implements LocationListener {
         return MyService.isWork();
     }
 
+    @RequiresPermission("android.permission.ACCESS_FINE_LOCATION")
     public void disconnect() {
         Class.getInstance.unregisterCallback(this);
         MyService.setWork(false);

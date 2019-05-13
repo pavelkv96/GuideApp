@@ -24,7 +24,7 @@ import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.fragments.map.MapFragment;
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewFragment;
 import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.TestViews;
-import com.grsu.guideapp.models.Route1;
+import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.service.Listener;
@@ -269,7 +269,7 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
     }
 
     @Override
-    public void setContent(Route1 content) {
+    public void setContent(Route content) {
         Picasso.get().load(content.getPhotoPath())
                 .placeholder(R.drawable.my_location)
                 .error(R.drawable.ic_launcher_background)

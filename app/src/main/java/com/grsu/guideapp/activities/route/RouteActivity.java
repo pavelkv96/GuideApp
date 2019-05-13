@@ -50,7 +50,7 @@ public class RouteActivity extends AppCompatActivity implements OnFragmentReplac
         Intent intent = new Intent(context, RouteActivity.class);
         Bundle bundle = new Bundle();
         bundle.putInt(Constants.KEY_ID_ROUTE, route.getIdRoute());
-        bundle.putString(Constants.KEY_NAME_ROUTE, route.getNameRoute());
+        bundle.putString(Constants.KEY_NAME_ROUTE, route.getNameRoute().getShortName());
         bundle.putString(Constants.KEY_SOUTHWEST, route.getSouthwest());
         bundle.putString(Constants.KEY_NORTHEAST, route.getNortheast());
         intent.putExtra(Constants.KEY_BUNDLE_ROUTE, bundle);

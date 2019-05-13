@@ -58,12 +58,11 @@ public interface Table {
 
         String id_translate = "id_translate";
         String id_poi = "id_poi";
-        String type = "type";
-        String language_ru = "language_ru";
-        String language_en = "language_en";
-        String language_cn = "language_cn";
-        String language_lt = "language_lt";
-        String language_pl = "language_pl";
+        String language = "language";
+        String short_name = "short_name";
+        String full_name = "full_name";
+        String short_description = "short_description";
+        String full_description = "full_description";
     }
 
     interface Routes {
@@ -87,12 +86,11 @@ public interface Table {
 
         String id_translate = "id_translate";
         String id_route = "id_route";
-        String type = "type";
-        String language_ru = "language_ru";
-        String language_en = "language_en";
-        String language_cn = "language_cn";
-        String language_lt = "language_lt";
-        String language_pl = "language_pl";
+        String language = "language";
+        String short_name = "short_name";
+        String full_name = "full_name";
+        String short_description = "short_description";
+        String full_description = "full_description";
     }
 
     interface Types {

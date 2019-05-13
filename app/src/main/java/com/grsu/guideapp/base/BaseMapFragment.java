@@ -11,7 +11,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import butterknife.BindView;
+import butterknife.OnClick;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener;
 import com.google.android.gms.maps.GoogleMap.OnCameraMoveListener;
@@ -47,6 +50,23 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
     private LatLngBounds borders;
     private float previousZoom = -1.0f;
     private Handler handler;
+
+    @BindView(R.id.map_zoom_control)
+    protected RelativeLayout map_zoom_control;
+
+    @OnClick(R.id.map_zoom_in)
+    protected void zoomIn() {
+        if (mMap != null) {
+            mMap.animateCamera(CameraUpdateFactory.zoomIn());
+        }
+    }
+
+    @OnClick(R.id.map_zoom_out)
+    protected void zoomOut() {
+        if (mMap != null) {
+            mMap.animateCamera(CameraUpdateFactory.zoomOut());
+        }
+    }
 
     @BindView(R.id.scaleView)
     MapScaleView scaleView;

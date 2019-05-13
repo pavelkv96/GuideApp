@@ -8,10 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import com.grsu.guideapp.models.InfoAboutPoi;
 import com.grsu.guideapp.models.Line;
-import com.grsu.guideapp.models.Names;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.models.Route1;
 import com.grsu.guideapp.project_settings.Settings;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +54,8 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
         List<Route> routesList = new ArrayList<>();
         openDatabase();
 
-        String select = "select c1.id_route, c2.language_%s, c1.duration, c1.distance, c1.reference_photo_route, c1.southwest, c1.northeast, c1.is_full\n";
-        String from = "from routes c1, routes_language c2 where c1.id_route=c2.id_route and c2.type = 1 and c1.id_route<>1 order by c1.is_full desc";
+        String select = "select c1.id_route, c2.short_name,c2.full_name,c2.short_description, c2.full_description, c1.duration, c1.distance, c1.reference_photo_route, c1.southwest, c1.northeast, c1.is_full\n";
+        String from = "from routes c1, routes_language c2 where c1.id_route=c2.id_route and c2.language = '%s' and c1.id_route<>1 order by c1.is_full desc";
 
         String query = String.format(select + from, locale);
         Cursor cursor = mDatabase.rawQuery(query, null);
@@ -71,25 +69,22 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
         return routesList;
     }
 
-    public Route1 getRoute(Integer id_route, String locale) {
-        String select = "select type, language_%s\n";
-        String from = "from routes_language\n";
-        String where = "where id_route = %s order by type asc limit 4";
+    public Route getRoute(Integer id_route, String locale) {
+        String select = "SELECT c1.id_route, c2.short_name,c2.full_name,c2.short_description, c2.full_description, c1.duration, c1.distance, c1.reference_photo_route, c1.southwest, c1.northeast, c1.is_full\n";
+        String from = "FROM routes c1, routes_language c2\n";
+        String where = " WHERE c1.id_route = c2.id_route and c1.id_route= %s and c2.language = '%s' limit 1";
 
-        String s = String.format(select + from + where, locale, id_route);
+        String s = String.format(select + from + where, id_route, locale);
         Cursor cursor = getReadableDatabase().rawQuery(s, null);
 
-        Names names = Names.fromCursor(cursor);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            Route route = Route.fromCursor(cursor);
+            cursor.close();
+            return route;
+        }
 
-        //cursor.close();
-
-        String query = String.format("SELECT * FROM routes WHERE id_route = %s", id_route);
-        cursor = getReadableDatabase().rawQuery(query, null);
-
-        Route1 route = Route1.fromCursor(cursor, names);
-        cursor.close();
-
-        return route;
+        return null;
     }
 
     public void setDownload(Integer id_route, int is_full) {
@@ -141,27 +136,21 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
     public InfoAboutPoi getInfoById(String id_point, String locale) {
         openDatabase();
 
-        String miniSelect = "select c1.id_poi, c2.language_%s, c1.audio_reference, c1.photo_reference, c1.link, c1.last_update\n";
-        String miniFrom = "from poi c1, types c2 where c1.id_type=c2.id_type and location = '%s' limit 1";
-        String miniQuery = String.format(miniSelect + miniFrom, locale, id_point);
-
-        String select = "select c1.type, c1.language_%s\n";
-        String from = "from poi_language c1, (" + miniQuery + ") z1\n";
-        String where = "where z1.id_poi = c1.id_poi order by c1.type asc limit 4";
-        String query = String.format(select + from + where, locale, id_point);
+        String select = "select c2.language_%s, c3.short_name, c3.full_name, c3.short_description, c3.full_description, c1.audio_reference, c1.photo_reference, c1.link, c1.last_update\n";
+        String from = "from poi c1, types c2, poi_language c3\n";
+        String where = " where c1.id_type=c2.id_type and c1.id_poi = c3.id_poi and c3.language = '%s' and location = '%s' limit 1";
+        String query = String.format(select + from + where, locale, locale, id_point);
 
         Cursor cursor = mDatabase.rawQuery(query, null);
-        Names names = Names.fromCursor(cursor);
 
-        cursor = mDatabase.rawQuery(miniQuery, null);
-
-        InfoAboutPoi poi = null;
-        if (cursor.moveToFirst()) {
-            poi = InfoAboutPoi.fromCursor(cursor, names);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            InfoAboutPoi poi = InfoAboutPoi.fromCursor(cursor);
+            cursor.close();
+            return poi;
         }
-        cursor.close();
         closeDatabase();
-        return poi;
+        return null;
     }
 
     public Cursor getAllTypes(String locale) {

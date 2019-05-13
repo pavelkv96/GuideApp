@@ -1,13 +1,16 @@
 package com.grsu.guideapp.models;
 
 import android.database.Cursor;
+import com.grsu.guideapp.project_settings.Settings;
+import com.grsu.guideapp.utils.CryptoUtils;
+import java.io.File;
 import java.io.Serializable;
 
 public class Route implements Serializable {
 
     //POJO model
     private Integer idRoute;
-    private String nameRoute;
+    private Names nameRoute;
     private Integer duration;
     private Integer distance;
     private String referencePhotoRoute;
@@ -22,52 +25,60 @@ public class Route implements Serializable {
     public Route() {
     }
 
-    /**
-     * @param idRoute the identifier route
-     * @param nameRoute the name route
-     * @param duration the duration the route
-     * @param distance the distance the route
-     * @param referencePhotoRoute the link photo the route
-     */
-
-    public Route(Integer idRoute, String nameRoute, Integer duration, Integer distance,
-            String referencePhotoRoute, String southwest, String northeast, int is_full) {
-        this.idRoute = idRoute;
-        this.nameRoute = nameRoute;
-        this.duration = duration;
-        this.distance = distance;
-        this.referencePhotoRoute = referencePhotoRoute;
-        this.southwest = southwest;
-        this.northeast = northeast;
-        this.is_full = is_full;
-    }
-
     public Integer getIdRoute() {
         return idRoute;
     }
 
-    public String getNameRoute() {
+    public void setIdRoute(Integer idRoute) {
+        this.idRoute = idRoute;
+    }
+
+    public Names getNameRoute() {
         return nameRoute;
+    }
+
+    public void setNameRoute(Names nameRoute) {
+        this.nameRoute = nameRoute;
     }
 
     public Integer getDuration() {
         return duration;
     }
 
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
     public Integer getDistance() {
         return distance;
+    }
+
+    public void setDistance(Integer distance) {
+        this.distance = distance;
     }
 
     public String getReferencePhotoRoute() {
         return referencePhotoRoute;
     }
 
+    public void setReferencePhotoRoute(String referencePhotoRoute) {
+        this.referencePhotoRoute = referencePhotoRoute;
+    }
+
     public String getSouthwest() {
         return southwest;
     }
 
+    public void setSouthwest(String southwest) {
+        this.southwest = southwest;
+    }
+
     public String getNortheast() {
         return northeast;
+    }
+
+    public void setNortheast(String northeast) {
+        this.northeast = northeast;
     }
 
     public void setIsFull(Integer is_full) {
@@ -78,8 +89,28 @@ public class Route implements Serializable {
         return is_full;
     }
 
+    public File getPhotoPath() {
+        String photo = CryptoUtils.hash(referencePhotoRoute);
+        return new File(Settings.CONTENT, photo);
+    }
+
     public static Route fromCursor(Cursor cur) {
-        return new Route(cur.getInt(0), cur.getString(1), cur.getInt(2), cur.getInt(3),
-                cur.getString(4), cur.getString(5), cur.getString(6), cur.getInt(7));
+        Names name = new Names();
+        name.setShortName(cur.getString(1));
+        name.setFullName(cur.getString(2));
+        name.setShortDescription(cur.getString(3));
+        name.setFullDescription(cur.getString(4));
+
+        Route route = new Route();
+
+        route.setIdRoute(cur.getInt(0));
+        route.setNameRoute(name);
+        route.setDuration(cur.getInt(5));
+        route.setDistance(cur.getInt(6));
+        route.setReferencePhotoRoute(cur.getString(7));
+        route.setSouthwest(cur.getString(8));
+        route.setNortheast(cur.getString(9));
+        route.setIsFull(cur.getInt(10));
+        return route;
     }
 }

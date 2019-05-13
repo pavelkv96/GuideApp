@@ -1,6 +1,5 @@
 package com.grsu.guideapp.models;
 
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import java.io.Serializable;
 
@@ -14,13 +13,6 @@ public class Names implements Serializable {
     private final static long serialVersionUID = -4448199341994382402L;
 
     public Names() {
-    }
-
-    public Names(String short_name, String full_name, String short_desc, String full_desc) {
-        this.short_name = short_name;
-        this.full_name = full_name;
-        this.short_desc = short_desc;
-        this.full_desc = full_desc;
     }
 
     public String getShortName() {
@@ -64,24 +56,5 @@ public class Names implements Serializable {
                 ", short_desc='" + short_desc + '\'' +
                 ", full_desc='" + full_desc + '\'' +
                 '}';
-    }
-
-    public static Names fromCursor(Cursor cur) {
-        Names names = new Names();
-        if (cur.moveToFirst()) {
-            names.setShortName(cur.getString(1));
-
-            cur.moveToNext();
-            names.setFullName(cur.getString(1));
-
-            cur.moveToNext();
-            names.setShortDescription(cur.getString(1));
-
-            cur.moveToNext();
-            names.setFullDescription(cur.getString(1));
-        }
-        cur.close();
-
-        return names;
     }
 }

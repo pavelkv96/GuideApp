@@ -1,6 +1,10 @@
 package com.grsu.guideapp.fragments.map_preview;
 
+import static android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import butterknife.BindView;
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -32,6 +37,7 @@ import com.grsu.guideapp.views.dialogs.MultiChoiceItemsDialogFragment;
 import com.grsu.guideapp.views.dialogs.MultiChoiceItemsDialogFragment.OnMultiChoiceItemsListener;
 import com.grsu.guideapp.views.dialogs.SingleChoiceItemsDialogFragment;
 import com.grsu.guideapp.views.dialogs.SingleChoiceItemsDialogFragment.OnChoiceItemListener;
+import com.grsu.guideapp.views.viewmodels.TestViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +48,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     private static final String TAG = MapPreviewFragment.class.getSimpleName();
     private List<Marker> nearPoi = new ArrayList<>();
     private List<Marker> turnPoint = new ArrayList<>();
+    private TestViewModel model;
 
     protected int route = -1;
     protected LatLngBounds bounds;
@@ -66,6 +73,8 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
             @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
+        model = ViewModelProviders.of(this).get(TestViewModel.class);
+
         setHasOptionsMenu(true);
 
         if (route != -1) {
@@ -89,6 +98,19 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     //-------------------------------------------
 
     @Override
+    public void onMapReady(GoogleMap googleMap) {
+        super.onMapReady(googleMap);
+        if (model.getPosition() != null) {
+            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(model.getPosition()));
+            myLocation.setLocation(model.getMyLocation());
+        } else {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+            model.setPosition(mMap.getCameraPosition());
+            model.setMyLocation(myLocation.getMyLocation(Location.class));
+        }
+    }
+
+    @Override
     public void setPolyline(List<LatLng> geoPointList, int id) {
         PolylineOptions polylineOptions = new PolylineOptions()
                 .color(Color.BLUE)
@@ -105,6 +127,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
         markerOptions.position(latLng);
         markerOptions.visible(false);
         if (icon != -1) {
+            markerOptions.visible(true);
             markerOptions.icon(BitmapDescriptorFactory.fromResource(icon));
         }
         turnPoint.add(mMap.addMarker(markerOptions));
@@ -196,13 +219,12 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        if (model != null) {
+            model.setPosition(mMap.getCameraPosition());
+            model.setMyLocation(myLocation.getMyLocation(Location.class));
+        }
         mPresenter.onMarkerClick(getActivity, marker);
         return true;
-    }
-
-    @Override
-    public void moveToStart(LatLng latLng) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
     }
 
     @Override
@@ -210,5 +232,17 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
         for (Marker marker : turnPoint) {
             marker.setVisible(visibility);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity.getWindow().addFlags(FLAG_KEEP_SCREEN_ON);
+    }
+
+    @Override
+    public void onPause() {
+        getActivity.getWindow().clearFlags(FLAG_KEEP_SCREEN_ON);
+        super.onPause();
     }
 }

@@ -36,7 +36,7 @@ public class Animator implements Runnable {
         mHandler.postDelayed(this, 10);
     }
 
-    private void stopAnimation() {
+    public void stopAnimation() {
         mHandler.removeCallbacks(this);
     }
 

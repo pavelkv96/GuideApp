@@ -46,7 +46,6 @@ public class MapPreviewPresenter extends BasePresenterImpl<MapPreviewViews> impl
 
                 LatLng startPosition = turnsList.get(0).getPosition();
                 mapViews.setPointsTurn(startPosition, R.drawable.a_marker);
-                mapViews.moveToStart(startPosition);
                 for (int i = 1; i < s; i++) {
                     mapViews.setPointsTurn(turnsList.get(i).getPosition(), -1);
                 }

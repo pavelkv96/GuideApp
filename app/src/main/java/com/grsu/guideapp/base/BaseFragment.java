@@ -116,6 +116,10 @@ public abstract class BaseFragment<P extends BasePresenter, A extends FragmentAc
         preferences.edit().remove(key).apply();
     }
 
+    protected boolean contains(String key){
+        return preferences.contains(key);
+    }
+
     //BaseView
     @Override
     public void showProgress(String title, String message) {

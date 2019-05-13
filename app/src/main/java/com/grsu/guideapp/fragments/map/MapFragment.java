@@ -5,48 +5,45 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition.Builder;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
 import com.grsu.guideapp.fragments.map_preview.MapPreviewFragment;
 import com.grsu.guideapp.models.Point;
 import com.grsu.guideapp.project_settings.Constants;
+import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
-import com.grsu.service.Listener;
 import com.grsu.service.LocationClient;
+import com.grsu.service.OnLocationListener;
 import java.util.List;
 
 public class MapFragment extends MapPreviewFragment<MapPresenter>
-        implements MapViews, Listener, OnSeekBarChangeListener {
+        implements MapViews, OnLocationListener {
 
     private static final String TAG = MapFragment.class.getSimpleName();
-    //private List<LatLng> myMovement;//deleting
+    private boolean isMoving = false;
 
     private LocationClient client;
     int i = 0;
     Animator animator;
-
-    @BindView(R.id.sb)
-    SeekBar seekBar;
 
     @BindView(R.id.fragment_map_indicator)
     ImageView found;
@@ -86,11 +83,10 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
 
         super.onCreateView(inflater, container, savedInstanceState);
 
-        client = new LocationClient.Builder(getActivity).setInterval(2000).addListener(this)
+        client = new LocationClient.Builder(getActivity)
+                .setInterval(2000)
+                .addListener(this)
                 .build();
-
-        seekBar.setMax(68);
-        seekBar.setOnSeekBarChangeListener(this);
 
         getActivity.setTitleToolbar(name);
 
@@ -107,10 +103,15 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         return rootView;
     }
 
+    @SuppressLint("MissingPermission")
     @Override
-    public void onStop() {
-        super.onStop();
-        Logs.e(TAG, "onStop");
+    public void onMapReady(GoogleMap googleMap) {
+        super.onMapReady(googleMap);
+        map_zoom_control.setVisibility(View.VISIBLE);
+        if (CheckPermission.canGetLocation(getActivity)) {
+            mMap.setMyLocationEnabled(false);
+        }
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
     }
 
     //-------------------------------------------
@@ -137,8 +138,10 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     //	Summary: implements OnClicks
     //-------------------------------------------
 
+    @SuppressLint("MissingPermission")
     @OnClick(R.id.btn_fragment_map_stop)
     public void stopService(View view) {
+        isMoving = false;
         client.disconnect();
     }
 
@@ -146,8 +149,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     @OnClick(R.id.btn_fragment_map_start)
     public void startService(View view) {
         if (CheckPermission.canGetLocation(getActivity)) {
-            mMap.setMyLocationEnabled(false);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            isMoving = true;
             client.connect();
         } else {
             MySnackbar.makeL(view,
@@ -162,10 +164,11 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
 
     @OnClick(R.id.btn_fragment_map_tilt)
     public void tilt(View view) {
+        boolean mode = !read(SharedPref.KEY_IS_3D_MODE, Boolean.class);
+        save(SharedPref.KEY_IS_3D_MODE, mode);
         Button button = (Button) view;
-        String text = button.getText().toString();
         float tilt;
-        if (text.equals("2D")) {
+        if (mode) {
             button.setText("3D");
             tilt = 0f;
         } else {
@@ -173,7 +176,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
             tilt = 54f;
         }
 
-        mMap.moveCamera(createCamera(myLocation.getMyLocation(), tilt));
+        mMap.moveCamera(createCamera(myLocation.getMyLocation(Location.class), tilt));
         animator.setTilt(tilt);
     }
 
@@ -181,14 +184,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         float zoom = mMap.getCameraPosition().zoom;
         Builder builder = new Builder();
         builder.target(MapUtils.toLatLng(target)).tilt(tilt).zoom(zoom);
-        return CameraUpdateFactory.newCameraPosition(builder.build());
-    }
-
-    public CameraUpdate createCamera(Location target, Location next, float tilt) {
-        float zoom = mMap.getCameraPosition().zoom;
-        Builder builder = new Builder();
-        builder.target(MapUtils.toLatLng(target)).tilt(tilt).zoom(zoom);
-        builder.bearing(target.bearingTo(next));
+        builder.bearing(target.getBearing());
         return CameraUpdateFactory.newCameraPosition(builder.build());
     }
 
@@ -224,6 +220,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         return fragment;
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onChangedLocation(Location location) {
         if (animator == null){
@@ -250,27 +247,57 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         outState.putFloat("zoom", mMap.getCameraPosition().zoom);
     }
 
+    @SuppressLint("MissingPermission")
     @Override
-    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-        List<Point> list = mPresenter.getList(myLocation.getMyLocation());
-        mMap.moveCamera(createCamera(MapUtils.toLocation(list.get(2).getPosition()),
-                MapUtils.toLocation(list.get(3).getPosition()), i));
-        Log.e(TAG, "onProgressChanged: " + i);
+    public void onStart() {
+        super.onStart();
+        if (CheckPermission.canGetLocation(getActivity) && isMoving){
+            client.connect();
+            btn_fragment_map_tilt.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onStop() {
+        if (CheckPermission.canGetLocation(getActivity)){
+            client.disconnect();
+        }
+        if (animator != null) {
+            animator.stopAnimation();
+        }
+        super.onStop();
     }
 
     @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-
+    public void onProviderEnabled(final String var1) {
+        App.getThread().mainThread(new Runnable() {
+            @Override
+            public void run() {
+                hideProgress();
+                Logs.e(TAG, "onProviderEnabled: " + var1);
+            }
+        });
     }
 
     @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-
+    public void onProviderDisabled(final String var1) {
+        App.getThread().mainThread(new Runnable() {
+            @Override
+            public void run() {
+                showProgress("Поиск устройства", "Подождите...");
+                Logs.e(TAG, "onProviderDisabled: " + var1);
+            }
+        });
     }
 
     @Override
-    public void onDestroy() {
-        client.disconnect();
-        super.onDestroy();
+    public void onStatusChanged(final String provider, final int status, Bundle bundle) {
+        App.getThread().mainThread(new Runnable() {
+            @Override
+            public void run() {
+                Logs.e(TAG, "onStatusChanged: " + provider + "   " + status);
+            }
+        });
     }
 }

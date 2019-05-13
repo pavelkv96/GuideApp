@@ -21,7 +21,7 @@ import com.grsu.guideapp.base.listeners.OnLoadRoute;
 import com.grsu.guideapp.database.Table;
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewPresenter;
 import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.TestViews;
-import com.grsu.guideapp.models.Route1;
+import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.ui.bottomsheet.BottomSheetBehaviorGoogleMaps;
@@ -202,9 +202,9 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
 
     @Override
     public void isDownLoad(int id_route, String locale) {
-        routePreviewInteractor.isDownLoad(new OnFinishedListener<Route1>() {
+        routePreviewInteractor.isDownLoad(new OnFinishedListener<Route>() {
             @Override
-            public void onFinished(final Route1 route) {
+            public void onFinished(final Route route) {
                 App.getThread().mainThread(new Runnable() {
                     @Override
                     public void run() {

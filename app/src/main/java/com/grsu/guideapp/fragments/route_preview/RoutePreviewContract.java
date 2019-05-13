@@ -11,7 +11,7 @@ import com.grsu.guideapp.base.listeners.OnLoadRoute;
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewContract.MapPreviewInteractor;
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewContract.MapPreviewPresenter;
 import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewContract.MapPreviewViews;
-import com.grsu.guideapp.models.Route1;
+import com.grsu.guideapp.models.Route;
 
 public interface RoutePreviewContract {
 
@@ -51,7 +51,7 @@ public interface RoutePreviewContract {
 
         void mapSettings(boolean isUsable);
 
-        void setContent(Route1 content);
+        void setContent(Route content);
 
         void openMapFragment();
     }
@@ -79,7 +79,7 @@ public interface RoutePreviewContract {
 
     interface TestInteractor extends MapPreviewInteractor {
 
-        void isDownLoad(OnFinishedListener<Route1> listener, int id_route, String locale);
+        void isDownLoad(OnFinishedListener<Route> listener, int id_route, String locale);
 
         void loadRoute(OnLoadRoute<String> listener, int id_route);
 

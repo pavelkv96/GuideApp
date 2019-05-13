@@ -87,8 +87,19 @@ public class MyLocationLayer {
         setShow(true);
     }
 
-    public LatLng getMyLocation() {
-        return marker.getPosition();
+    public <T> T getMyLocation(Class<T> locationClass) {
+        if (locationClass.isAssignableFrom(Location.class)) {
+            Location location = new Location("MyPositionLayer");
+            location.setBearing(marker.getRotation());
+            location.setLatitude(marker.getPosition().latitude);
+            location.setLongitude(marker.getPosition().longitude);
+            location.setAccuracy((float) circle.getRadius());
+            return (T) location;
+        }
+        if (locationClass.isAssignableFrom(LatLng.class)) {
+            return (T) marker.getPosition();
+        }
+        throw new NoSuchFieldError("Not support " + locationClass);
     }
 
     public void clear() {

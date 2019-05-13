@@ -1,7 +1,6 @@
 package com.grsu.guideapp.fragments.list_routes;
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
@@ -37,6 +36,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
         implements ListRoutesViews, Callback<Root>, OnFinishedListener<Integer> {
 
     private static final String TAG = ListRoutesFragment.class.getSimpleName();
+    private Test helper;
 
     RoutesListAdapter adapter;
     @BindView(R.id.rv_fragment_list_routes)
@@ -55,7 +55,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
     public void onStart() {
         super.onStart();
         String locale = getString(R.string.locale);
-        List<Route> routes = new Test(getActivity).getListRoutes(locale);
+        List<Route> routes = helper.getListRoutes(locale);
         if (adapter != null) {
             adapter.setRoutesList(routes);
         }
@@ -64,8 +64,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
     @Override
     public void onResume() {
         super.onResume();
-        if (App.isOnline() && !PreferenceManager.getDefaultSharedPreferences(getActivity)
-                .contains(SharedPref.KEY_LOAD)) {
+        if (App.isOnline() && !contains(SharedPref.KEY_LOAD)) {
             tv_fragment_list_routes_more.setVisibility(View.VISIBLE);
             cv_fragment_list_routes_load_more.setVisibility(View.VISIBLE);
         } else {
@@ -77,8 +76,8 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
     @NonNull
     @Override
     protected ListRoutesPresenter getPresenterInstance() {
-        return new ListRoutesPresenter(this,
-                new ListRoutesInteractor(new Test(getContext())));
+        helper = new Test(getContext());
+        return new ListRoutesPresenter(this, new ListRoutesInteractor(helper));
     }
 
     @Override
@@ -135,7 +134,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
         Log.e("TAG", "onResponse: ");
         if (response.isSuccessful()) {
             if (response.body() != null && adapter != null) {
-                new Test(getActivity).loadRoute(this, response.body().getDatums());
+                helper.loadRoute(this, response.body().getDatums());
             }
         }
     }
@@ -159,8 +158,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
             @Override
             public void run() {
                 showToast(integer);
-                List<Route> listRoutes = new Test(getActivity)
-                        .getListRoutes(getString(R.string.locale));
+                List<Route> listRoutes = helper.getListRoutes(getString(R.string.locale));
                 save(SharedPref.KEY_LOAD, true);
                 pb_fragment_list_routes_progress.setVisibility(View.GONE);
                 cv_fragment_list_routes_load_more.setVisibility(View.GONE);

@@ -27,6 +27,7 @@ import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 import java.io.File;
 import java.util.List;
 import retrofit2.Response;
@@ -82,17 +83,19 @@ public class RouteViewHolder extends ViewHolder {
 
         tv_item_routes_duration.setText(duration);
         tv_item_routes_distance.setText(distance);
-        tv_item_routes_name_route.setText(String.valueOf(route.getNameRoute()));
+        tv_item_routes_name_route.setText(String.valueOf(route.getNameRoute().getShortName()));
 
         String photo = CryptoUtils.hash(route.getReferencePhotoRoute());
         File file = new File(Settings.CONTENT, photo);
 
         updateView(route, context, adapter);
 
-        Picasso.get().load(file)
+        RequestCreator error = Picasso.get().load(file)
                 .placeholder(R.drawable.my_location)
-                .error(R.drawable.ic_launcher_background)
-                .into(iv_item_preview_photo_route);
+                .error(R.drawable.ic_launcher_background);
+        if (iv_item_preview_photo_route != null) {
+            error.into(iv_item_preview_photo_route);
+        }
     }
 
     private void openActivity(View view, Route route, Context activity) {
