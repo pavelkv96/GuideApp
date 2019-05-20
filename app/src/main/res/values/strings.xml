@@ -99,5 +99,12 @@
   <string name="download_route">Download route</string>
   <string name="about_route">About route</string>
   <string name="download">Download</string>
+  <string name="update">Update</string>
   <string name="no_internet_connection">No internet connection</string>
+  <string name="device_searching">Device searching</string>
+  <string name="wait_please">Wait please…</string>
+  <string name="warning">Warning!</string>
+  <string name="you_are_out_of_map">You are out of map</string>
+  <string name="click_to_exit">Click to exit</string>
+  <string name="load_route">Load route</string>
 </resources>

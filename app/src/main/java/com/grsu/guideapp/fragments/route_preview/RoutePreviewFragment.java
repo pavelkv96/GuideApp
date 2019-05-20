@@ -26,11 +26,13 @@ import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewFragment;
 import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.TestViews;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.project_settings.Constants;
+import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.service.Listener;
 import com.grsu.service.LocationClient;
 import com.grsu.ui.bottomsheet.BottomSheetBehaviorGoogleMaps;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
 public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresenter> implements TestViews,
         OnClickListener, Listener, OnGlobalLayoutListener {
@@ -112,7 +114,10 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
 
     @Override
     public void onPause() {
-        //getActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if (CheckPermission.checkLocationPermission(getActivity)) {
+            hideProgress();
+            client.disconnect();
+        }
         super.onPause();
     }
 
@@ -169,6 +174,9 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
     @Override
     public void getSingleMyLocation() {
         client.singleConnection();
+        String title = getString(R.string.device_searching);
+        String message = getString(R.string.wait_please);
+        showProgress(title, message);
     }
 
     @Override
@@ -231,6 +239,7 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
 
     @Override
     public void onChangedLocation(Location location) {
+        hideProgress();
         mPresenter.onChangedLocation(location, bounds, getBorders());
     }
 
@@ -270,10 +279,12 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
 
     @Override
     public void setContent(Route content) {
-        Picasso.get().load(content.getPhotoPath())
+        RequestCreator error = Picasso.get().load(content.getPhotoPath())
                 .placeholder(R.drawable.my_location)
-                .error(R.drawable.ic_launcher_background)
-                .into(iv_bottom_sheet_route_image);
+                .error(R.drawable.ic_launcher_background);
+        if (iv_bottom_sheet_route_image != null) {
+            error.into(iv_bottom_sheet_route_image);
+        }
 
         String duration;
         String distance;

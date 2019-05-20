@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnShowListener;
+import android.content.res.Resources;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -110,7 +111,11 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
             testViews.hideBehavior();
 
         } catch (NullPointerException ignore) {
-            String message = "Сообщение о том что откроется диалоговое окно о том что пользователь вне карты";
+            Context context = testViews.getContentView().getContext();
+            String firstLine = context.getString(R.string.warning);
+            String secondLine = context.getString(R.string.you_are_out_of_map);
+
+            String message = String.format("%s\n%s", firstLine, secondLine);
             testViews.fabMyLocationEnabled(true);
             testViews.mapMoveCamera(CameraUpdateFactory.newLatLngBounds(routeBounds, 20));
             testViews.showToast(message);
@@ -119,7 +124,7 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
 
     @Override
     public void myLocationClick(Context context) {
-        if (CheckPermission.canGetLocation(context)) {
+        if (CheckPermission.checkLocationPermission(context)) {
             testViews.fabMyLocationEnabled(false);
             testViews.getSingleMyLocation();
         } else {
@@ -130,7 +135,7 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
     @Override
     public void actionGoClick(Context context, int id_route) {
         if (isLoadRoute == Table.NOT_DOWNLOAD) {
-            if (CheckPermission.canWriteStorage(context)) {
+            if (CheckPermission.checkStoragePermission(context)) {
                 if (App.isOnline()) {
                     onStartLoad(id_route);
                 } else {
@@ -140,7 +145,7 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
                 testViews.requestPermissions(CheckPermission.groupStorage, 2);
             }
         } else {
-            if (CheckPermission.canGetLocation(context)) {
+            if (CheckPermission.checkLocationPermission(context)) {
                 testViews.openMapFragment();
             } else {
                 testViews.requestPermissions(CheckPermission.groupLocation, 3);
@@ -222,7 +227,8 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
 
             mProgressDialog.setTitle(title);
 
-            mProgressDialog.setButton(ProgressDialog.BUTTON_NEGATIVE, "Cancel",
+            String cancel = Resources.getSystem().getString(android.R.string.cancel);
+            mProgressDialog.setButton(ProgressDialog.BUTTON_NEGATIVE, cancel,
                     (DialogInterface.OnClickListener) null);
 
             mProgressDialog.setOnShowListener(new OnShowListener() {
@@ -270,7 +276,12 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
     @Override
     public void onStartLoad(int id_route) {
         routePreviewInteractor.loadRoute(this, id_route);
-        showProgress("Load route", "Pleas wait...");
+        Context context = testViews.getContentView().getContext();
+
+        String title = context.getString(R.string.load_route);
+        String message = context.getString(R.string.wait_please);
+
+        showProgress(title, message);
     }
 
     @Override

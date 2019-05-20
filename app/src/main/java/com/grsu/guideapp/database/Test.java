@@ -7,8 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.util.ArraySet;
 import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.App;
+import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.adapters.SaveAdapter;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
+import com.grsu.guideapp.base.listeners.OnSuccessListener;
+import com.grsu.guideapp.network.APIService;
 import com.grsu.guideapp.network.model.About;
 import com.grsu.guideapp.network.model.Category;
 import com.grsu.guideapp.network.model.Data;
@@ -18,6 +21,7 @@ import com.grsu.guideapp.network.model.Objects;
 import com.grsu.guideapp.network.model.Point;
 import com.grsu.guideapp.network.model.Turn;
 import com.grsu.guideapp.network.model.Value;
+import com.grsu.guideapp.project_settings.Constants.Language;
 import com.grsu.guideapp.utils.MapUtils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -63,10 +67,10 @@ public class Test extends DatabaseHelper {
                             insertTypesAndPoi(value.getObjects());
                             insertPoiList(turns, id_route, value.getObjects());
                             SaveAdapter.saveImage(url);
-                            listener.onFinished(android.R.string.ok);
                         }
                     }
                 }
+                listener.onFinished(android.R.string.ok);
             }
         });
     }
@@ -87,16 +91,10 @@ public class Test extends DatabaseHelper {
 
     private void insertRoute(Data route, int id, List<Long> polylinesIds) {
 
-        String updatedAt = route.getRoute().getTimestamp().getUpdatedAt();
-        Date date;
-        try {
-            date = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss", Locale.US).parse(updatedAt);
-        } catch (ParseException e) {
-            date = new Date(0);
-        }
+        Date date = new Date();
 
         String s = "SELECT %s FROM %s WHERE %s = %s";
-        String query = String.format(s, Routes.last_update, Routes.table_name, Routes.id_route, id);
+        String query = String.format(s, Routes.last_download, Routes.table_name, Routes.id_route, id);
 
         Cursor cursor = getReadableDatabase().rawQuery(query, null);
         long last_update;
@@ -122,15 +120,19 @@ public class Test extends DatabaseHelper {
 
     private void updateRoute(Data route, int id, long date, List<Long> polylinesIds) {
         ContentValues values = Content.insertRoute(route, id, date);
-        getWritableDatabase().insertWithOnConflict(Routes.table_name, null, values, 5);
+        getWritableDatabase().update(Routes.table_name, values, "id_route = ?", new String[]{String.valueOf(id)});
+        String query = "UPDATE routes SET is_full = CASE WHEN is_full < 1 THEN 0 ELSE 2 END WHERE id_route = %s";
+
+        getWritableDatabase().execSQL(String.format(query, id));
 
         List<ContentValues> valuesList = Content
                 .insertRouteLanguage(route.getName(), route.getAbout(), id,
                         RoutesLanguage.id_route);
+
         for (int i = 0; i < valuesList.size(); i++) {
-            getWritableDatabase().update(RoutesLanguage.name_table, valuesList.get(i),
-                    "id_route = ? and type = ?",
-                    new String[]{String.valueOf(id), String.valueOf(i + 1)});
+            String clause = "id_route = ? and language = ?";
+            String[] args = {String.valueOf(id), Language.values()[i].name()};
+            getWritableDatabase().update(RoutesLanguage.name_table, valuesList.get(i), clause, args);
         }
         updateListLines(polylinesIds, id);
     }
@@ -165,6 +167,7 @@ public class Test extends DatabaseHelper {
             values.putNull(POI.audio_reference);
             values.putNull(POI.photo_reference);
             values.putNull(POI.link);
+            values.put(POI.last_download, new Date().getTime() / 1000);
 
             getWritableDatabase().insertWithOnConflict(POI.name_table, null, values, 5);
         }
@@ -198,7 +201,7 @@ public class Test extends DatabaseHelper {
                 LatLng from = point.getLatLng();
                 LatLng to = objects.get(index).getLatLng();
 
-                values.put(ListPoi.distance, MapUtils.distanceTo(from, to));
+                values.put(ListPoi.distance, (int) MapUtils.distanceTo(from, to));
 
                 getWritableDatabase().insert(ListPoi.name_table, null, values);
             }
@@ -280,5 +283,50 @@ public class Test extends DatabaseHelper {
         for (Integer id : updateIds) {
             haveUpdate(id, Table.HAVE_UPDATE);
         }
+    }
+
+    public void updateFullRouteById(final OnSuccessListener<String> listener, final long id) {
+        App.getThread().diskIO(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    APIService networkIO = App.getThread().networkIO();
+                    Datum datum = networkIO.getRouteById(id, BuildConfig.ApiKey).execute().body();
+                    if (datum != null) {
+                        clearRouteById((int)id);
+                        clearPoi();
+                        clearLines();
+                        clearTypes();
+
+                        Data data = datum.getData();
+                        Value value = data.getRoute().getValue();
+                        List<Turn> turns = value.getPoints();
+                        List<Long> polylinesIds = insertPolyline(turns);
+
+                        int id_route = datum.getId();
+                        insertRoute(data, id_route, polylinesIds);
+                        String url = datum.getData().getImages().get(0).getHref();
+                        insertTypesAndPoi(value.getObjects());
+                        insertPoiList(turns, id_route, value.getObjects());
+                        SaveAdapter.saveImage(url);
+
+                        List<Integer> ids = getListPoiFromBD(id);
+                        for (Integer poiId : ids) {
+
+                            Datum body = networkIO.getPoi(poiId, BuildConfig.ApiKey).execute().body();
+                            if (body != null) {
+                                insertPoiAndTypes(body);
+                            }
+                        }
+
+
+                        setDownload((int) id, Table.DOWNLOAD);
+                        listener.onSuccess("Океюшки");
+                    }
+                } catch (Exception e) {
+                    listener.onFailure(e);
+                }
+            }
+        });
     }
 }

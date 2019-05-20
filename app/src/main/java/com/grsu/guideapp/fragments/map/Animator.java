@@ -21,19 +21,24 @@ public class Animator implements Runnable {
     private LatLng endLatLng;
     private GoogleMap map;
     private float tilt = 54f;
+    private LatLng lastStart;
 
     Animator(GoogleMap map, MyLocationLayer overlay) {
         this.map = map;
         this.overlay = overlay;
         mHandler = new Handler();
+        lastStart = null;
     }
 
     void startAnimation(LatLng start, LatLng end) {
-        stopAnimation();
-        this.startTime = SystemClock.uptimeMillis();
-        beginLatLng = start;
-        endLatLng = end;
-        mHandler.postDelayed(this, 10);
+        if (lastStart == null || !lastStart.equals(start)) {
+            stopAnimation();
+            this.startTime = SystemClock.uptimeMillis();
+            beginLatLng = start;
+            endLatLng = end;
+            mHandler.postDelayed(this, 10);
+        }
+        lastStart = start;
     }
 
     public void stopAnimation() {

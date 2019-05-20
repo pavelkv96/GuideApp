@@ -46,4 +46,15 @@
     <item name="layout_anchorGravity">top|center</item>
   </style>
 
+  <style name="BaseButton" parent="Widget.AppCompat.Button">
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:visibility">gone</item>
+  </style>
+
+  <style name="MaterialButton" parent="BaseButton">
+    <item name="android:background">@android:color/white</item>
+    <item name="android:textColor">@color/light_blue</item>
+  </style>
+
 </resources>

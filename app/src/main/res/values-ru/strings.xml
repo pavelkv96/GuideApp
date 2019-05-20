@@ -81,5 +81,12 @@
   <string name="download_route">Скачивание маршрута</string>
   <string name="about_route">О маршруте</string>
   <string name="download">Скачать</string>
+  <string name="update">Обновить</string>
   <string name="no_internet_connection">Нет доступа в интернет</string>
+  <string name="device_searching">Поиск устройства</string>
+  <string name="wait_please">Подождите, пожалуйста…</string>
+  <string name="warning">Внимание!</string>
+  <string name="you_are_out_of_map">Вы вне карты</string>
+  <string name="click_to_exit">Зактрыть</string>
+  <string name="load_route">Загрузка маршрута</string>
 </resources>

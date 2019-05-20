@@ -1,7 +1,6 @@
 package com.grsu.service;
 
 import android.Manifest.permission;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -120,7 +119,6 @@ public class LocationClient implements LocationListener {
         }
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onProviderEnabled(String provider) {
         try {

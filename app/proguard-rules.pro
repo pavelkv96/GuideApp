@@ -36,3 +36,6 @@
 -dontwarn org.mapsforge.map.android.rotation.RotateView
 -dontwarn org.mapsforge.map.android.rotation.SmoothCanvas
 -keep class org.xmlpull.v1.** { *; }
+-keepclassmembers public class * {
+    @com.google.gson.annotations.Expose *;
+}

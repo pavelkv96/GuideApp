@@ -1,11 +1,12 @@
 package com.grsu.service;
 
-import android.annotation.SuppressLint;
+import android.Manifest.permission;
 import android.app.Service;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresPermission;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -18,7 +19,7 @@ public class MyService extends Service {
     static float distance = -1f;
     private static boolean isWork;
 
-    @SuppressLint("MissingPermission")
+    @RequiresPermission(permission.ACCESS_FINE_LOCATION)
     @Override
     public void onCreate() {
         super.onCreate();
@@ -28,6 +29,7 @@ public class MyService extends Service {
             return;
         }
         try {
+            manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, interval, distance, Class.getInstance);
             manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, interval, distance, Class.getInstance);
         } catch (SecurityException ex) {
             Log.e(TAG, "fail to request location update, ignore", ex);
@@ -52,7 +54,7 @@ public class MyService extends Service {
         return START_STICKY;
     }
 
-    @SuppressLint("MissingPermission")
+    @RequiresPermission(permission.ACCESS_FINE_LOCATION)
     @Override
     public void onDestroy() {
         isWork = false;

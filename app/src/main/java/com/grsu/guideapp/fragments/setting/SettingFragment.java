@@ -93,7 +93,6 @@ public class SettingFragment extends
                 if (context != null) {
                     if (StorageUtils.deleteDatabase(context)) {
                         Toasts.makeS(context, R.string.success_database_deleted);
-                        preferences.edit().remove(SharedPref.KEY_LOAD).apply();
                     } else {
                         Toasts.makeS(context, R.string.error_database_not_found);
                     }

@@ -59,7 +59,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         boolean isContains = preferences.contains(SharedPref.KEY_SPLASH);
-        if (isContains && CheckPermission.canWriteStorage(this)) {
+        if (isContains && CheckPermission.checkStoragePermission(this)) {
             openActivity();
             if (App.isOnline()) {
                 checkUpdate();
@@ -76,7 +76,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
 
     @OnClick(R.id.btn_activity_splash_next)
     public void buttonNext() {
-        if (CheckPermission.canWriteStorage(this)) {
+        if (CheckPermission.checkStoragePermission(this)) {
             otherContent();
         } else {
             ActivityCompat.requestPermissions(this, CheckPermission.groupStorageAndLocation, 1);
@@ -98,7 +98,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
             @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1) {
-            if (CheckPermission.canWriteStorage(this)) {
+            if (CheckPermission.checkStoragePermission(this)) {
                 btn_activity_splash_next.setEnabled(false);
                 otherContent();
                 return;

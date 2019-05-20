@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import com.grsu.guideapp.models.InfoAboutPoi;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
@@ -16,11 +17,11 @@ import java.util.List;
 
 class DatabaseHelper extends SQLiteOpenHelper implements Table {
 
-    protected final Context mContext;
-    protected static final String DB_NAME = Settings.DATABASE_INFORMATION_NAME;
-    protected SQLiteDatabase mDatabase;
+    private final Context mContext;
+    private static final String DB_NAME = Settings.DATABASE_INFORMATION_NAME;
+    private SQLiteDatabase mDatabase;
 
-    public DatabaseHelper(Context context) {
+    DatabaseHelper(Context context) {
         super(context, DB_NAME, null, Settings.DATABASE_INFORMATION_VERSION);
         mContext = context;
     }
@@ -33,6 +34,13 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        db.execSQL("PRAGMA foreign_keys = ON;");
+        Log.e(DB_NAME, "onOpen: ");
     }
 
     private void openDatabase() {
@@ -223,6 +231,26 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
     @NonNull
     private String getByIdPoint(String point) {
         return " AND (c1.id_point = '" + point + "')";
+    }
+
+    void clearRouteById(Integer id) {
+        //String query = String.format("DELETE FROM routes WHERE id_route = %s", id);
+        getWritableDatabase().delete(Routes.table_name, "id_route = ?", new String[]{String.valueOf(id)});
+    }
+
+    void clearPoi() {
+        String query = "DELETE FROM poi WHERE id_poi not IN (SELECT id_poi FROM list_poi WHERE id_poi is not null)";
+        getWritableDatabase().execSQL(query);
+    }
+
+    void clearTypes() {
+        String query = "DELETE FROM types WHERE id_type not IN (SELECT id_type FROM poi WHERE id_type is not null) and id_type <> 0";
+        getWritableDatabase().execSQL(query);
+    }
+
+    void clearLines() {
+        String query = "DELETE FROM lines WHERE id_line not IN (SELECT id_line FROM list_lines WHERE id_line is not null)";
+        getWritableDatabase().execSQL(query);
     }
 }
 // Удалить все poi неимеющие связей в таблице list_poi

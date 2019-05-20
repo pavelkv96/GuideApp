@@ -108,6 +108,7 @@ public class StorageUtils {
     }
 
     public static void copyDatabase(@NonNull Context context) {
+        getDatabasePath(context);
         String dbName = Settings.DATABASE_INFORMATION_NAME;
         InputStream inputStream = null;
         OutputStream outputStream = null;

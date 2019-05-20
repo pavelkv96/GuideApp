@@ -47,19 +47,17 @@
     android:textSize="15sp"
     app:layout_anchorGravity="bottom|center"/>
 
-  <Button
+  <TextView
     android:id="@+id/btn_activity_splash_close"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    style="@style/MaterialButton"
     android:layout_marginBottom="16dp"
     android:layout_marginStart="32dp"
     android:layout_alignParentBottom="true"
     android:layout_alignParentStart="true"
-    android:background="#fff"
     android:drawableStart="@drawable/ic_close"
     android:drawableTint="#4c84ff"
     android:text="Выход"
-    android:textColor="#4c84ff"
+    android:visibility="visible"
     />
 
   <Button

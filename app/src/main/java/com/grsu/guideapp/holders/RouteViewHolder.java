@@ -1,14 +1,12 @@
 package com.grsu.guideapp.holders;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.grsu.guideapp.App;
@@ -16,13 +14,13 @@ import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.adapters.RoutesListAdapter;
+import com.grsu.guideapp.base.listeners.OnSuccessListener;
 import com.grsu.guideapp.database.Table;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.network.model.Datum;
 import com.grsu.guideapp.project_settings.Settings;
-import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
@@ -41,7 +39,7 @@ public class RouteViewHolder extends ViewHolder {
     private TextView tv_item_routes_name_route;
     private Button btn_item_routes_about;
     private Button btn_item_routes_download;
-    private ImageButton ib_item_routes_download;
+    private Button btn_item_routes_update;
 
     public RouteViewHolder(@NonNull View pView) {
         super(pView);
@@ -52,7 +50,7 @@ public class RouteViewHolder extends ViewHolder {
         tv_item_routes_name_route = pView.findViewById(R.id.tv_item_routes_name_route);
         btn_item_routes_about = pView.findViewById(R.id.btn_item_routes_about);
         btn_item_routes_download = pView.findViewById(R.id.btn_item_routes_download);
-        ib_item_routes_download = pView.findViewById(R.id.ib_item_routes_download);
+        btn_item_routes_update = pView.findViewById(R.id.btn_item_routes_update);
     }
 
     public void bind(final Route route, final Context context, final RoutesListAdapter adapter) {
@@ -90,7 +88,9 @@ public class RouteViewHolder extends ViewHolder {
 
         updateView(route, context, adapter);
 
-        RequestCreator error = Picasso.get().load(file)
+        Picasso picasso = Picasso.get();
+
+        RequestCreator error = picasso.load(file)
                 .placeholder(R.drawable.my_location)
                 .error(R.drawable.ic_launcher_background);
         if (iv_item_preview_photo_route != null) {
@@ -99,7 +99,7 @@ public class RouteViewHolder extends ViewHolder {
     }
 
     private void openActivity(View view, Route route, Context activity) {
-        if (CheckPermission.canWriteStorage(activity)) {
+        if (CheckPermission.checkStoragePermission(activity)) {
             activity.startActivity(RouteActivity.newIntent(activity, route));
         } else {
             int message = R.string.error_snackbar_do_not_have_permission_write_on_the_storage;
@@ -149,10 +149,6 @@ public class RouteViewHolder extends ViewHolder {
                                     App.getThread().mainThread(new Runnable() {
                                         @Override
                                         public void run() {
-
-                                            PreferenceManager.getDefaultSharedPreferences(context)
-                                                    .edit().putBoolean(
-                                                    SharedPref.KEY_LOAD, true).apply();
                                             adapter.setRoutesList(routes);
                                         }
                                     });
@@ -173,11 +169,43 @@ public class RouteViewHolder extends ViewHolder {
             }
             break;
             case Table.HAVE_UPDATE: {
-                ib_item_routes_download.setVisibility(View.VISIBLE);
+
+                itemView.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openActivity(view, route, context);
+                    }
+                });
+                btn_item_routes_update.setVisibility(View.VISIBLE);
+                btn_item_routes_update.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final Test test = new Test(context);
+                        test.updateFullRouteById(new OnSuccessListener<String>() {
+                            @Override
+                            public void onSuccess(String s) {
+                                Log.e(TAG, "onSuccess: ");
+                                App.getThread().mainThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String locale = context.getString(R.string.locale);
+                                        adapter.setRoutesList(test.getListRoutes(locale));
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailure(Throwable throwable) {
+                                Log.e(TAG, "onFailure: " + throwable.getMessage(), throwable);
+                            }
+                        }, route.getIdRoute());
+                    }
+                });
             }
             break;
             case Table.DOWNLOAD: {
                 btn_item_routes_about.setVisibility(View.GONE);
+                btn_item_routes_update.setVisibility(View.GONE);
                 btn_item_routes_download.setVisibility(View.GONE);
                 itemView.setOnClickListener(new OnClickListener() {
                     @Override

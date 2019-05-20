@@ -5,7 +5,7 @@ import com.grsu.guideapp.BuildConfig;
 public class Constants {
 
     public enum Language {
-        en, ru, zh, pl, lt
+        ru, en, zh, pl, lt
     }
 
     public static final String EMPTY_STRING = "";

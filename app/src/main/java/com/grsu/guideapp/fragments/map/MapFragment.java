@@ -1,10 +1,12 @@
 package com.grsu.guideapp.fragments.map;
 
-import android.annotation.SuppressLint;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +42,8 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
 
     private static final String TAG = MapFragment.class.getSimpleName();
     private boolean isMoving = false;
+    private boolean isAnimated = false;
+    private List<LatLng> myMovement;
 
     private LocationClient client;
     int i = 0;
@@ -67,7 +71,6 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         return getString(R.string.map_fragment);
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
@@ -95,7 +98,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         if (savedInstanceState != null) {
             i = savedInstanceState.getInt("int", 0);
 
-            if (CheckPermission.canGetLocation(getActivity)) {
+            if (CheckPermission.checkLocationPermission(getActivity)) {
                 client.connect();
             }
         }
@@ -103,12 +106,11 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         return rootView;
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         super.onMapReady(googleMap);
         map_zoom_control.setVisibility(View.VISIBLE);
-        if (CheckPermission.canGetLocation(getActivity)) {
+        if (CheckPermission.checkLocationPermission(getActivity)) {
             mMap.setMyLocationEnabled(false);
         }
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -126,11 +128,18 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
 
     @Override
     public void show() {
+        if (isAnimated) {
+            animator.stopAnimation();
+            isAnimated = false;
+        }
         found.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hide() {
+        if (!isAnimated) {
+            isAnimated = true;
+        }
         found.setVisibility(View.GONE);
     }
 
@@ -138,17 +147,17 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     //	Summary: implements OnClicks
     //-------------------------------------------
 
-    @SuppressLint("MissingPermission")
     @OnClick(R.id.btn_fragment_map_stop)
     public void stopService(View view) {
         isMoving = false;
-        client.disconnect();
+        if (CheckPermission.checkLocationPermission(getActivity)) {
+            client.disconnect();
+        }
     }
 
-    @SuppressLint("MissingPermission")
     @OnClick(R.id.btn_fragment_map_start)
     public void startService(View view) {
-        if (CheckPermission.canGetLocation(getActivity)) {
+        if (CheckPermission.checkLocationPermission(getActivity)) {
             isMoving = true;
             client.connect();
         } else {
@@ -208,10 +217,33 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         Location location = MapUtils.toLocation(start);
         float accuracy = MapUtils.getDistanceBetween(currentLocation, MapUtils.toLocation(start));
         location.setAccuracy(accuracy);
-
-        myLocation.setLocation(location);
-
-        animator.startAnimation(start, end);
+        if (accuracy <= 30 && isAnimated) {
+            myLocation.setLocation(location);
+            animator.startAnimation(start, end);
+        } else {
+            myLocation.setLocation(currentLocation);
+            LatLng latLng = MapUtils.toLatLng(currentLocation);
+            try {
+                LatLngBounds latLngBounds = MapUtils.getBounds(latLng, bounds, getBorders());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50));
+            } catch (NullPointerException e) {
+                hideProgress();
+                if (CheckPermission.checkLocationPermission(getActivity))
+                client.disconnect();
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity);
+                dialog.setTitle(R.string.warning);
+                dialog.setMessage(R.string.you_are_out_of_map);
+                dialog.setCancelable(false);
+                dialog.setPositiveButton(R.string.click_to_exit, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        getActivity.getSupportFragmentManager().popBackStack();
+                    }
+                });
+                dialog.create();
+                dialog.show();
+            }
+        }
     }
 
     public static MapFragment newInstance(Bundle args) {
@@ -220,12 +252,13 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         return fragment;
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onChangedLocation(Location location) {
-        if (animator == null){
+        hideProgress();
+        if (animator == null) {
             btn_fragment_map_tilt.setVisibility(View.VISIBLE);
             animator = new Animator(mMap, myLocation);
+            isAnimated = true;
         }
 
         update(location);
@@ -236,7 +269,9 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
             i++;
         } else {
             update(MapUtils.toLocation(myMovement.get(myMovement.size() - 1)));
-            client.disconnect();
+            if (CheckPermission.checkLocationPermission(getActivity)) {
+                client.disconnect();
+            }
         }*/
     }
 
@@ -247,23 +282,22 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         outState.putFloat("zoom", mMap.getCameraPosition().zoom);
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onStart() {
         super.onStart();
-        if (CheckPermission.canGetLocation(getActivity) && isMoving){
+        if (CheckPermission.checkLocationPermission(getActivity) && isMoving) {
             client.connect();
             btn_fragment_map_tilt.setVisibility(View.VISIBLE);
         }
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onStop() {
-        if (CheckPermission.canGetLocation(getActivity)){
+        if (CheckPermission.checkLocationPermission(getActivity)) {
             client.disconnect();
         }
         if (animator != null) {
+            isAnimated = false;
             animator.stopAnimation();
         }
         super.onStop();
@@ -285,7 +319,9 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         App.getThread().mainThread(new Runnable() {
             @Override
             public void run() {
-                showProgress("Поиск устройства", "Подождите...");
+                String title = getString(R.string.device_searching);
+                String message = getString(R.string.wait_please);
+                showProgress(title, message);
                 Logs.e(TAG, "onProviderDisabled: " + var1);
             }
         });

@@ -27,20 +27,28 @@
       />
   </android.support.v7.widget.CardView>
 
-  <android.support.v7.widget.RecyclerView
-    android:id="@+id/rv_fragment_list_routes"
+  <android.support.v4.widget.SwipeRefreshLayout
+    android:id="@+id/srl_fragment_list_routes"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_above="@+id/cv_fragment_list_routes_load_more"
-    android:layout_below="@+id/cv_fragment_list_routes_about"/>
+    android:layout_below="@+id/cv_fragment_list_routes_about">
 
-  <android.support.v7.widget.CardView
+    <android.support.v7.widget.RecyclerView
+      android:id="@+id/rv_fragment_list_routes"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      tools:listitem="@layout/item_routes"/>
+
+  </android.support.v4.widget.SwipeRefreshLayout>
+
+  <!--<android.support.v7.widget.CardView
     android:id="@+id/cv_fragment_list_routes_load_more"
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:layout_marginTop="5dp"
     android:layout_alignParentBottom="true"
-    android:visibility="gone">
+    android:visibility="gone"
+    tools:visibility="visible">
 
     <TextView
       android:id="@+id/tv_fragment_list_routes_more"
@@ -51,13 +59,15 @@
       android:textColor="@android:color/black"
       android:textSize="25sp"
       android:visibility="gone"
+      tools:visibility="visible"
       />
     <ProgressBar
       android:id="@+id/pb_fragment_list_routes_progress"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:visibility="gone"/>
-  </android.support.v7.widget.CardView>
+      android:visibility="gone"
+      tools:visibility="visible"/>
+  </android.support.v7.widget.CardView>-->
 
 </RelativeLayout>

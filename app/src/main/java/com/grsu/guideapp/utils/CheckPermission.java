@@ -25,12 +25,12 @@ public class CheckPermission {
             permission.ACCESS_FINE_LOCATION,
     };
 
-    public static boolean canWriteStorage(Context context) {
+    public static boolean checkStoragePermission(Context context) {
         return ContextCompat.checkSelfPermission(context, groupStorage[0]) == 0 &&
                 ContextCompat.checkSelfPermission(context, groupStorage[1]) == 0;
     }
 
-    public static boolean canGetLocation(Context context) {
+    public static boolean checkLocationPermission(Context context) {
         return ContextCompat.checkSelfPermission(context, groupLocation[0]) == 0;
     }
 
