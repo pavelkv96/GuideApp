@@ -98,18 +98,11 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
 
         initViews();
         mPresenter.isDownLoad(route, getString(R.string.locale));
-        //mPresenter.isLoadRoute(flag);
         getActivity.setTitleToolbar(name);
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(this);
         client = new LocationClient.Builder(getContext()).addListener(this).build();
 
         return rootView;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        //getActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override
@@ -186,12 +179,14 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
 
     @Override
     public void fabMyLocationScale(float scale) {
+        fabMyLocation.setClickable(scale > 0);
         fabMyLocation.setScaleX(scale);
         fabMyLocation.setScaleY(scale);
     }
 
     @Override
     public void fabActionGoScale(float scale) {
+        fabActionGo.setClickable(scale > 0);
         fabActionGo.setScaleX(scale);
         fabActionGo.setScaleY(scale);
     }
@@ -266,11 +261,7 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
     @Override
     public void mapSettings(boolean flag) {
         if (mMap != null) {
-            if (flag) {
-                mMap.setOnMapClickListener(this);
-            } else {
-                mMap.setOnMapClickListener(null);
-            }
+            mMap.setOnMapClickListener(flag ? this : null);
             mMap.getUiSettings().setScrollGesturesEnabled(flag);
             mMap.getUiSettings().setAllGesturesEnabled(flag);
             mMap.getUiSettings().setTiltGesturesEnabled(flag);

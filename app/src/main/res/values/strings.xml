@@ -107,4 +107,5 @@
   <string name="you_are_out_of_map">You are out of map</string>
   <string name="click_to_exit">Click to exit</string>
   <string name="load_route">Load route</string>
+  <string name="updating_route">Updating route</string>
 </resources>

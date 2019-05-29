@@ -3,7 +3,9 @@ package com.grsu.guideapp.network.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.grsu.guideapp.utils.Converter;
 import java.io.Serializable;
+import java.util.Date;
 
 public class Timestamp implements Serializable
 {
@@ -34,11 +36,11 @@ public class Timestamp implements Serializable
         this.updatedAt = updatedAt;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
+    public Date getCreatedAt() {
+        return Converter.toDate(createdAt);
     }
 
-    public String getUpdatedAt() {
-        return updatedAt;
+    public Date getUpdatedAt() {
+        return Converter.toDate(updatedAt);
     }
 }

@@ -14,28 +14,38 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.grsu.guideapp.App;
+import com.grsu.guideapp.AppExecutors;
 import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.R;
+import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.adapters.RoutesListAdapter;
 import com.grsu.guideapp.base.BaseFragment;
+import com.grsu.guideapp.base.listeners.ItemClickListener;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
+import com.grsu.guideapp.base.listeners.OnSuccessListener;
+import com.grsu.guideapp.database.Table;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.fragments.list_routes.ListRoutesContract.ListRoutesViews;
+import com.grsu.guideapp.holders.routes.BaseRouteViewHolder.Const;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.network.model.Datum;
 import com.grsu.guideapp.network.model.Root;
+import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
+import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, NavigationDrawerActivity>
-        implements ListRoutesViews, Callback<Root>, OnFinishedListener<Integer>, OnRefreshListener {
+        implements ListRoutesViews, Callback<Root>, OnFinishedListener<Integer>, OnRefreshListener,
+        ItemClickListener {
 
     private static final String TAG = ListRoutesFragment.class.getSimpleName();
     private Test helper;
+    private List<Route> listRoutes;
 
     RoutesListAdapter adapter;
     @BindView(R.id.rv_fragment_list_routes)
@@ -48,9 +58,9 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
     public void onStart() {
         super.onStart();
         String locale = getString(R.string.locale);
-        List<Route> routes = helper.getListRoutes(locale);
+        listRoutes = helper.getListRoutes(locale);
         if (adapter != null) {
-            adapter.setRoutesList(routes);
+            adapter.setRoutesList(listRoutes);
         }
     }
 
@@ -90,7 +100,8 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
 
     @Override
     public void setData(final List<Route> routes) {
-        adapter = new RoutesListAdapter(getActivity, routes);
+        listRoutes = routes;
+        adapter = new RoutesListAdapter(listRoutes, this);
         rw_fragment_list_routes.setAdapter(adapter);
     }
 
@@ -127,7 +138,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
             public void run() {
                 srl_fragment_list_routes.setRefreshing(false);
                 showToast(integer);
-                List<Route> listRoutes = helper.getListRoutes(getString(R.string.locale));
+                listRoutes = helper.getListRoutes(getString(R.string.locale));
                 adapter.setRoutesList(listRoutes);
             }
         });
@@ -142,6 +153,106 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
         } else {
             srl_fragment_list_routes.setRefreshing(false);
             showToast(getString(R.string.no_internet_connection));
+        }
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        if (view != null && view.getTag() instanceof Const) {
+
+            Const tag = (Const) view.getTag();
+            switch (tag) {
+                case ITEM:
+                case ABOUT: {
+                    about(position);
+                }
+                break;
+                case UPDATE: {
+                    update(position);
+                }
+                break;
+                case DOWNLOAD: {
+                    download(position);
+                }
+                break;
+                default:
+                    throw new IllegalArgumentException("Not support tag: " + view.getTag());
+            }
+            Log.e(TAG, "onItemClick: " + position + " " + view.getTag());
+        }
+    }
+
+    private void update(int position) {
+        final Route route = listRoutes.get(position);
+        final Test test = new Test(getActivity);
+        showProgress("", getString(R.string.updating_route));
+        test.updateFullRouteById(new OnSuccessListener<String>() {
+            @Override
+            public void onSuccess(String s) {
+                Log.e(TAG, "onSuccess: ");
+                App.getThread().mainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String locale = getString(R.string.locale);
+                        listRoutes = test.getListRoutes(locale);
+                        adapter.setRoutesList(listRoutes);
+                        hideProgress();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                Log.e(TAG, "onFailure: " + throwable.getMessage(), throwable);
+            }}, route.getIdRoute());
+    }
+
+    private void download(int position) {
+        final Route route = listRoutes.get(position);
+        showProgress("", getString(R.string.download_route));
+        final AppExecutors thread = App.getThread();
+        thread.diskIO(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Test helper = new Test(getActivity);
+                    List<Integer> poiFromBD = helper.getListPoiFromBD(route.getIdRoute());
+
+                    for (Integer id : poiFromBD) {
+                        Response<Datum> datum = thread.networkIO().getPoi(id, BuildConfig.ApiKey).execute();
+                        if (datum.isSuccessful()) {
+                            helper.insertPoiAndTypes(datum.body());
+                        }
+
+                    }
+                    helper.setDownload(route.getIdRoute(), Table.DOWNLOAD);
+                    listRoutes = helper.getListRoutes(getString(R.string.locale));
+                    thread.mainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.setRoutesList(listRoutes);
+                        }
+                    });
+                } catch (Exception e) {
+                    Log.e(TAG, "onFailure: ", e);
+                } finally {
+                    thread.mainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            hideProgress();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void about(int position) {
+        if (CheckPermission.checkStoragePermission(getActivity) && listRoutes != null) {
+            startActivity(RouteActivity.newIntent(getActivity, listRoutes.get(position)));
+        } else {
+            int message = R.string.error_snackbar_do_not_have_permission_write_on_the_storage;
+            MySnackbar.makeL(getView(), message, getActivity);
         }
     }
 }

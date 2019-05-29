@@ -1,20 +1,22 @@
 package com.grsu.guideapp.fragments.about;
 
+import android.support.annotation.StringRes;
+
 public class AboutItem {
 
-    private String title;
-    private String action;
+    private int title;
+    private int action;
 
-    AboutItem(String title, String action) {
+    AboutItem(@StringRes int title, @StringRes int action) {
         this.title = title;
         this.action = action;
     }
 
-    public String getTitle() {
+    public int getTitle() {
         return title;
     }
 
-    public String getAction() {
+    public int getAction() {
         return action;
     }
 }

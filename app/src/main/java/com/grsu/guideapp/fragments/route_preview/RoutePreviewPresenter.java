@@ -191,7 +191,7 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
         int behaviorHeight = testViews.getBehaviorPeekHeight();
         int height = (int) (max - max * offset - behaviorHeight * (1 - offset) - top);
         if (offset <= .5032f && offset >= 0) {
-            testViews.fabMyLocationScale(offset / .5f - 1);
+            testViews.fabMyLocationScale(1 - offset / .5f);
             if (offset > 0) {
                 testViews.mapMoveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20));
             }

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -19,14 +20,13 @@ import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.network.model.Datum;
 import com.grsu.guideapp.network.model.Root;
+import com.grsu.guideapp.network.model.Timestamp;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.StorageUtils;
 import com.grsu.ui.progress.CustomProgressBar;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -160,9 +160,9 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
             @Override
             public void onResponse(@NonNull Call<Root> call, @NonNull Response<Root> response) {
                 if (response.body() != null) {
-                    List<Integer> updateIds = new ArrayList<>();
+                    SparseArray<Timestamp> updateIds = new SparseArray<>();
                     for (Datum datum : response.body().getDatums()){
-                        updateIds.add(datum.getId());
+                        updateIds.put(datum.getId(), datum.getData().getRoute().getTimestamp());
                     }
                     new Test(SplashActivity.this).setHaveUpdate(updateIds);
                 }

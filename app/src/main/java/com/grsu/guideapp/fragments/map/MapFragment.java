@@ -100,6 +100,9 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
 
             if (CheckPermission.checkLocationPermission(getActivity)) {
                 client.connect();
+                String title = getString(R.string.device_searching);
+                String message = getString(R.string.wait_please);
+                showProgress(title, message);
             }
         }
 
@@ -160,6 +163,9 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         if (CheckPermission.checkLocationPermission(getActivity)) {
             isMoving = true;
             client.connect();
+            String title = getString(R.string.device_searching);
+            String message = getString(R.string.wait_please);
+            showProgress(title, message);
         } else {
             MySnackbar.makeL(view,
                     R.string.error_snackbar_do_not_have_permission_access_location,
@@ -175,16 +181,9 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     public void tilt(View view) {
         boolean mode = !read(SharedPref.KEY_IS_3D_MODE, Boolean.class);
         save(SharedPref.KEY_IS_3D_MODE, mode);
-        Button button = (Button) view;
-        float tilt;
-        if (mode) {
-            button.setText("3D");
-            tilt = 0f;
-        } else {
-            button.setText("2D");
-            tilt = 54f;
-        }
 
+        ((Button) view).setText(mode ? "3D" : "2D");
+        float tilt = mode ? 0f : 54f;
         mMap.moveCamera(createCamera(myLocation.getMyLocation(Location.class), tilt));
         animator.setTilt(tilt);
     }
@@ -217,7 +216,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         Location location = MapUtils.toLocation(start);
         float accuracy = MapUtils.getDistanceBetween(currentLocation, MapUtils.toLocation(start));
         location.setAccuracy(accuracy);
-        if (accuracy <= 30 && isAnimated) {
+        if (accuracy <= 25 && isAnimated) {
             myLocation.setLocation(location);
             animator.startAnimation(start, end);
         } else {
@@ -287,6 +286,12 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         super.onStart();
         if (CheckPermission.checkLocationPermission(getActivity) && isMoving) {
             client.connect();
+            String title = getString(R.string.device_searching);
+            String message = getString(R.string.wait_please);
+            showProgress(title, message);
+
+            Boolean mode = read(SharedPref.KEY_IS_3D_MODE, Boolean.class);
+            btn_fragment_map_tilt.setText(mode ? "3D" : "2D");
             btn_fragment_map_tilt.setVisibility(View.VISIBLE);
         }
     }

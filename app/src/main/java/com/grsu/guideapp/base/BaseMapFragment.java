@@ -127,7 +127,9 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
     @Override
     public void onStop() {
         super.onStop();
-        overlay.clearTileCache();
+        if (overlay != null) {
+            overlay.clearTileCache();
+        }
         TileAdapter.dispose();
         AndroidGraphicFactory.clearResourceMemoryCache();
         handler.removeCallbacks(this);

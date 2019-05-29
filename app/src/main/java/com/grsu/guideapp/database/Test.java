@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.util.ArraySet;
+import android.util.SparseArray;
 import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.BuildConfig;
@@ -19,16 +20,15 @@ import com.grsu.guideapp.network.model.Datum;
 import com.grsu.guideapp.network.model.Name;
 import com.grsu.guideapp.network.model.Objects;
 import com.grsu.guideapp.network.model.Point;
+import com.grsu.guideapp.network.model.Timestamp;
 import com.grsu.guideapp.network.model.Turn;
 import com.grsu.guideapp.network.model.Value;
 import com.grsu.guideapp.project_settings.Constants.Language;
+import com.grsu.guideapp.utils.Converter;
 import com.grsu.guideapp.utils.MapUtils;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 public class Test extends DatabaseHelper {
@@ -91,7 +91,7 @@ public class Test extends DatabaseHelper {
 
     private void insertRoute(Data route, int id, List<Long> polylinesIds) {
 
-        Date date = new Date();
+        Date date = route.getRoute().getTimestamp().getUpdatedAt();
 
         String s = "SELECT %s FROM %s WHERE %s = %s";
         String query = String.format(s, Routes.last_download, Routes.table_name, Routes.id_route, id);
@@ -211,14 +211,7 @@ public class Test extends DatabaseHelper {
 
     //INSERT POI
     public void insertPoiAndTypes(Datum datum) {
-
-        String updatedAt = datum.getTimestamp().getUpdatedAt();
-        Date date;
-        try {
-            date = new SimpleDateFormat("dd-MM-yyyy_hh:mm:ss", Locale.US).parse(updatedAt);
-        } catch (ParseException e) {
-            date = new Date(0);
-        }
+        Date date = datum.getTimestamp().getUpdatedAt();
 
         Name name = datum.getData().getName();
         About about = datum.getData().getAbout();
@@ -252,7 +245,7 @@ public class Test extends DatabaseHelper {
     }
 
     public String getLastCheck() {
-        String query = "SELECT min(last_download) FROM routes where last_download > 0";
+        String query = "SELECT min(last_download) FROM routes where last_update > 0";
         Cursor cursor = getReadableDatabase().rawQuery(query, null);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -260,8 +253,7 @@ public class Test extends DatabaseHelper {
             if (date != 0) {
                 long time = new Date(date).getTime() * 1000;
                 cursor.close();
-                String pattern = "dd-MM-yyyy_HH:mm:ss";
-                return new SimpleDateFormat(pattern, Locale.US).format(time);
+                return Converter.toStringDate(time);
             } else {
                 return null;
             }
@@ -270,18 +262,19 @@ public class Test extends DatabaseHelper {
         }
     }
 
-    private void haveUpdate(Integer id_route, int is_full) {
+    private void haveUpdate(int id, Timestamp timestamp, int is_full) {
         ContentValues values = new ContentValues();
         values.put(Routes.is_full, is_full);
-        String[] args = {String.valueOf(id_route)};
-        String whereClause = "id_route = ? and is_full = 2";
+        String[] args = {String.valueOf(id), String.valueOf(timestamp.getUpdatedAt().getTime()/1000)};
+        String whereClause = "id_route = ? and is_full = 2 and last_update < ?";
         getWritableDatabase().updateWithOnConflict(Routes.table_name, values, whereClause, args, 5);
         //return new Route();
     }
 
-    public void setHaveUpdate(List<Integer> updateIds) {
-        for (Integer id : updateIds) {
-            haveUpdate(id, Table.HAVE_UPDATE);
+    public void setHaveUpdate(SparseArray<Timestamp> updateIds) {
+        for (int i = 0; i < updateIds.size(); i++) {
+            int key = updateIds.keyAt(i);
+            haveUpdate(key, updateIds.get(key), Table.HAVE_UPDATE);
         }
     }
 

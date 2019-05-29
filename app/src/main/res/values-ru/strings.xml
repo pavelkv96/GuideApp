@@ -89,4 +89,5 @@
   <string name="you_are_out_of_map">Вы вне карты</string>
   <string name="click_to_exit">Зактрыть</string>
   <string name="load_route">Загрузка маршрута</string>
+  <string name="updating_route">Обновление маршрута</string>
 </resources>
