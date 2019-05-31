@@ -18,6 +18,7 @@ import com.grsu.R;
 import java.lang.ref.WeakReference;
 import java.util.Vector;
 
+@SuppressWarnings("unused")
 public class BottomSheetBehaviorGoogleMaps<V extends View> extends Behavior<V> {
 
     /**
@@ -160,8 +161,7 @@ public class BottomSheetBehaviorGoogleMaps<V extends View> extends Behavior<V> {
     public boolean onLayoutChild(CoordinatorLayout parent, V child, int layoutDirection) {
         // First let the parent lay it out
         if (mState != STATE_DRAGGING && mState != STATE_SETTLING) {
-            if (parent.getFitsSystemWindows() &&
-                    !child.getFitsSystemWindows()) {
+            if (parent.getFitsSystemWindows() && !child.getFitsSystemWindows()) {
                 child.setFitsSystemWindows(true);
             }
             parent.onLayoutChild(child, layoutDirection);
@@ -497,6 +497,10 @@ public class BottomSheetBehaviorGoogleMaps<V extends View> extends Behavior<V> {
 
     public void setAnchorPoint(int anchorPoint) {
         mAnchorPoint = anchorPoint;
+    }
+
+    public void setAnchorPoint() {
+        mAnchorPoint = (mParentHeight - 112) * 2 / 3;
     }
 
     public int getAnchorPoint() {

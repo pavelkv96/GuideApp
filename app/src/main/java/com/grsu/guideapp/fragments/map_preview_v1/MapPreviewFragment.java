@@ -116,7 +116,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
 
     @Override
     public void initData() {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
         Integer choiceItem = read(Constants.KEY_SINGLE_CHOICE_ITEM, Integer.class);
         mPresenter.setRadius(choiceItem);
         mPresenter.getAllPoi(true);

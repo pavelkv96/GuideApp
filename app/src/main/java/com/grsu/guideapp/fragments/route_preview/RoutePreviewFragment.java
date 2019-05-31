@@ -180,15 +180,24 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
     @Override
     public void fabMyLocationScale(float scale) {
         fabMyLocation.setClickable(scale > 0);
-        fabMyLocation.setScaleX(scale);
-        fabMyLocation.setScaleY(scale);
+        if (scale > 0) {
+            fabMyLocation.setScaleX(scale);
+            fabMyLocation.setScaleY(scale);
+        } else {
+            fabMyLocation.animate().setDuration(100).scaleX(scale).scaleY(scale).start();
+        }
+
     }
 
     @Override
     public void fabActionGoScale(float scale) {
         fabActionGo.setClickable(scale > 0);
-        fabActionGo.setScaleX(scale);
-        fabActionGo.setScaleY(scale);
+        if (scale > 0) {
+            fabActionGo.setScaleX(scale);
+            fabActionGo.setScaleY(scale);
+        } else {
+            fabActionGo.animate().setDuration(100).scaleX(scale).scaleY(scale).start();
+        }
     }
 
     @Override
@@ -204,6 +213,11 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
     @Override
     public int getCoordinatorLayoutHeight() {
         return coordinatorLayout.getHeight();
+    }
+
+    @Override
+    public int getMapFragmentHeight() {
+        return fragment.getHeight();
     }
 
     @Override
@@ -252,6 +266,7 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
 
     @Override
     public void onGlobalLayout() {
+        behavior.setAnchorPoint();
         LayoutParams params = fragment.getLayoutParams();
         params.height = mPresenter.fragmentChangeSize();
         fragment.setLayoutParams(params);

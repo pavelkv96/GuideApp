@@ -51,6 +51,7 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
     public void onStateChanged(@NonNull View bottomSheet, int newState) {
         switch (newState) {
             case BottomSheetBehaviorGoogleMaps.STATE_DRAGGING: {
+                testViews.fabMyLocationScale(0);
                 Log.e(TAG, "onStateChanged: dragging");
             }
             break;
@@ -65,6 +66,7 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
             }
             break;
             case BottomSheetBehaviorGoogleMaps.STATE_COLLAPSED: {
+                testViews.fabMyLocationScale(1);
                 Log.e(TAG, "onStateChanged: collapsed");
                 testViews.mapSettings(true);
             }
@@ -74,10 +76,9 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
 
     @Override
     public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-        if (slideOffset <= .5032f) {
-            Log.e(TAG, "onSlide: " + slideOffset);
-            testViews.updateViewSize(slideOffset);
-        }
+        float inPercent = (float) ((int) (slideOffset * 100)) / 100;
+        Log.e(TAG, "onSlide: " + slideOffset + "   " + inPercent);
+        testViews.updateViewSize(inPercent);
     }
 
     @Override
@@ -117,7 +118,7 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
 
             String message = String.format("%s\n%s", firstLine, secondLine);
             testViews.fabMyLocationEnabled(true);
-            testViews.mapMoveCamera(CameraUpdateFactory.newLatLngBounds(routeBounds, 20));
+            testViews.mapMoveCamera(CameraUpdateFactory.newLatLngBounds(routeBounds, 50));
             testViews.showToast(message);
         }
     }
@@ -171,35 +172,34 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
     @Override
     public int fragmentChangeSize() {
         int top = (int) testViews.getActionBarSize();
-        int point = 0;
         if (testViews.getBehaviorState() == BottomSheetBehaviorGoogleMaps.STATE_COLLAPSED) {
             testViews.mapSettings(true);
             testViews.fabMyLocationScale(1);
+            int max = testViews.getCoordinatorLayoutHeight();
+            return max - testViews.getBehaviorPeekHeight() - top;
         } else {
             testViews.mapSettings(false);
-            point = testViews.getBehaviorAnchorPoint();
+            return testViews.getBehaviorAnchorPoint() - top;
         }
-        int coordinatorLayoutHeight = testViews.getCoordinatorLayoutHeight();
-        int behaviorPeekHeight = testViews.getBehaviorPeekHeight();
-        return coordinatorLayoutHeight - point - behaviorPeekHeight - top;
     }
 
     @Override
     public int updateViewSize(float offset, LatLngBounds bounds) {
         int max = testViews.getCoordinatorLayoutHeight();
-        float top = testViews.getActionBarSize();
+        int top = (int) testViews.getActionBarSize();
         int behaviorHeight = testViews.getBehaviorPeekHeight();
-        int height = (int) (max - max * offset - behaviorHeight * (1 - offset) - top);
-        if (offset <= .5032f && offset >= 0) {
-            testViews.fabMyLocationScale(1 - offset / .5f);
-            if (offset > 0) {
-                testViews.mapMoveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20));
+        int height;
+        if (offset <= .33f && offset >= 0) {
+            height = (int) (max - max * offset - behaviorHeight * (1 - offset) - top);
+            testViews.mapMoveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+        } else {
+            if (offset < 0) {
+                height = (int) (max - behaviorHeight * (1 + offset) - top);
+                testViews.fabMyLocationScale(1 + offset);
+                testViews.fabActionGoScale(1 + offset);
+            } else {
+                height = testViews.getMapFragmentHeight();
             }
-        }
-        if (offset < 0) {
-            height = (int) (max - behaviorHeight * (1 + offset) - top);
-            testViews.fabMyLocationScale(1 + offset);
-            testViews.fabActionGoScale(1 + offset);
         }
 
         return height;

@@ -7,7 +7,6 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:background="@android:color/white"
-  app:anchorPoint="300dp"
   app:behavior_peekHeight="?attr/actionBarSize"
   app:layout_behavior="com.grsu.ui.bottomsheet.BottomSheetBehaviorGoogleMaps">
 
@@ -68,7 +67,6 @@
       android:id="@+id/tv_bottom_sheet_description"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:textSize="18sp"
       android:layout_marginTop="16dp"
       android:layout_marginBottom="10dp"
       android:layout_marginStart="10dp"
@@ -77,6 +75,7 @@
       android:layout_below="@+id/tv_bottom_sheet_route_duration"
       android:gravity="start"
       android:textColor="@android:color/black"
+      android:textSize="18sp"
       tools:text="@tools:sample/lorem/random"/>
   </RelativeLayout>
 

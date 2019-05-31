@@ -27,6 +27,8 @@ public interface RoutePreviewContract {
 
         int getCoordinatorLayoutHeight();
 
+        int getMapFragmentHeight();
+
         void fabActionGoScale(float scale);
 
         void fabMyLocationEnabled(boolean isEnabled);
