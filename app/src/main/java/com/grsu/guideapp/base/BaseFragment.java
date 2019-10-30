@@ -2,6 +2,7 @@ package com.grsu.guideapp.base;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -35,7 +36,7 @@ public abstract class BaseFragment<P extends BasePresenter, A extends FragmentAc
 
     protected abstract String getTitle();
 
-    private ProgressDialog mProgressDialog = null;
+    protected ProgressDialog mProgressDialog = null;
 
     protected View rootView;
 
@@ -132,7 +133,34 @@ public abstract class BaseFragment<P extends BasePresenter, A extends FragmentAc
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
         }
+    }
 
+    public void showProgress(String title, String message, DialogInterface.OnClickListener listener) {
+        if (mProgressDialog == null || !mProgressDialog.isShowing()) {
+            mProgressDialog = new ProgressDialog(getActivity);
+            if (title != null) {
+                mProgressDialog.setTitle(title);
+            }
+
+            if (listener != null) {
+                String text = getString(android.R.string.no);
+                mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, text, listener);
+            }
+            mProgressDialog.setMessage(message);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+        }
+    }
+
+    @Override
+    public void changeProgress(int progress) {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            if (mProgressDialog.isIndeterminate()){
+                mProgressDialog.setIndeterminate(false);
+                mProgressDialog.show();
+            }
+            mProgressDialog.setProgress(progress);
+        }
     }
 
     @Override

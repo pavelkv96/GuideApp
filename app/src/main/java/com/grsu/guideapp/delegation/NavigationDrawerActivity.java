@@ -10,9 +10,6 @@ import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseDelegationActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
-import com.grsu.guideapp.fragments.about.AboutFragment;
-import com.grsu.guideapp.fragments.list_routes.ListRoutesFragment;
-import com.grsu.guideapp.fragments.setting.SettingFragment;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 
 public class NavigationDrawerActivity
@@ -23,7 +20,7 @@ public class NavigationDrawerActivity
         implements NavigationDrawerView, Runnable {
 
     @BindView(R.id.toolbar)
-    protected Toolbar mToolbar;
+    Toolbar mToolbar;
 
     private boolean doubleBackToExitPressedOnce = false;
 
@@ -44,9 +41,10 @@ public class NavigationDrawerActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         setSupportActionBar(mToolbar);
-        super.onCreate(savedInstanceState);
+        mDelegate.setSelectedItem(R.id.nav_slideshow);
     }
 
     @Override
@@ -71,17 +69,22 @@ public class NavigationDrawerActivity
 
     @Override
     public void openAboutFragment() {
-        mPresenter.replaceFragment(new AboutFragment());
+        mDelegate.setSelectedItem(R.id.nav_share);
     }
 
     @Override
     public void openSettingsFragment() {
-        mPresenter.replaceFragment(new SettingFragment());
+        mDelegate.setSelectedItem(R.id.nav_settings);
     }
 
     @Override
     public void openListRoutesFragment() {
-        mPresenter.replaceFragment(new ListRoutesFragment());
+        mDelegate.setSelectedItem(R.id.nav_slideshow);
+    }
+
+    @Override
+    public void openCatalogFragment() {
+        mDelegate.setSelectedItem(R.id.nav_gallery);
     }
 
     @Override

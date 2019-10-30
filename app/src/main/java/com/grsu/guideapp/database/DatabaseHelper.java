@@ -7,7 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import com.grsu.guideapp.models.InfoAboutPoi;
+import com.grsu.guideapp.models.DtoDetail;
+import com.grsu.guideapp.models.DtoObject;
+import com.grsu.guideapp.models.DtoRoute;
+import com.grsu.guideapp.models.DtoType;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Route;
@@ -17,7 +20,7 @@ import java.util.List;
 
 class DatabaseHelper extends SQLiteOpenHelper implements Table {
 
-    private final Context mContext;
+    public final Context mContext;
     private static final String DB_NAME = Settings.DATABASE_INFORMATION_NAME;
     private SQLiteDatabase mDatabase;
 
@@ -62,7 +65,7 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
         List<Route> routesList = new ArrayList<>();
         openDatabase();
 
-        String select = "select c1.id_route, c2.short_name,c2.full_name,c2.short_description, c2.full_description, c1.duration, c1.distance, c1.reference_photo_route, c1.southwest, c1.northeast, c1.is_full\n";
+        String select = "select c1.id_route, c2.name,c2.description, c1.duration, c1.distance, c1.reference_photo_route, c1.southwest, c1.northeast, c1.is_full\n";
         String from = "from routes c1, routes_language c2 where c1.id_route=c2.id_route and c2.language = '%s' and c1.id_route<>1 order by c1.is_full desc";
 
         String query = String.format(select + from, locale);
@@ -77,8 +80,31 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
         return routesList;
     }
 
-    public Route getRoute(Integer id_route, String locale) {
-        String select = "SELECT c1.id_route, c2.short_name,c2.full_name,c2.short_description, c2.full_description, c1.duration, c1.distance, c1.reference_photo_route, c1.southwest, c1.northeast, c1.is_full\n";
+    public List<Route> getListRoutes(String locale, boolean isAll) {
+        List<Route> routesList = new ArrayList<>();
+        openDatabase();
+
+        String select = "select c1.id_route, c2.name, c2.description, c1.duration, c1.distance, c1.reference_photo_route, c1.southwest, c1.northeast, c1.is_full\n";
+        String from = "from routes c1, routes_language c2\n";
+        String where = "where c1.id_route=c2.id_route and c2.language = '%s' and c1.is_full<>0 order by c1.is_full desc";
+        if (isAll){
+            where = "where c1.id_route=c2.id_route and c2.language = '%s' order by c1.is_full desc";
+        }
+
+        String query = String.format(select + from + where, locale);
+        Cursor cursor = mDatabase.rawQuery(query, null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            routesList.add(Route.fromCursor(cursor));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        closeDatabase();
+        return routesList;
+    }
+
+    public DtoRoute getRoute(Integer id_route, String locale) {
+        String select = "SELECT c1.id_route, c2.name, c2.description, c1.duration, c1.distance, c1.reference_photo_route, c1.southwest, c1.northeast, c1.is_full\n";
         String from = "FROM routes c1, routes_language c2\n";
         String where = " WHERE c1.id_route = c2.id_route and c1.id_route= %s and c2.language = '%s' limit 1";
 
@@ -87,7 +113,7 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
 
         if (cursor != null) {
             cursor.moveToFirst();
-            Route route = Route.fromCursor(cursor);
+            DtoRoute route = DtoRoute.fromCursor(cursor);
             cursor.close();
             return route;
         }
@@ -141,21 +167,21 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
         return poiList;
     }
 
-    public InfoAboutPoi getInfoById(String id_point, String locale) {
+    public DtoDetail getInfoById(int id_poi, String locale) {
         openDatabase();
 
-        String select = "select c2.language_%s, c3.short_name, c3.full_name, c3.short_description, c3.full_description, c1.audio_reference, c1.photo_reference, c1.link, c1.last_update\n";
-        String from = "from poi c1, types c2, poi_language c3\n";
-        String where = " where c1.id_type=c2.id_type and c1.id_poi = c3.id_poi and c3.language = '%s' and location = '%s' limit 1";
-        String query = String.format(select + from + where, locale, locale, id_point);
+        String select = "select c2.name, c2.description, c1.photo_reference, c1.link, c1.address, c1.email, c1.phone\n";
+        String from = "from poi c1, poi_language c2\n";
+        String where = "where c1.id_poi = c2.id_poi and c2.language = '%s' and c1.id_poi = %s limit 1";
+        String query = String.format(select + from + where, locale, id_poi);
 
         Cursor cursor = mDatabase.rawQuery(query, null);
 
-        if (cursor != null) {
+        if (cursor.getCount() == 1) {
             cursor.moveToFirst();
-            InfoAboutPoi poi = InfoAboutPoi.fromCursor(cursor);
+            DtoDetail detail = DtoDetail.fromCursor(cursor);
             cursor.close();
-            return poi;
+            return detail;
         }
         closeDatabase();
         return null;
@@ -164,8 +190,40 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
     public Cursor getAllTypes(String locale) {
         openDatabase();
         String select = String.format("SELECT id_type as _id, is_checked, language_%s", locale);
-        String query = select + " FROM types";
+        String from = String.format(" FROM types WHERE not ifnull(language_%s, '') = ''", locale);
+        String query = select + from;
         return mDatabase.rawQuery(query, null);
+    }
+
+    public List<DtoType> getAllType(String locale) {
+        Cursor cursor = getAllTypes(locale);
+        List<DtoType> types = DtoType.fromCursor(cursor);
+        closeDatabase();
+        return types;
+    }
+
+    public List<DtoObject> getAllObjectFromType(String locale, int type){
+        openDatabase();
+        String select = "SELECT distinct c1.id_poi, c2.name, c1.photo_reference";
+        String from = " FROM poi c1, poi_language c2";
+        String where = " WHERE c1.id_poi = c2.id_poi AND c2.language = '%s' AND c1.id_type = %s ORDER BY c1.number ASC";
+        String query = String.format(select + from + where, locale, type);
+        Cursor cursor = mDatabase.rawQuery(query, null);
+        List<DtoObject> objects = DtoObject.fromCursor(cursor);
+        closeDatabase();
+        return objects;
+    }
+
+    public List<DtoObject> getObjectById(int id, String locale){
+        openDatabase();
+        String select = "SELECT distinct c1.id_poi, c2.name, c1.photo_reference";
+        String from = " FROM poi c1, poi_language c2";
+        String where = " WHERE c1.id_poi = c2.id_poi AND c2.language = '%s' AND c1.id_poi = %s limit 1";
+        String query = String.format(select + from + where, locale, id);
+        Cursor cursor = mDatabase.rawQuery(query, null);
+        List<DtoObject> objects = DtoObject.fromCursor(cursor);
+        closeDatabase();
+        return objects;
     }
 
     public void changeRec(long pos, boolean isChecked) {
@@ -173,9 +231,46 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
         cv.put(Types.is_checked, (isChecked) ? 1 : 0);
         if (pos == 0) {
             getWritableDatabase().update(Types.name_table, cv, null, null);
-            return;
+        } else {
+            int all = getAllCountTypes();
+            getWritableDatabase().update(Types.name_table, cv, Types.id_type + " = " + pos, null);
+            int checked = getCountTypes();
+
+            ContentValues cv1 = new ContentValues();
+            if (all == checked) {
+                cv1.put(Types.is_checked, 1);
+                getWritableDatabase()
+                        .update(Types.name_table, cv1, Types.id_type + " = " + 0, null);
+            } else {
+                cv1.put(Types.is_checked, 0);
+                getWritableDatabase()
+                        .update(Types.name_table, cv1, Types.id_type + " = " + 0, null);
+            }
         }
-        getWritableDatabase().update(Types.name_table, cv, Types.id_type + " = " + pos, null);
+    }
+
+    private int getCountTypes() {
+        int count = 0;
+        //openDatabase();
+        Cursor cur = mDatabase.rawQuery("SELECT id_type FROM types WHERE is_checked = 1 AND id_type <> 0", null);
+        if (cur != null) {
+            count = cur.getCount();
+            cur.close();
+        }
+        //closeDatabase();
+        return count;
+    }
+
+    private int getAllCountTypes() {
+        int count = 0;
+        //openDatabase();
+        Cursor cur = mDatabase.rawQuery("SELECT id_type FROM types WHERE id_type <> 0", null);
+        if (cur != null) {
+            count = cur.getCount();
+            cur.close();
+        }
+        //closeDatabase();
+        return count;
     }
 
     public int getCountCheckedTypes() {
@@ -211,7 +306,7 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
         String idRoute = String.format(" AND c1.id_route = %s", id);
         String join = point != null ? getByIdPoint(point) : "";
 
-        String selectOne = "select c2.id_poi, c2.location, z1.icon_type from `list_poi` c1, `poi` c2";
+        String selectOne = "select c2.id_poi, c2.location, c2.icon_type from `list_poi` c1, `poi` c2";
         String selectTwo = ", (" + getByTypes() + ") z1 ";
         String where = "where c1.id_poi=c2.id_poi AND c2.id_type=z1.id_type" + join + idRoute;
 
@@ -225,7 +320,7 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
 
     @NonNull
     private String getByTypes() {
-        return "SELECT id_type, icon_type FROM types WHERE is_checked = 1";
+        return "SELECT id_type FROM types WHERE is_checked = 1";
     }
 
     @NonNull
@@ -233,7 +328,7 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
         return " AND (c1.id_point = '" + point + "')";
     }
 
-    void clearRouteById(Integer id) {
+    void clearRouteById(long id) {
         //String query = String.format("DELETE FROM routes WHERE id_route = %s", id);
         getWritableDatabase().delete(Routes.table_name, "id_route = ?", new String[]{String.valueOf(id)});
     }

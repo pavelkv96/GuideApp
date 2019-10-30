@@ -75,8 +75,8 @@ public class SettingFragment extends
             case SharedPref.KEY_LANGUAGE: {
                 prefLang.setSummary(prefLang.getEntry());
 
-                editor.putString(SharedPref.KEY_LANGUAGE, prefLang.getValue());
-                App.setLocale(sharedPref, getActivity.getResources());
+                editor.putString(SharedPref.KEY_LANGUAGE, prefLang.getValue()).apply();
+                App.getInstance().setLocale(sharedPref, App.getInstance());
                 getActivity.recreate();
             }
             break;

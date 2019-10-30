@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.Tile;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
+import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.adapters.TileAdapter;
 import com.grsu.guideapp.project_settings.Settings;
@@ -121,7 +122,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
         }
 
         AndroidGraphicFactory.createInstance(getActivity.getApplication());
-        TileAdapter.createInstance(file, getActivity, Settings.CURRENT_PROVIDER);
+        TileAdapter.createInstance(file, getActivity.getApplication(), Settings.CURRENT_PROVIDER);
     }
 
     @Override

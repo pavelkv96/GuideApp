@@ -26,7 +26,7 @@ enum Class implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        if (listeners != null && !listeners.isEmpty() && MyService.isWork()) {
+        if (listeners != null && !listeners.isEmpty()) {
             for (LocationListener listener : listeners) {
                 listener.onLocationChanged(location);
             }
@@ -35,7 +35,7 @@ enum Class implements LocationListener {
 
     @Override
     public void onProviderDisabled(String provider) {
-        if (listeners != null && !listeners.isEmpty() && MyService.isWork()) {
+        if (listeners != null && !listeners.isEmpty()) {
             for (LocationListener listener : listeners) {
                 listener.onProviderDisabled(provider);
             }
@@ -44,7 +44,7 @@ enum Class implements LocationListener {
 
     @Override
     public void onProviderEnabled(String provider) {
-        if (listeners != null && !listeners.isEmpty() && MyService.isWork()) {
+        if (listeners != null && !listeners.isEmpty()) {
             for (LocationListener listener : listeners) {
                 listener.onProviderEnabled(provider);
             }
@@ -53,7 +53,7 @@ enum Class implements LocationListener {
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        if (listeners != null && !listeners.isEmpty() && MyService.isWork()) {
+        if (listeners != null && !listeners.isEmpty()) {
             for (LocationListener listener : listeners) {
                 listener.onStatusChanged(provider, status, extras);
             }

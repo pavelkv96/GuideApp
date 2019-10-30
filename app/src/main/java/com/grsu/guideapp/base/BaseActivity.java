@@ -1,6 +1,7 @@
 package com.grsu.guideapp.base;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -30,10 +31,14 @@ public abstract class BaseActivity<P extends BasePresenter>
     protected P mPresenter;
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(newBase);
+        super.attachBaseContext(App.getInstance().setLocale(preferences, newBase));
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        App.setLocale(preferences, getResources());
         mPresenter = getPresenterInstance();
         mPresenter.attachView(this);
     }
@@ -47,7 +52,9 @@ public abstract class BaseActivity<P extends BasePresenter>
     @Override
     protected void onDestroy() {
         mPresenter.detachView();
-        mUnBinder.unbind();
+        if (mUnBinder != null) {
+            mUnBinder.unbind();
+        }
         super.onDestroy();
     }
 
@@ -64,6 +71,16 @@ public abstract class BaseActivity<P extends BasePresenter>
             mProgressDialog.show();
         }
 
+    }
+
+    @Override
+    public void changeProgress(int progress) {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            if (!mProgressDialog.isIndeterminate()) {
+                mProgressDialog.setIndeterminate(false);
+            }
+            mProgressDialog.setProgress(progress);
+        }
     }
 
     @Override

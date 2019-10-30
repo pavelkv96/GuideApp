@@ -39,7 +39,20 @@ class Content {
         return values;
     }
 
-    static List<ContentValues> insertRouteLanguage(Name name, About about, int id, String key) {
+    static ContentValues updateRoute(Data route, int id) {
+        Value value = route.getRoute().getValue();
+        ContentValues values = new ContentValues();
+        values.put(Routes.id_route, id);
+        values.put(Routes.duration, 0);
+        values.put(Routes.distance, 0);
+        values.put(Routes.reference_photo_route, route.getImages().get(0).getHref());
+        values.put(Routes.southwest, CryptoUtils.encodeP(value.getLimLeft().getLatLng()));
+        values.put(Routes.northeast, CryptoUtils.encodeP(value.getLimRight().getLatLng()));
+        values.put(Routes.last_download, System.currentTimeMillis() / 1000);
+        return values;
+    }
+
+    static List<ContentValues> insertLanguage(Name name, About about, int id, String key) {
         List<ContentValues> valuesList = new ArrayList<>();
 
         valuesList.add(setRUContent(name, about, id, key));
@@ -63,10 +76,18 @@ class Content {
         ContentValues values = new ContentValues();
         values.put(key, id);
         values.put(RoutesLanguage.language, Constants.Language.ru.toString());
-        values.put(RoutesLanguage.short_name, name.getShort().getRu());
-        values.put(RoutesLanguage.full_name, name.getFull().getRu());
-        values.put(RoutesLanguage.short_description, about.getShort().getRu());
-        values.put(RoutesLanguage.full_description, about.getFull().getRu());
+
+        if (name.getFull() != null) {
+            values.put(RoutesLanguage.name, name.getFull().getRu());
+        } else {
+            values.put(RoutesLanguage.name,"");
+        }
+
+        if (about.getFull() != null) {
+            values.put(RoutesLanguage.description, about.getFull().getRu());
+        } else {
+            values.put(RoutesLanguage.description, "");
+        }
         return values;
     }
 
@@ -74,10 +95,18 @@ class Content {
         ContentValues values = new ContentValues();
         values.put(key, id);
         values.put(RoutesLanguage.language, Constants.Language.en.toString());
-        values.put(RoutesLanguage.short_name, name.getShort().getEn());
-        values.put(RoutesLanguage.full_name, name.getFull().getEn());
-        values.put(RoutesLanguage.short_description, about.getShort().getEn());
-        values.put(RoutesLanguage.full_description, about.getFull().getEn());
+
+        if (name.getFull() != null) {
+            values.put(RoutesLanguage.name, name.getFull().getEn());
+        } else {
+            values.put(RoutesLanguage.name, "");
+        }
+
+        if (about.getFull() != null) {
+            values.put(RoutesLanguage.description, about.getFull().getEn());
+        } else {
+            values.put(RoutesLanguage.description, "");
+        }
         return values;
     }
 
@@ -85,10 +114,18 @@ class Content {
         ContentValues values = new ContentValues();
         values.put(key, id);
         values.put(RoutesLanguage.language, Constants.Language.zh.toString());
-        values.put(RoutesLanguage.short_name, name.getShort().getCn());
-        values.put(RoutesLanguage.full_name, name.getFull().getCn());
-        values.put(RoutesLanguage.short_description, about.getShort().getCn());
-        values.put(RoutesLanguage.full_description, about.getFull().getCn());
+
+        if (name.getFull() != null) {
+            values.put(RoutesLanguage.name, name.getFull().getCn());
+        } else {
+            values.put(RoutesLanguage.name, "");
+        }
+
+        if (about.getFull() != null) {
+            values.put(RoutesLanguage.description, about.getFull().getCn());
+        } else {
+            values.put(RoutesLanguage.description, "");
+        }
         return values;
     }
 
@@ -96,10 +133,18 @@ class Content {
         ContentValues values = new ContentValues();
         values.put(key, id);
         values.put(RoutesLanguage.language, Constants.Language.pl.toString());
-        values.put(RoutesLanguage.short_name, name.getShort().getPl());
-        values.put(RoutesLanguage.full_name, name.getFull().getPl());
-        values.put(RoutesLanguage.short_description, about.getShort().getPl());
-        values.put(RoutesLanguage.full_description, about.getFull().getPl());
+
+        if (name.getFull() != null) {
+            values.put(RoutesLanguage.name, name.getFull().getPl());
+        } else {
+            values.put(RoutesLanguage.name, "");
+        }
+
+        if (about.getFull() != null) {
+            values.put(RoutesLanguage.description, about.getFull().getPl());
+        } else {
+            values.put(RoutesLanguage.description, "");
+        }
         return values;
     }
 
@@ -107,10 +152,18 @@ class Content {
         ContentValues values = new ContentValues();
         values.put(key, id);
         values.put(RoutesLanguage.language, Constants.Language.lt.toString());
-        values.put(RoutesLanguage.short_name, name.getShort().getLt());
-        values.put(RoutesLanguage.full_name, name.getFull().getLt());
-        values.put(RoutesLanguage.short_description, about.getShort().getLt());
-        values.put(RoutesLanguage.full_description, about.getFull().getLt());
+
+        if (name.getFull() != null) {
+            values.put(RoutesLanguage.name, name.getFull().getLt());
+        } else {
+            values.put(RoutesLanguage.name, "");
+        }
+
+        if (about.getFull() != null) {
+            values.put(RoutesLanguage.description, about.getFull().getLt());
+        } else {
+            values.put(RoutesLanguage.description, "");
+        }
         return values;
     }
 }

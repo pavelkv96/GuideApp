@@ -32,14 +32,15 @@ public class MyLocationLayer {
 
     private MyLocationLayer(Resources res) {
         LatLng latLng = new LatLng(0, 0);
-        Bitmap bitmap = StorageUtils.getBitmap(res, R.drawable.my_location);
+        Bitmap bitmap = StorageUtils.getBitmap(res.getDrawable(R.drawable.my_location1));
         BitmapDescriptor descriptor = BitmapDescriptorFactory.fromBitmap(bitmap);
 
         if (circleOptions == null) {
             circleOptions = new CircleOptions();
         }
         circleOptions.visible(false);
-        circleOptions.zIndex(.1f);
+        circleOptions.zIndex(1f);
+        circleOptions.radius(10);
         circleOptions.strokeWidth(1);
         circleOptions.fillColor(res.getColor(R.color.myLocation));
         circleOptions.strokeColor(res.getColor(R.color.myLocation1));
@@ -50,6 +51,7 @@ public class MyLocationLayer {
         }
         options.visible(false);
         options.icon(descriptor);
+        options.zIndex(1f);
         options.flat(true);
         options.anchor(.5f, .5f);
         options.position(latLng);

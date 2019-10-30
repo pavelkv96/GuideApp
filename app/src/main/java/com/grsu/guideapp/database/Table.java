@@ -45,11 +45,15 @@ public interface Table {
         String id_poi = "id_poi";
         String location = "location";
         String id_type = "id_type";
-        String audio_reference = "audio_reference";
         String photo_reference = "photo_reference";
-        String link = "link";
         String last_update = "last_update";
         String last_download = "last_download";
+        String icon_type = "icon_type";
+        String number = "number";
+        String address = "address";
+        String email = "email";
+        String link = "link";
+        String phone = "phone";
     }
 
     interface PoiLanguage {
@@ -59,10 +63,8 @@ public interface Table {
         String id_translate = "id_translate";
         String id_poi = "id_poi";
         String language = "language";
-        String short_name = "short_name";
-        String full_name = "full_name";
-        String short_description = "short_description";
-        String full_description = "full_description";
+        String name = "name";
+        String description = "description";
     }
 
     interface Routes {
@@ -87,10 +89,8 @@ public interface Table {
         String id_translate = "id_translate";
         String id_route = "id_route";
         String language = "language";
-        String short_name = "short_name";
-        String full_name = "full_name";
-        String short_description = "short_description";
-        String full_description = "full_description";
+        String name = "name";
+        String description = "description";
     }
 
     interface Types {
@@ -103,7 +103,6 @@ public interface Table {
         String language_cn = "language_cn";
         String language_lt = "language_lt";
         String language_pl = "language_pl";
-        String icon_type = "icon_type";
         String is_checked = "is_checked";
     }
 }

@@ -3,6 +3,7 @@ package com.grsu.guideapp.network.model;
 import android.support.annotation.NonNull;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.grsu.guideapp.project_settings.Settings;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

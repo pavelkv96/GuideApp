@@ -2,13 +2,18 @@ package com.grsu.guideapp.activities.route;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.listeners.OnFragmentReplace;
 import com.grsu.guideapp.fragments.route_preview.RoutePreviewFragment;
@@ -23,9 +28,17 @@ public class RouteActivity extends AppCompatActivity implements OnFragmentReplac
     private Toolbar toolbar;
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(newBase);
+        super.attachBaseContext(App.getInstance().setLocale(preferences, newBase));
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setContentView(R.layout.activity_route);
+        Drawable drawable = ContextCompat.getDrawable(this ,R.drawable.ic_filter);
         toolbar = findViewById(R.id.toolbar);
+        toolbar.setOverflowIcon(drawable);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -50,7 +63,7 @@ public class RouteActivity extends AppCompatActivity implements OnFragmentReplac
         Intent intent = new Intent(context, RouteActivity.class);
         Bundle bundle = new Bundle();
         bundle.putInt(Constants.KEY_ID_ROUTE, route.getIdRoute());
-        bundle.putString(Constants.KEY_NAME_ROUTE, route.getNameRoute().getShortName());
+        bundle.putString(Constants.KEY_NAME_ROUTE, route.getNameRoute().getName());
         bundle.putString(Constants.KEY_SOUTHWEST, route.getSouthwest());
         bundle.putString(Constants.KEY_NORTHEAST, route.getNortheast());
         intent.putExtra(Constants.KEY_BUNDLE_ROUTE, bundle);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">Веломаршруты Августовского канала</string>
+  <string name="app_name">Маршруты Августовского канала</string>
   <string name="title_activity_home">Главная</string>
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -22,16 +22,18 @@
   <!--MENU ITEM NAME-->
   <string name="menu_item_settings">Настройки</string>
   <string name="menu_item_routes">Маршруты</string>
-  <string name="menu_item_types_object">Типы POI на карте</string>
-  <string name="menu_item_distance">POI на расстоянии</string>
-  <string name="menu_item_showing_selected_poi">Отобразить выбранные POI</string>
+  <string name="menu_item_categories">Каталог объектов</string>
+  <string name="menu_item_types_object">Типы объектов на карте</string>
+  <string name="menu_item_distance">Объекты на расстоянии</string>
+  <string name="menu_item_showing_selected_poi">Отобразить выбранные объекты</string>
   <string name="menu_item_showing_all_turn">Отобразить съезды с маршрута</string>
 
   <!--SCREEN NAME TITLE-->
   <string name="map_fragment">Карта</string>
   <string name="details_fragment">Детали</string>
   <string name="settings_fragment">Настройки</string>
-  <string name="list_routes_fragment">Список маршрутов</string>
+  <string name="list_routes_fragment">Каталог маршрутов</string>
+  <string name="list_objects_fragment">Каталог объектов</string>
   <string name="about_fragment">Инфо</string>
 
 
@@ -50,7 +52,7 @@
   <!--SUCCESS MESSAGES-->
   <string name="success_copy_database_success">База данных скопирована успешно</string>
   <string name="success_database_deleted">База данных была удалена</string>
-  <string name="success_map_file_updated">Файл карт обнавлён</string>
+  <string name="success_map_file_updated">Файл карт обновлён</string>
 
   <string name="dialog_types_objects">Типы объектов</string>
   <string name="dialog_radius_in_meters">Радиус (в метрах)</string>
@@ -83,11 +85,33 @@
   <string name="download">Скачать</string>
   <string name="update">Обновить</string>
   <string name="no_internet_connection">Нет доступа в интернет</string>
-  <string name="device_searching">Поиск устройства</string>
+  <string name="device_searching">Определение местоположения</string>
   <string name="wait_please">Подождите, пожалуйста…</string>
   <string name="warning">Внимание!</string>
   <string name="you_are_out_of_map">Вы вне карты</string>
-  <string name="click_to_exit">Зактрыть</string>
+  <string name="click_to_exit">Закрыть</string>
   <string name="load_route">Загрузка маршрута</string>
   <string name="updating_route">Обновление маршрута</string>
+  <string name="turn_on_gps">Для корректной работы приложения включите GPS</string>
+  <string name="empty_list">Список пуст</string>
+  <string name="open_on_map">Открыть на карте</string>
+  <string name="go_to_route">Перейти к маршруту</string>
+  <string name="provide_access">Предоставте доступ</string>
+  <string name="provide_access_description">Предоставте приложению доступ к памяти в настройках вашего устройства, иначе использовать приложение будет невозможно.</string>
+  <string name="next">Далее</string>
+  <string name="exit">Выход</string>
+  <string name="preview_provide_access">Предоставте приложению доступ к памяти и\n местоположению.</string>
+  <string name="preview_provide_access_description">Чтобы скачивать карты, смотреть места вокруг вас и пользоваться навигацией.</string>
+  <string name="radius_in_meters">радиус %d метров</string>
+  <string name="my_tab">Мои маршруты</string>
+  <string name="all_tab">Все маршруты</string>
+  <string name="route">Маршрут</string>
+  <string name="details">Подробнее</string>
+  <string name="address">Адрес</string>
+  <string name="email">Электронная почта</string>
+  <string name="phone">Телефоны</string>
+  <string name="link">Ссылки</string>
+  <string name="retry_again_later">Попробуйте позже</string>
+  <string name="error.message.update">Ошибка обновления данных</string>
+  <string name="cancel">Отмена</string>
 </resources>

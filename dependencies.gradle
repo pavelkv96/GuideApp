@@ -11,5 +11,6 @@ ext.versions = [
         constraint : "1.1.3",
         retrofit2  : "2.5.0",
         lifecycle  : "1.1.1",
-        picasso    : "2.71828"
+        picasso    : "2.71828",
+        kotlin     : "1.3.31"
 ]

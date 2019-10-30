@@ -2,6 +2,7 @@ package com.grsu.guideapp.network.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.grsu.guideapp.project_settings.Settings;
 import java.io.Serializable;
 
 public class Image implements Serializable {

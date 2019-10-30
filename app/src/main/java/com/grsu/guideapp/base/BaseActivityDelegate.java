@@ -13,6 +13,9 @@ public abstract class BaseActivityDelegate<
 
     public void onCreate(P presenter) {
         mPresenter = presenter;
+    }
+
+    protected void setContentView() {
         mUnBinder = ButterKnife.bind(this, mPresenter.getView().getContentView());
     }
 

@@ -25,7 +25,7 @@ public class AboutAdapter extends RecyclerView.Adapter<AboutHolder> {
     @Override
     public AboutHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater from = LayoutInflater.from(parent.getContext());
-        View view = from.inflate(R.layout.title_descr_list_item, parent, false);
+        View view = from.inflate(R.layout.item_about, parent, false);
         return new AboutHolder(view, listener);
     }
 

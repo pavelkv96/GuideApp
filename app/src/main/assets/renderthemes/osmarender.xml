@@ -406,6 +406,54 @@
         <circle fill="#707070" radius="1.5" scale-radius="true"/>
     </rule>
 
+    <!-- waterbodies -->
+    <rule e="any" k="*" v="*">
+        <rule e="way" k="bridge" v="yes|true|viaduct|aqueduct|suspension|culvert|swing">
+            <rule e="way" k="waterway" v="ditch|drain|stream">
+                <line stroke="#333333" stroke-linecap="butt" stroke-width="1.6" />
+                <line stroke="#EEEEEE" stroke-linecap="butt" stroke-width="1.2" />
+            </rule>
+            <rule e="way" k="waterway" v="canal|river">
+                <line stroke="#333333" stroke-linecap="butt" stroke-width="2.0" />
+                <line stroke="#EEEEEE" stroke-linecap="butt" stroke-width="1.6" />
+            </rule>
+        </rule>
+        <rule e="way" k="waterway" v="ditch">
+            <line stroke="#B3DDFF" stroke-width="0.6" />
+        </rule>
+        <rule e="way" k="waterway" v="drain">
+            <line stroke="#B0B0B0" stroke-linecap="butt" stroke-width="0.7" />
+            <line stroke="#B3DDFF" stroke-linecap="butt" stroke-width="0.5" />
+        </rule>
+        <rule e="way" k="waterway" v="canal">
+            <line stroke="#B0B0B0" stroke-linecap="butt" stroke-width="1.1" />
+            <line stroke="#B3DDFF" stroke-linecap="butt" stroke-width="0.9" />
+        </rule>
+        <rule e="way" k="waterway" v="stream">
+            <line stroke="#B3DDFF" stroke-width="0.6" />
+        </rule>
+        <rule e="way" k="waterway" v="river">
+            <line stroke="#B3DDFF" stroke-width="1.1" />
+        </rule>
+        <rule e="way" k="waterway" v="riverbank">
+            <area fill="#B3DDFF" />
+        </rule>
+        <rule e="way" k="waterway" v="river" zoom-min="12">
+            <pathText display="always" fill="#6C96E6" font-size="14" font-style="bold" k="name"
+              priority="-100" stroke="#FFFFFF" stroke-width="2.0" />
+        </rule>
+        <rule e="way" k="waterway" v="stream|canal" zoom-min="15">
+            <pathText display="always" fill="#6C96E6" font-size="12" font-style="bold" k="name"
+              priority="-100" stroke="#FFFFFF" stroke-width="2.0" />
+        </rule>
+        <rule e="way" k="natural|landuse" v="water|reservoir|basin">
+            <area fill="#B3DDFF" />
+            <rule e="any" k="*" v="*" zoom-min="14">
+                <caption display="always" fill="#6C96E6" font-size="12" k="name" priority="-100"
+                  stroke="#FFFFFF" stroke-width="2.0" />
+            </rule>
+        </rule>
+    </rule>
 
     <!-- ways -->
     <rule e="way" k="*" v="*">
@@ -862,7 +910,7 @@
                         <line stroke="#f9574b" stroke-width="0.25"/>
                     </rule>
                     <rule e="way" k="admin_level" v="2">
-                        <line stroke="#80ffff00" stroke-width="0.75"/>
+                        <line stroke="#f9574b" stroke-width="1"/>
                         <line stroke="#f9574b" stroke-dasharray="15, 15" stroke-width="0.25"/>
                     </rule>
                     <rule e="way" k="admin_level" v="1">

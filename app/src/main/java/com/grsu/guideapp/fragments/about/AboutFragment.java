@@ -12,9 +12,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.adapters.AboutAdapter;
 import com.grsu.guideapp.base.listeners.ItemClickListener;
@@ -27,6 +29,9 @@ public class AboutFragment extends Fragment implements ItemClickListener {
     @BindView(R.id.fragment_about_rv)
     RecyclerView fragment_about_rv;
 
+    @BindView(R.id.fragment_about_version)
+    TextView fragment_about_version;
+
     private NavigationDrawerActivity parentActivity;
     private Unbinder mUnBinder;
 
@@ -36,6 +41,9 @@ public class AboutFragment extends Fragment implements ItemClickListener {
             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_about, container, false);
         mUnBinder = ButterKnife.bind(this, view);
+
+        String text = getString(R.string.title_about_app, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
+        fragment_about_version.setText(text);
         parentActivity = (NavigationDrawerActivity) getActivity();
         fragment_about_rv.setHasFixedSize(true);
         fragment_about_rv.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -47,13 +55,13 @@ public class AboutFragment extends Fragment implements ItemClickListener {
     @Override
     public void onItemClick(View view, int position) {
         switch (position) {
-            case 0:
+            /*case 0:
                 openURL(R.string.nav_header_subtitle);
-                break;
-            case 1:
+                break;*/
+            case 0:
                 composeEmail();
                 break;
-            case 2:
+            case 1:
                 rateMe();
                 break;
         }
@@ -86,7 +94,7 @@ public class AboutFragment extends Fragment implements ItemClickListener {
 
     public List<AboutItem> getData() {
         List<AboutItem> items = new ArrayList<>();
-        items.add(new AboutItem(R.string.nav_header_title, R.string.action_about_openURL));
+        /*items.add(new AboutItem(R.string.nav_header_title, R.string.action_about_openURL));*/
         items.add(new AboutItem(R.string.title_about_contact_developer,
                 R.string.action_about_contact_developer));
         items.add(new AboutItem(R.string.title_about_rate_app, R.string.action_about_rate_app));

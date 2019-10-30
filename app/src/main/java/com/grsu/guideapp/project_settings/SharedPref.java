@@ -8,4 +8,5 @@ public class SharedPref {
     public static final String KEY_MAP_CONTENT = "map_content";
     public static final String KEY_MAP_DELETE_FILE = "map_delete_file";
     public static final String KEY_IS_3D_MODE = "is_3d_mode";
+    public static final String KEY_VERSION = "version";
 }

@@ -13,6 +13,10 @@ public class Category implements Serializable {
     @Expose
     private Language name;
 
+    @SerializedName("number")
+    @Expose
+    private Integer number;
+
     private final static long serialVersionUID = 2853086861039255112L;
 
     /**
@@ -25,9 +29,10 @@ public class Category implements Serializable {
      * @param id
      * @param name
      */
-    public Category(Integer id, Language name) {
+    public Category(Integer id, Language name, Integer number) {
         this.id = id;
         this.name = name;
+        this.number = number;
     }
 
     public Integer getId() {
@@ -36,5 +41,9 @@ public class Category implements Serializable {
 
     public Language getName() {
         return name;
+    }
+
+    public Integer getNumber() {
+        return number;
     }
 }

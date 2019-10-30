@@ -1,9 +1,12 @@
 package com.grsu.guideapp.adapters;
 
-import android.content.ContentValues;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import com.grsu.guideapp.database.Table.Types;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
+import com.grsu.guideapp.R;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CryptoUtils;
@@ -12,6 +15,11 @@ import com.grsu.guideapp.utils.StreamUtils;
 import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.FileOutputStream;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okio.BufferedSink;
+import okio.Okio;
 
 public class SaveAdapter {
 
@@ -19,7 +27,7 @@ public class SaveAdapter {
         File file = new File(Settings.CONTENT);
         FileOutputStream ostream = null;
         try {
-            Bitmap bitmap = Picasso.get().load(url).resize(200, 150).get();
+            Bitmap bitmap = Picasso.get().load(url)/*.resize(200, 150)*/.get();
             if (!file.exists()) {
                 file.mkdirs();
             }
@@ -35,53 +43,48 @@ public class SaveAdapter {
         }
     }
 
-    /*public static void saveIcon(Test helper, String url, long id) {
-        try {
-            Bitmap bitmap = Picasso.get().load(url).resize(64, 64).get();
-            byte[] bytes = StorageUtils.toByteArray(bitmap);
-            ContentValues values = new ContentValues();
-            values.put(Types.id_type, id);
-            values.put(Types.icon_type, bytes);
-            values.put(Types.is_checked, 1);
-            helper.getWritableDatabase().insertWithOnConflict(Types.icon_type, null, values, 4);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }*/
-
-    public static void saveIcon(Test helper, String url, long id) {
+    public static byte[] saveIcon(Test helper, String url) {
 
         byte[] bytes;
+        Resources resources = helper.mContext.getResources();
         try {
-            Bitmap bitmap = Picasso.get().load(url).resize(64, 64).get();
+            Bitmap bitmap = Picasso.get().load(url).resize(59, 75).get();
             bytes = StorageUtils.toByteArray(bitmap);
         } catch (Exception e) {
-            e.printStackTrace();
-            bytes = null;
+            Log.e("TAG", "saveIcon: " + e.getMessage(), e);
+            Drawable drawable = resources.getDrawable(R.drawable.noicon);
+            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+            bytes = StorageUtils.toByteArray(bitmap);
         }
-        ContentValues values = new ContentValues();
-        values.put(Types.id_type, id);
-
-        if (bytes == null) {
-            values.putNull(Types.icon_type);
-        } else {
-            values.put(Types.icon_type, bytes);
-        }
-
-        values.put(Types.is_checked, 1);
-        helper.getWritableDatabase().insertWithOnConflict(Types.name_table, null, values, 4);
+        return bytes;
     }
 
-    public static void saveIcon1(Test helper, String url, long id) {
+    public static void saveAudio(String url) {
+        if (url == null || url.isEmpty()) {
+            return;
+        }
+
+        File file = new File(Settings.CONTENT);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+
+        BufferedSink sink = null;
         try {
-            Bitmap bitmap = Picasso.get().load(url).resize(64, 64).get();
-            byte[] bytes = StorageUtils.toByteArray(bitmap);
-            ContentValues values = new ContentValues();
-            values.put(Types.icon_type, bytes);
-            helper.getWritableDatabase().update(Types.icon_type, values, "id_type = ?",
-                    new String[]{String.valueOf(id)});
+            Request request = new Request.Builder().url(url).build();
+            Response response = new OkHttpClient().newCall(request).execute();
+
+            if (response.isSuccessful() && response.body() != null) {
+                File downloadedFile = new File(Settings.CONTENT, CryptoUtils.hash(url));
+                Log.e("TAG", "saveAudio: " + CryptoUtils.hash(url));
+                sink = Okio.buffer(Okio.sink(downloadedFile));
+                sink.writeAll(response.body().source());
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            StreamUtils.closeStream(sink);
         }
     }
 }

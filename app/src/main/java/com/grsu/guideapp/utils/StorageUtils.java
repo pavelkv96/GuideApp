@@ -190,8 +190,7 @@ public class StorageUtils {
         throw new NullPointerException("Audio not found by path " + file.getAbsoluteFile());
     }
 
-    public static Bitmap getBitmap(Resources res, int drawableRes) {
-        Drawable drawable = res.getDrawable(drawableRes);
+    public static Bitmap getBitmap(Drawable drawable) {
         Canvas canvas = new Canvas();
         Bitmap bitmap = Bitmap
                 .createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(),

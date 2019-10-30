@@ -11,7 +11,7 @@ public class SplashInteractor implements SplashContract.SplashInteractor {
     private static final String TAG = SplashInteractor.class.getSimpleName();
     private AssetManager manager;
 
-    public SplashInteractor(AssetManager manager) {
+    SplashInteractor(AssetManager manager) {
         this.manager = manager;
     }
 
@@ -27,6 +27,9 @@ public class SplashInteractor implements SplashContract.SplashInteractor {
         App.getThread().diskIO(new Runnable() {
             @Override
             public void run() {
+                if (path.exists()){
+                    path.delete();
+                }
                 copyFile(path, name);
                 updated.onUpdated(50);
             }

@@ -13,6 +13,8 @@ public interface BaseView {
 
     void showToast(@StringRes int message);
 
+    void changeProgress(int progress);
+
     void hideProgress();
 
     View getContentView();

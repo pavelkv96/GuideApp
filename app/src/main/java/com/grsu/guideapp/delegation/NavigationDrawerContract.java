@@ -12,6 +12,8 @@ public interface NavigationDrawerContract {
 
         void openListRoutesFragment();
 
+        void openCatalogFragment();
+
         void showToastMessage(String message);
 
         NavigationDrawerActivity getActivity();

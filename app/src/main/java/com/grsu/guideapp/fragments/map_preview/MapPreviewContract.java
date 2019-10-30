@@ -8,6 +8,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.grsu.guideapp.base.BasePresenter;
 import com.grsu.guideapp.base.BaseView;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
+import com.grsu.guideapp.base.listeners.OnSuccessListener;
+import com.grsu.guideapp.models.DtoObject;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import java.util.List;
@@ -25,6 +27,12 @@ public interface MapPreviewContract extends OnFinishedListener {
         void removePoi();
 
         void showTurn(boolean visibility);
+
+        void showInfo();
+
+        void setInfoData(DtoObject object);
+
+        void hideInfo();
     }
 
     interface MapPreviewPresenter extends BasePresenter<MapPreviewViews> {
@@ -51,5 +59,7 @@ public interface MapPreviewContract extends OnFinishedListener {
         void getListPoi(OnFinishedListener<List<Poi>> listener, Integer id, String point, int radius);
 
         void getCountCheckedTypes(OnFinishedListener<Integer> listener);
+
+        void getObjectInfo(OnSuccessListener<DtoObject> listener, int id, String locale);
     }
 }

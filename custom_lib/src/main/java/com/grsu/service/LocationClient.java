@@ -36,14 +36,9 @@ public class LocationClient implements LocationListener {
         }
     }
 
-    public boolean isConnection() {
-        return MyService.isWork();
-    }
-
     @RequiresPermission("android.permission.ACCESS_FINE_LOCATION")
     public void disconnect() {
         Class.getInstance.unregisterCallback(this);
-        MyService.setWork(false);
         context.stopService(new Intent(context, MyService.class));
     }
 
@@ -66,36 +61,6 @@ public class LocationClient implements LocationListener {
             }
         }
         return bestLocation;
-    }
-
-    public void singleConnection() {
-        if (ContextCompat.checkSelfPermission(context, permission.ACCESS_FINE_LOCATION) == 0) {
-            context.startService(new Intent(context, MyService.class));
-            Class.getInstance.registerCallback(new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    Class.getInstance.unregisterCallback(this);
-                    context.stopService(new Intent(context, MyService.class));
-                    Log.e(TAG, "onLocationChanged: SINGLE REQUEST");
-                    listener.onChangedLocation(location);
-                }
-
-                @Override
-                public void onStatusChanged(String s, int i, Bundle bundle) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String s) {
-
-                }
-
-                @Override
-                public void onProviderDisabled(String s) {
-
-                }
-            });
-        }
     }
 
     @Override
@@ -133,7 +98,6 @@ public class LocationClient implements LocationListener {
         private int interval;
         private int distance;
         private Listener listener;
-        private boolean lastKnow;
 
         public Builder(Context context) {
             this.context = context;
@@ -146,11 +110,6 @@ public class LocationClient implements LocationListener {
 
         public Builder setDistance(int distance) {
             this.distance = distance;
-            return this;
-        }
-
-        public Builder useLastKnow(boolean b) {
-            this.lastKnow = b;
             return this;
         }
 

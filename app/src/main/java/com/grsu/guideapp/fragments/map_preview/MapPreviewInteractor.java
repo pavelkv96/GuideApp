@@ -2,7 +2,9 @@ package com.grsu.guideapp.fragments.map_preview;
 
 import android.os.Handler;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
+import com.grsu.guideapp.base.listeners.OnSuccessListener;
 import com.grsu.guideapp.database.Test;
+import com.grsu.guideapp.models.DtoObject;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import java.util.List;
@@ -42,6 +44,20 @@ public class MapPreviewInteractor implements MapPreviewContract.MapPreviewIntera
             @Override
             public void run() {
                 listener.onFinished(helper.getCountCheckedTypes());
+            }
+        });
+    }
+
+    @Override
+    public void getObjectInfo(final OnSuccessListener<DtoObject> listener, final int id, final String locale) {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    listener.onSuccess(helper.getObjectById(id, locale).get(0));
+                }catch (Exception e){
+                    listener.onFailure(e);
+                }
             }
         });
     }

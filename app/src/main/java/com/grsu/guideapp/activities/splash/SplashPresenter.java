@@ -1,5 +1,6 @@
 package com.grsu.guideapp.activities.splash;
 
+import com.grsu.guideapp.App;
 import com.grsu.guideapp.activities.splash.SplashContract.SplashInteractor.OnFinishedListener;
 import com.grsu.guideapp.activities.splash.SplashContract.SplashInteractor.OnUpdatedListener;
 import com.grsu.guideapp.activities.splash.SplashContract.SplashView;
@@ -13,7 +14,7 @@ public class SplashPresenter extends BasePresenterImpl<SplashView> implements On
     private SplashInteractor splashInteractor;
     private int progress = 0;
 
-    public SplashPresenter(SplashView splashView, SplashInteractor splashInteractor) {
+    SplashPresenter(SplashView splashView, SplashInteractor splashInteractor) {
         this.splashView = splashView;
         this.splashInteractor = splashInteractor;
     }
@@ -29,7 +30,12 @@ public class SplashPresenter extends BasePresenterImpl<SplashView> implements On
             progress += i;
             splashView.updateViewProgress(progress);
             if (progress == 100) {
-                onFinished();
+                App.getThread().mainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        onFinished();
+                    }
+                });
             }
         }
     }

@@ -1,251 +1,135 @@
 package com.grsu.guideapp.fragments.route_preview;
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnShowListener;
-import android.content.res.Resources;
-import android.location.Location;
-import android.support.annotation.NonNull;
+import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.base.listeners.OnFinishedListener;
+import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.base.listeners.OnLoadRoute;
-import com.grsu.guideapp.database.Table;
-import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewPresenter;
-import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.TestViews;
-import com.grsu.guideapp.models.Route;
-import com.grsu.guideapp.utils.CheckPermission;
-import com.grsu.guideapp.utils.MapUtils;
-import com.grsu.ui.bottomsheet.BottomSheetBehaviorGoogleMaps;
-import com.grsu.ui.bottomsheet.BottomSheetCallback;
+import com.grsu.guideapp.base.listeners.OnProgressListener;
+import com.grsu.guideapp.base.listeners.OnSuccessListener;
+import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.RouteInteractor;
+import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.RoutePresenter;
+import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.RouteViews;
+import com.grsu.guideapp.models.DtoRoute;
 
-public class RoutePreviewPresenter extends MapPreviewPresenter implements
-        RoutePreviewContract.TestPresenter,
-        BottomSheetCallback, OnLoadRoute<String> {
+class RoutePreviewPresenter extends BasePresenterImpl<RouteViews>
+        implements RoutePresenter, OnLoadRoute<Integer>, OnShowListener {
+
+    private ProgressDialog mProgressDialog;
+    private RouteInteractor mInteractor;
+
+    RoutePreviewPresenter(RouteInteractor pInteractor) {
+        mInteractor = pInteractor;
+    }
 
     private static final String TAG = RoutePreviewPresenter.class.getSimpleName();
-    private boolean flag = false;
-    private int isLoadRoute = 0;
-    private ProgressDialog mProgressDialog;
-
-    private TestViews testViews;
-    private RoutePreviewInteractor routePreviewInteractor;
-
-    RoutePreviewPresenter(TestViews mapViews, RoutePreviewInteractor mapInteractor) {
-        super(mapViews, mapInteractor);
-        testViews = mapViews;
-        routePreviewInteractor = mapInteractor;
-    }
-
-    @SuppressLint("SwitchIntDef")
-    @Override
-    public void onStateChanged(@NonNull View bottomSheet, int newState) {
-        switch (newState) {
-            case BottomSheetBehaviorGoogleMaps.STATE_DRAGGING: {
-                testViews.fabMyLocationScale(0);
-                Log.e(TAG, "onStateChanged: dragging");
-            }
-            break;
-            case BottomSheetBehaviorGoogleMaps.STATE_ANCHOR_POINT: {
-                Log.e(TAG, "onStateChanged: anchor_point");
-                testViews.mapSettings(false);
-
-            }
-            break;
-            case BottomSheetBehaviorGoogleMaps.STATE_EXPANDED: {
-                Log.e(TAG, "onStateChanged: expanded");
-            }
-            break;
-            case BottomSheetBehaviorGoogleMaps.STATE_COLLAPSED: {
-                testViews.fabMyLocationScale(1);
-                Log.e(TAG, "onStateChanged: collapsed");
-                testViews.mapSettings(true);
-            }
-            break;
-        }
-    }
 
     @Override
-    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-        float inPercent = (float) ((int) (slideOffset * 100)) / 100;
-        Log.e(TAG, "onSlide: " + slideOffset + "   " + inPercent);
-        testViews.updateViewSize(inPercent);
-    }
-
-    @Override
-    public void isLoadRoute(int isLoad) {
-        isLoadRoute = isLoad;
-        int imageRes = isLoadRoute > 0 ? R.drawable.ic_action_go : R.drawable.ic_download;
-        testViews.setFabActionGoImage(imageRes);
-    }
-
-    @Override
-    public void onMapClick(LatLng latLng) {
-        if (flag) {
-            flag = false;
-            testViews.showBehavior();
-        } else {
-            flag = true;
-            testViews.hideBehavior();
-        }
-    }
-
-    @Override
-    public void onChangedLocation(Location loc, LatLngBounds routeBounds, LatLngBounds mapBound) {
-        try {
-            LatLng latLng = MapUtils.toLatLng(loc);
-            LatLngBounds newBounds = MapUtils.getBounds(latLng, routeBounds, mapBound);
-            flag = true;
-
-            testViews.fabMyLocationEnabled(true);
-            testViews.mapMoveCamera(CameraUpdateFactory.newLatLngBounds(newBounds, 50));
-            testViews.updateMyLocationOverlay(loc);
-            testViews.hideBehavior();
-
-        } catch (NullPointerException ignore) {
-            Context context = testViews.getContentView().getContext();
-            String firstLine = context.getString(R.string.warning);
-            String secondLine = context.getString(R.string.you_are_out_of_map);
-
-            String message = String.format("%s\n%s", firstLine, secondLine);
-            testViews.fabMyLocationEnabled(true);
-            testViews.mapMoveCamera(CameraUpdateFactory.newLatLngBounds(routeBounds, 50));
-            testViews.showToast(message);
-        }
-    }
-
-    @Override
-    public void myLocationClick(Context context) {
-        if (CheckPermission.checkLocationPermission(context)) {
-            testViews.fabMyLocationEnabled(false);
-            testViews.getSingleMyLocation();
-        } else {
-            testViews.requestPermissions(CheckPermission.groupLocation, 1);
-        }
-    }
-
-    @Override
-    public void actionGoClick(Context context, int id_route) {
-        if (isLoadRoute == Table.NOT_DOWNLOAD) {
-            if (CheckPermission.checkStoragePermission(context)) {
-                if (App.isOnline()) {
-                    onStartLoad(id_route);
-                } else {
-                    testViews.showToast(context.getString(R.string.no_internet_connection));
-                }
-            } else {
-                testViews.requestPermissions(CheckPermission.groupStorage, 2);
-            }
-        } else {
-            if (CheckPermission.checkLocationPermission(context)) {
-                testViews.openMapFragment();
-            } else {
-                testViews.requestPermissions(CheckPermission.groupLocation, 3);
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, int[] grantResults) {
-        if (CheckPermission.isAllGranted(grantResults)) {
-            if (requestCode == 1) {
-                testViews.fabMyLocationEnabled(false);
-                testViews.getSingleMyLocation();
-            }
-            if (requestCode == 3) {
-                testViews.openMapFragment();
-            }
-        } else {
-            testViews.showToast(R.string.error_snackbar_do_not_have_permission_access_location);
-        }
-    }
-
-    @Override
-    public int fragmentChangeSize() {
-        int top = (int) testViews.getActionBarSize();
-        if (testViews.getBehaviorState() == BottomSheetBehaviorGoogleMaps.STATE_COLLAPSED) {
-            testViews.mapSettings(true);
-            testViews.fabMyLocationScale(1);
-            int max = testViews.getCoordinatorLayoutHeight();
-            return max - testViews.getBehaviorPeekHeight() - top;
-        } else {
-            testViews.mapSettings(false);
-            return testViews.getBehaviorAnchorPoint() - top;
-        }
-    }
-
-    @Override
-    public int updateViewSize(float offset, LatLngBounds bounds) {
-        int max = testViews.getCoordinatorLayoutHeight();
-        int top = (int) testViews.getActionBarSize();
-        int behaviorHeight = testViews.getBehaviorPeekHeight();
-        int height;
-        if (offset <= .33f && offset >= 0) {
-            height = (int) (max - max * offset - behaviorHeight * (1 - offset) - top);
-            testViews.mapMoveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
-        } else {
-            if (offset < 0) {
-                height = (int) (max - behaviorHeight * (1 + offset) - top);
-                testViews.fabMyLocationScale(1 + offset);
-                testViews.fabActionGoScale(1 + offset);
-            } else {
-                height = testViews.getMapFragmentHeight();
-            }
-        }
-
-        return height;
-    }
-
-    @Override
-    public void isDownLoad(int id_route, String locale) {
-        routePreviewInteractor.isDownLoad(new OnFinishedListener<Route>() {
+    public void getRouteById(int id, String locale) {
+        mInteractor.getRouteById(new OnSuccessListener<DtoRoute>() {
             @Override
-            public void onFinished(final Route route) {
+            public void onSuccess(final DtoRoute route) {
                 App.getThread().mainThread(new Runnable() {
                     @Override
                     public void run() {
-                        isLoadRoute(route.getIsFull());
-                        testViews.setContent(route);
+                        if (mView != null) {
+                            mView.setData(route);
+                        }
                     }
                 });
             }
-        }, id_route, locale);
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                App.getThread().mainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mView != null) {
+                            mView.closeFragment();
+                            mView.showToast(throwable.getMessage());
+                        }
+                    }
+                });
+            }
+        }, id, locale);
     }
 
-    private void showProgress(String title, String message) {
+    @Override
+    public void downloadRoute(int id) {
+        onStartLoad(id);
+    }
+
+    @Override
+    public void updateRoute(final int id) {
+        Context context = getView().getContentView().getContext();
+        mView.showProgress("", context.getString(R.string.updating_route));
+        mInteractor.updateRoute(new OnProgressListener<String>() {
+            @Override
+            public void onProgress(final int progress) {
+                App.getThread().mainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mView.changeProgress(progress);
+                    }
+                });
+            }
+
+            @Override
+            public void onSuccess(String s) {
+                Log.e(TAG, "onSuccess: ");
+                App.getThread().mainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Context context = mView.getContentView().getContext();
+                        String locale = context.getString(R.string.locale);
+                        getRouteById(id, locale);
+                        mView.hideProgress();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                App.getThread().mainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mView.hideProgress();
+                        mView.showToast(R.string.error_message_update);
+                        Log.e(TAG, "onFailure: " + throwable.getMessage(), throwable);
+                    }
+                });
+            }}, id);
+    }
+
+    @Override
+    public void openPreviewRoute(int id) {
+        mView.openFragment(id);
+    }
+
+    @Override
+    public void openRoute(Bundle bundle) {
+        mView.openFragment(bundle);
+    }
+
+    private void showProgress(int title, String message) {
         if (mProgressDialog == null || !mProgressDialog.isShowing()) {
-            mProgressDialog = new ProgressDialog(testViews.getContentView().getContext());
-
+            mProgressDialog = new ProgressDialog(mView.getContentView().getContext());
             mProgressDialog.setTitle(title);
+            String cancel = mView.getContentView().getContext().getString(R.string.cancel);
+            int negative = ProgressDialog.BUTTON_NEGATIVE;
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setButton(negative, cancel, (DialogInterface.OnClickListener) null);
 
-            String cancel = Resources.getSystem().getString(android.R.string.cancel);
-            mProgressDialog.setButton(ProgressDialog.BUTTON_NEGATIVE, cancel,
-                    (DialogInterface.OnClickListener) null);
-
-            mProgressDialog.setOnShowListener(new OnShowListener() {
-                @Override
-                public void onShow(DialogInterface dialogInterface) {
-                    final ProgressDialog dialog = (ProgressDialog) dialogInterface;
-                    final Button button = dialog.getButton(ProgressDialog.BUTTON_NEGATIVE);
-                    button.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            dialog.setMessage("Сanceled download...");
-                            button.setVisibility(View.GONE);
-                            routePreviewInteractor.setFlag(false);
-                        }
-                    });
-                }
-            });
+            mProgressDialog.setOnShowListener(this);
             mProgressDialog.setMessage(message);
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
@@ -261,27 +145,31 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
     }
 
     @Override
-    public void onSuccess(final String s) {
-        isLoadRoute = Table.DOWNLOAD;
+    public void onStartLoad(int id_route) {
+        if (mView != null) {
+            mInteractor.saveRoute(this, id_route);
+            int title = R.string.load_route;
+            Context context = mView.getContentView().getContext();
+            String message = context.getString(R.string.wait_please);
+            showProgress(title, message);
+        }
+    }
+
+    @Override
+    public void onSuccess(@StringRes final Integer res) {
         App.getThread().mainThread(new Runnable() {
             @Override
             public void run() {
                 hideProgress();
-                testViews.setFabActionGoImage(R.drawable.ic_action_go);
-                testViews.showToast(s);
+                if (mView != null) {
+                    mView.showToast(res);
+                    mView.visibleDownloadRouteButton(false);
+                    mView.visibleStartRouteButton(true);
+                    mView.visibleUpdateRouteButton(false);
+                    mView.visiblePreviewRouteButton(false);
+                }
             }
         });
-    }
-
-    @Override
-    public void onStartLoad(int id_route) {
-        routePreviewInteractor.loadRoute(this, id_route);
-        Context context = testViews.getContentView().getContext();
-
-        String title = context.getString(R.string.load_route);
-        String message = context.getString(R.string.wait_please);
-
-        showProgress(title, message);
     }
 
     @Override
@@ -290,18 +178,49 @@ public class RoutePreviewPresenter extends MapPreviewPresenter implements
             @Override
             public void run() {
                 hideProgress();
-                testViews.showToast(throwable.getMessage() + "\nRetry again later");
+                if (mView != null) {
+                    String s = mView.getContentView().getContext().getString(R.string.retry_again_later);
+                    mView.showToast(throwable.getMessage() + "\n" + s);
+                }
             }
         });
     }
 
     @Override
     public void onCancelLoad() {
-        hideProgress();
         App.getThread().mainThread(new Runnable() {
             @Override
             public void run() {
-                testViews.showToast(android.R.string.cancel);
+                hideProgress();
+                if (mView != null) {
+                    mView.showToast(android.R.string.cancel);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onShow(DialogInterface dialogInterface) {
+        final ProgressDialog dialog = (ProgressDialog) dialogInterface;
+        final Button button = dialog.getButton(ProgressDialog.BUTTON_NEGATIVE);
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.setMessage("Сanceled download...");
+                button.setVisibility(View.GONE);
+                mInteractor.setCancel(true);
+            }
+        });
+    }
+
+    @Override
+    public void onProgress(final int progress) {
+        App.getThread().mainThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.setProgress(progress);
+                }
             }
         });
     }

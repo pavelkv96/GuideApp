@@ -1,5 +1,6 @@
 package com.grsu.guideapp.delegation;
 
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
@@ -12,6 +13,10 @@ import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseActivityDelegate;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
+import com.grsu.guideapp.fragments.about.AboutFragment;
+import com.grsu.guideapp.fragments.categories.CatalogFragment;
+import com.grsu.guideapp.fragments.setting.SettingFragment;
+import com.grsu.guideapp.fragments.tabs.list_routes.ListRoutesFragment;
 
 public class NavigationDrawerDelegate
         extends BaseActivityDelegate<NavigationDrawerView, NavigationDrawerPresenter>
@@ -27,6 +32,11 @@ public class NavigationDrawerDelegate
     @Override
     public void onCreate(NavigationDrawerPresenter presenter) {
         super.onCreate(presenter);
+    }
+
+    @Override
+    protected void setContentView() {
+        super.setContentView();
         configureDrawer();
     }
 
@@ -43,6 +53,21 @@ public class NavigationDrawerDelegate
         onNavigationItemSelected(mNavigationView.getMenu().findItem(R.id.nav_slideshow));
     }
 
+    public Integer getSelectedItem() {
+        MenuItem item = mNavigationView.getCheckedItem();
+        return item == null ? null : item.getItemId();
+    }
+
+    public void setSelectedItem(@IdRes final int idItem) {
+        onNavigationItemSelected(mNavigationView.getMenu().findItem(idItem));
+        mNavigationView.post(new Runnable() {
+            @Override
+            public void run() {
+                mNavigationView.setCheckedItem(idItem);
+            }
+        });
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -50,16 +75,16 @@ public class NavigationDrawerDelegate
                 //mPresenter.getView().openMapFragment();
                 break;
             case R.id.nav_gallery:
-
+                mPresenter.replaceFragment(new CatalogFragment());
                 break;
             case R.id.nav_slideshow:
-                mPresenter.getView().openListRoutesFragment();
+                mPresenter.replaceFragment(new ListRoutesFragment());
                 break;
             case R.id.nav_settings:
-                mPresenter.getView().openSettingsFragment();
+                mPresenter.replaceFragment(new SettingFragment());
                 break;
             case R.id.nav_share:
-                mPresenter.getView().openAboutFragment();
+                mPresenter.replaceFragment(new AboutFragment());
                 break;
             case R.id.nav_send:
 

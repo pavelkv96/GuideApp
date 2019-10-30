@@ -9,17 +9,17 @@ import java.io.Serializable;
 
 public class Poi implements Serializable {
 
-    private String id;
+    private Integer id;
     private String location;
     private Bitmap icon;
 
-    public Poi(String id, String location, Bitmap icon) {
+    public Poi(Integer id, String location, Bitmap icon) {
         this.id = id;
         this.location = location;
         this.icon = icon;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -35,6 +35,6 @@ public class Poi implements Serializable {
         byte[] blob = cursor.getBlob(2);
         Bitmap bitmap = BitmapFactory.decodeByteArray(blob, 0, blob.length);
 
-        return new Poi(cursor.getString(0), cursor.getString(1), bitmap);
+        return new Poi(cursor.getInt(0), cursor.getString(1), bitmap);
     }
 }

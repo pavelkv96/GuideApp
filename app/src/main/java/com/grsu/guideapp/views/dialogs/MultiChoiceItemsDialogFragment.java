@@ -9,6 +9,7 @@ import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.database.Test;
@@ -35,10 +36,15 @@ public class MultiChoiceItemsDialogFragment extends DialogFragment implements On
         }
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        cur = helper.getAllTypes(getResources().getString(R.string.locale));
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        cur = helper.getAllTypes(getResources().getString(R.string.locale));
         Builder builder = new Builder(getActivity());
         builder.setTitle(getResources().getString(R.string.dialog_types_objects));
         builder.setMultiChoiceItems(cur, cur.getColumnName(1), cur.getColumnName(2), this);

@@ -67,8 +67,6 @@ public class Animator implements Runnable {
             CameraPosition camera = createCamera(newPosition, bearing);
             map.moveCamera(CameraUpdateFactory.newCameraPosition(camera));
             mHandler.postDelayed(this, 10);
-        } else {
-            stopAnimation();
         }
     }
 

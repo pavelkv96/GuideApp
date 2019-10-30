@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <color name="colorPrimary">#3F51B5</color>
-  <color name="colorPrimaryDark">#303F9F</color>
+  <color name="colorPrimary">#009966</color>
+  <color name="colorPrimaryDark">#009966</color>
   <color name="colorAccent">#FF4083</color>
   <color name="blue">#4285F4</color>
   <color name="grayDark">#616161</color>
@@ -10,4 +10,5 @@
   <color name="myLocation1">#97BAF4</color>
   
   <color name="light_blue">#4c84ff</color>
+  <color name="light_gray">#C2C5CF</color>
 </resources>

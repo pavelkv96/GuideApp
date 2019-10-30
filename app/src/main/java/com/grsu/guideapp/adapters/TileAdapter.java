@@ -2,6 +2,8 @@ package com.grsu.guideapp.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.support.annotation.Nullable;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -39,6 +41,7 @@ public class TileAdapter {
     private static RenderThemeFuture theme;
     private static DatabaseRenderer renderer;
     private static String mProvider;
+    private static int imageSize;
 
     private static MultiMapDataStore mapDatabase;
 
@@ -49,7 +52,7 @@ public class TileAdapter {
         } catch (Exception ignore) {
         } finally {
             if (renderTheme == null) {
-                renderTheme = InternalRenderTheme.OSMARENDER;
+                renderTheme = InternalRenderTheme.DEFAULT;
             }
         }
         mProvider = provider;
@@ -64,6 +67,7 @@ public class TileAdapter {
             throw new RuntimeException("Must call AndroidGraphicFactory.createInstance(app)");
         }
 
+        imageSize = VERSION.SDK_INT < VERSION_CODES.M ? 256 : 512;
         InMemoryTileCache cache = new InMemoryTileCache(2);
         TileBasedLabelStore labelStore = new TileBasedLabelStore(cache.getCapacityFirstLevel());
         renderer = new DatabaseRenderer(mapDatabase, instance, cache, labelStore, true, true, null);
@@ -102,7 +106,9 @@ public class TileAdapter {
         Bitmap image = renderTile(pMapTileIndex);
 
         if (image != null) {
-            image = Bitmap.createScaledBitmap(image, 256,256, false);
+            if (imageSize != 512) {
+                image = Bitmap.createScaledBitmap(image, imageSize, imageSize, false);
+            }
             ByteArrayInputStream bais = null;
             try {
                 byte[] bitmapdata = StorageUtils.toByteArray(image);

@@ -1,6 +1,8 @@
 package com.grsu.guideapp.activities.splash;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -10,7 +12,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
-import com.google.gson.Gson;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.R;
@@ -26,18 +27,19 @@ import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.StorageUtils;
 import com.grsu.ui.progress.CustomProgressBar;
+import com.grsu.ui.view.AppButton;
 import java.io.File;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SplashActivity extends BaseActivity<SplashPresenter> implements SplashView {
+public class SplashActivity extends BaseActivity<SplashPresenter> implements SplashView, Runnable {
 
     @BindView(R.id.current_progress)
     CustomProgressBar progress_view;
 
     @BindView(R.id.btn_activity_splash_next)
-    Button btn_activity_splash_next;
+    AppButton btn_activity_splash_next;
 
     @BindView(R.id.btn_activity_splash_settings)
     Button btn_activity_splash_settings;
@@ -47,6 +49,11 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
 
     @BindView(R.id.tv_activity_splash_description)
     TextView tv_activity_splash_description;
+
+    @BindView(R.id.btn_activity_splash_close)
+    AppButton btn_activity_splash_close;
+
+    private Handler mHandler;
 
     @NonNull
     @Override
@@ -58,11 +65,25 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        if (!preferences.contains(SharedPref.KEY_VERSION)){
+            preferences.edit().remove(SharedPref.KEY_SPLASH).remove(SharedPref.KEY_VERSION).apply();
+        } else {
+            int version = preferences.getInt(SharedPref.KEY_VERSION, 0);
+            if (version < BuildConfig.VERSION_CODE) {
+                preferences.edit().remove(SharedPref.KEY_SPLASH).remove(SharedPref.KEY_VERSION).apply();
+            }
+        }
         boolean isContains = preferences.contains(SharedPref.KEY_SPLASH);
         if (isContains && CheckPermission.checkStoragePermission(this)) {
             openActivity();
             if (App.isOnline()) {
-                checkUpdate();
+                App.getThread().diskIO(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkUpdate();
+                    }
+                });
             }
         }
     }
@@ -108,11 +129,8 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
         btn_activity_splash_settings.setVisibility(View.VISIBLE);
         btn_activity_splash_next.setVisibility(View.GONE);
 
-        String s = "Предоставте доступ";
-        String text = "Предоставте приложению доступ к памяти в настройках вашего устройства, иначе использовать приложение будет невозможно.";
-
-        tv_activity_splash_title.setText(s);
-        tv_activity_splash_description.setText(text);
+        tv_activity_splash_title.setText(R.string.provide_access);
+        tv_activity_splash_description.setText(R.string.provide_access_description);
     }
 
     @Override
@@ -127,25 +145,49 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
 
     @Override
     public void openActivity() {
+        if (!preferences.contains(SharedPref.KEY_VERSION)){
+            preferences.edit().putInt(SharedPref.KEY_VERSION, BuildConfig.VERSION_CODE).apply();
+        }
+
         if (!preferences.contains(SharedPref.KEY_SPLASH)) {
             preferences.edit().putBoolean(SharedPref.KEY_SPLASH, true).apply();
         }
-        startActivity(NavigationDrawerActivity.newIntent(this));
-        finish();
+        if (mHandler == null) {
+            mHandler = new Handler(Looper.getMainLooper());
+        }
+
+        setContentView(View.inflate(this, R.layout.fragment_logotype, null));
+
+        mHandler.postDelayed(this, 2 * 1000);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mHandler != null) {
+            mHandler.removeCallbacks(this);
+        }
     }
 
     public void otherContent() {
         progress_view.setVisibility(View.VISIBLE);
-        File photos = new File(Settings.CONTENT);
-        if (!photos.exists()) {
-            photos.mkdirs();
-        }
+
         File file = new File(getFilesDir(), Settings.ZOOM_TABLE);
         File map = new File(StorageUtils.getDatabasePath(this), Settings.MAP_FILE);
-        StorageUtils.copyAssetsFolder(photos, "photo", getAssets());
-
+        File data = new File(StorageUtils.getDatabasePath(this), Settings.DATABASE_INFORMATION_NAME);
+        App.getThread().diskIO(new Runnable() {
+            @Override
+            public void run() {
+                File photos = new File(Settings.CONTENT);
+                if (!photos.exists()) {
+                    photos.mkdirs();
+                }
+                StorageUtils.copyAssetsFolder(photos, "photo", getAssets());
+            }
+        });
         mPresenter.copyFromAssets(file, Settings.ZOOM_TABLE);
         mPresenter.copyFromAssets(map, Settings.MAP_FILE);
+        mPresenter.copyFromAssets(data, Settings.DATABASE_INFORMATION_NAME);
     }
 
     private void checkUpdate() {
@@ -159,15 +201,20 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
         root.enqueue(new Callback<Root>() {
             @Override
             public void onResponse(@NonNull Call<Root> call, @NonNull Response<Root> response) {
+                Log.e("TAG", "onResponse: " + call.request().url());
                 if (response.body() != null) {
                     SparseArray<Timestamp> updateIds = new SparseArray<>();
-                    for (Datum datum : response.body().getDatums()){
-                        updateIds.put(datum.getId(), datum.getData().getRoute().getTimestamp());
+                    for (Datum datum : response.body().getDatums()) {
+                        Log.e("TAG", "onResponse: " + datum.getId() + "   " + datum.getTimestamp().getUpdatedAt());
+                        if (datum.getData() != null && datum.getData().getRoute() != null)
+//                        updateIds.put(datum.getId(), datum.getData().getRoute().getTimestamp());
+                        {
+                            updateIds.put(datum.getId(), datum.getTimestamp());
+                        }
                     }
                     new Test(SplashActivity.this).setHaveUpdate(updateIds);
                 }
-                Log.e("TAG", "onResponse: " + call.request().url());
-                Log.e("TAG", "onResponse: " + new Gson().toJson(response.body()));
+                //Log.e("TAG", "onResponse: " + new Gson().toJson(response.body()));
             }
 
             @Override
@@ -175,5 +222,11 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
                 Log.e("TAG", "onFailure: " + t.getMessage(), t);
             }
         });
+    }
+
+    @Override
+    public void run() {
+        startActivity(NavigationDrawerActivity.newIntent(this));
+        finish();
     }
 }

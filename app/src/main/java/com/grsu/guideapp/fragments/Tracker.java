@@ -1,7 +1,7 @@
 package com.grsu.guideapp.fragments;
 
-import static android.content.Context.LOCATION_SERVICE;
 import static android.location.LocationManager.GPS_PROVIDER;
+import static android.location.LocationManager.NETWORK_PROVIDER;
 
 import android.location.Location;
 import android.location.LocationListener;
@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +33,8 @@ public class Tracker extends Fragment implements LocationListener {
     @BindView(R.id.tv_fragment_tracker_data)
     TextView data;
     private LocationManager mLocationManager = null;
-    private static final int INTERVAL = 0;
-    private static final float DISTANCE = 10;
+    private static final int INTERVAL = 1000;
+    private static final float DISTANCE = 0;
     FileOutputStream stream = null;
 
     @Nullable
@@ -46,7 +47,7 @@ public class Tracker extends Fragment implements LocationListener {
     }
 
     @OnClick(R.id.btn_fragment_tracker_start)
-    public void start(View view) {
+    public void start() {
         initializeLocationManager();
 
         File file = new File(StorageUtils.getStorage() + "/tracker.txt");
@@ -57,13 +58,14 @@ public class Tracker extends Fragment implements LocationListener {
             file.createNewFile();
             stream = new FileOutputStream(file);
             mLocationManager.requestLocationUpdates(GPS_PROVIDER, INTERVAL, DISTANCE, Tracker.this);
+            mLocationManager.requestLocationUpdates(NETWORK_PROVIDER, INTERVAL, DISTANCE, Tracker.this);
         } catch (SecurityException | IllegalArgumentException | IOException e) {
             e.printStackTrace();
         }
     }
 
     @OnClick(R.id.btn_fragment_tracker_stop)
-    public void stop(View view) {
+    public void stop() {
 
         StreamUtils.closeStream(stream);
         if (mLocationManager != null) {
@@ -76,7 +78,7 @@ public class Tracker extends Fragment implements LocationListener {
 
     private void initializeLocationManager() {
         if (mLocationManager == null && getActivity() != null) {
-            mLocationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
+            mLocationManager = ContextCompat.getSystemService(getActivity(), LocationManager.class);
         }
     }
 
@@ -85,10 +87,11 @@ public class Tracker extends Fragment implements LocationListener {
     public void onLocationChanged(Location location) {
         Logs.e("TAG", location.toString());
         LatLng latLng = MapUtils.toLatLng(location);
-        data.setText(latLng.toString());
+        String text = location.getProvider() + "  " + location.getAccuracy() + "   " + latLng.toString() + "  " + location.getBearing();
+        data.setText(text);
         try {
-            stream.write(String.valueOf("latLngList.add(new LatLng(" + latLng.latitude + ", "
-                    + latLng.longitude + "));\n").getBytes());
+            stream.write(("latLngList.add(new LatLng(" + latLng.latitude + ", " + latLng.longitude
+                    + "));   " + location.getBearing() + "\n").getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }

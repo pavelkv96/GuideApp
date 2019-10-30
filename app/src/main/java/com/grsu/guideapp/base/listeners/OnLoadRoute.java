@@ -1,12 +1,8 @@
 package com.grsu.guideapp.base.listeners;
 
-public interface OnLoadRoute<Task> {
+public interface OnLoadRoute<Task> extends OnProgressListener<Task> {
 
     void onStartLoad(int i);
-
-    void onSuccess(Task task);
-
-    void onFailure(Throwable throwable);
 
     void onCancelLoad();
 }

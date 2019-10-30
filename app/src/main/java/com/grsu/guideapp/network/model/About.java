@@ -9,9 +9,6 @@ public class About implements Serializable {
     @SerializedName("full")
     @Expose
     private Language full;
-    @SerializedName("short")
-    @Expose
-    private Language shorted;
     private final static long serialVersionUID = 3587333965453276249L;
 
     /**
@@ -23,19 +20,13 @@ public class About implements Serializable {
     /**
      *
      * @param full
-     * @param shorted
      */
-    public About(Language full, Language shorted) {
+    public About(Language full) {
         super();
         this.full = full;
-        this.shorted = shorted;
     }
 
     public Language getFull() {
         return full;
-    }
-
-    public Language getShort() {
-        return shorted;
     }
 }

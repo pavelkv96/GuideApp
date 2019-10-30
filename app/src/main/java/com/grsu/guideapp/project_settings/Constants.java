@@ -30,6 +30,10 @@ public class Constants {
     public static final String KEY_NAME_PLACE_RECORD = "name_place_record";
     public static final String KEY_MULTI_CHOICE_ITEMS = "multi_choice_items";
     public static final String KEY_SINGLE_CHOICE_ITEM = "single_choice_item";
+    public static final String KEY_ID_TYPE = "ID_TYPE";
+    public static final String KEY_NAME_TYPE = "NAME_TYPE";
+    public static final String KEY_ID_OBJECT = "ID_OBJECT";
+    public static final String KEY_NAVIGATION_ITEM = "NAVIGATION_ITEM";
 
     //Notification action keys and chanel
     public static final String NOTIFY_PREVIOUS = "NOTIFY_PREVIOUS";

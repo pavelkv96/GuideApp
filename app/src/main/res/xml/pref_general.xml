@@ -20,6 +20,9 @@
     <Preference
       android:key="map_delete_file"
       android:title="@string/view_refresh_map_file"/>
+    <!--<Preference
+      android:key="newIntent"
+      android:title="@string/view_refresh_map_file"/>-->
 
   </PreferenceCategory>
 

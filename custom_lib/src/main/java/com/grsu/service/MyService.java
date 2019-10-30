@@ -17,13 +17,11 @@ public class MyService extends Service {
     private LocationManager manager;
     static int interval = 10000;
     static float distance = -1f;
-    private static boolean isWork;
 
     @RequiresPermission(permission.ACCESS_FINE_LOCATION)
     @Override
     public void onCreate() {
         super.onCreate();
-        isWork = true;
         manager = ContextCompat.getSystemService(this, LocationManager.class);
         if (manager == null) {
             return;
@@ -57,19 +55,10 @@ public class MyService extends Service {
     @RequiresPermission(permission.ACCESS_FINE_LOCATION)
     @Override
     public void onDestroy() {
-        isWork = false;
         Log.e(TAG, "onDestroy");
         if (manager != null) {
             manager.removeUpdates(Class.getInstance);
         }
         super.onDestroy();
-    }
-
-    public static boolean isWork() {
-        return isWork;
-    }
-
-    public static void setWork(boolean isWork) {
-        MyService.isWork = isWork;
     }
 }

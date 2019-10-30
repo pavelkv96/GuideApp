@@ -1,77 +1,69 @@
 package com.grsu.guideapp.fragments.route_preview;
 
-import android.location.Location;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
+import android.support.v4.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.widget.FrameLayout;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindView;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
+import butterknife.OnClick;
 import com.grsu.guideapp.R;
+import com.grsu.guideapp.activities.route.RouteActivity;
+import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.fragments.map.MapFragment;
-import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewFragment;
-import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.TestViews;
-import com.grsu.guideapp.models.Route;
+import com.grsu.guideapp.fragments.open_route.OpenRouteFragment;
+import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.RoutePresenter;
+import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.RouteViews;
+import com.grsu.guideapp.models.DtoRoute;
+import com.grsu.guideapp.models.Names;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.CheckPermission;
-import com.grsu.guideapp.utils.CryptoUtils;
-import com.grsu.service.Listener;
-import com.grsu.service.LocationClient;
-import com.grsu.ui.bottomsheet.BottomSheetBehaviorGoogleMaps;
+import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.RequestCreator;
 
-public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresenter> implements TestViews,
-        OnClickListener, Listener, OnGlobalLayoutListener {
+public class RoutePreviewFragment extends BaseFragment<RoutePresenter, RouteActivity>
+        implements RouteViews {
 
     private static final String TAG = RoutePreviewFragment.class.getSimpleName();
-    private BottomSheetBehaviorGoogleMaps behavior;
-    private CoordinatorLayout coordinatorLayout;
-    private FrameLayout fragment;
-    private FloatingActionButton fabMyLocation;
-    private FloatingActionButton fabActionGo;
-    private LocationClient client;
-    private Bundle bundle;
 
-    @BindView(R.id.tv_bottom_sheet_title)
-    TextView tv_bottom_sheet_title;
+    @BindView(R.id.tv_fragment_route_preview_description)
+    TextView description;
 
-    @BindView(R.id.tv_bottom_sheet_description)
-    TextView tv_bottom_sheet_description;
+    @BindView(R.id.tv_fragment_route_preview_distance)
+    TextView distance;
 
-    @BindView(R.id.tv_bottom_sheet_route_distance)
-    TextView tv_bottom_sheet_route_distance;
+    @BindView(R.id.tv_fragment_route_preview_duration)
+    TextView duration;
 
-    @BindView(R.id.tv_bottom_sheet_route_duration)
-    TextView tv_bottom_sheet_route_duration;
+    @BindView(R.id.iv_fragment_route_preview_image)
+    ImageView image;
 
-    @BindView(R.id.iv_bottom_sheet_route_image)
-    ImageView iv_bottom_sheet_route_image;
+    @BindView(R.id.btn_fragment_route_preview_start)
+    Button startRoute;
+
+    @BindView(R.id.btn_fragment_route_preview_map)
+    Button openPreview;
+
+    @BindView(R.id.btn_fragment_route_preview_download)
+    Button downloadRoute;
+
+    @BindView(R.id.btn_fragment_route_preview_update)
+    Button updateRoute;
+
+    private int id = -1;
+    private Bundle mBundle;
 
     @NonNull
     @Override
-    protected RoutePreviewPresenter getPresenterInstance() {
-        Test helper = new Test(getActivity);
-        RoutePreviewInteractor interactor = new RoutePreviewInteractor(helper, getActivity);
-        return new RoutePreviewPresenter(this, interactor);
-    }
-
-    @Override
-    protected String getTitle() {
-        return "Test";
+    protected RoutePresenter getPresenterInstance() {
+        return new RoutePreviewPresenter(new RoutePreviewInteractor(new Test(getContext())));
     }
 
     @Override
@@ -79,160 +71,31 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
         return R.layout.fragment_route_preview;
     }
 
+    @Override
+    protected String getTitle() {
+        return "Error name";
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-
-        String name = getTitle();
-        bundle = getArguments();
-        if (bundle != null) {
-            route = bundle.getInt(Constants.KEY_ID_ROUTE);
-            name = bundle.getString(Constants.KEY_NAME_ROUTE);
-            LatLng southwest = CryptoUtils.decodeP(bundle.getString(Constants.KEY_SOUTHWEST));
-            LatLng northeast = CryptoUtils.decodeP(bundle.getString(Constants.KEY_NORTHEAST));
-            bounds = new LatLngBounds(southwest, northeast);
-        }
-
         super.onCreateView(inflater, container, savedInstanceState);
 
-        initViews();
-        mPresenter.isDownLoad(route, getString(R.string.locale));
-        getActivity.setTitleToolbar(name);
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(this);
-        client = new LocationClient.Builder(getContext()).addListener(this).build();
+        getTitle();
+
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            mBundle = bundle;
+            id = bundle.getInt(Constants.KEY_ID_ROUTE);
+            String title = bundle.getString(Constants.KEY_NAME_ROUTE, getTitle());
+            getActivity.setTitleToolbar(title);
+            mPresenter.getRouteById(id, getString(R.string.locale));
+        } else {
+            closeFragment();
+        }
 
         return rootView;
-    }
-
-    @Override
-    public void onPause() {
-        if (CheckPermission.checkLocationPermission(getActivity)) {
-            hideProgress();
-            client.disconnect();
-        }
-        super.onPause();
-    }
-
-    void initViews() {
-        coordinatorLayout = rootView.findViewById(R.id.coordinator_layout);
-
-        fabMyLocation = rootView.findViewById(R.id.fab_my_location);
-        fabMyLocation.setOnClickListener(this);
-        fabActionGo = rootView.findViewById(R.id.fab_action_go);
-        fabActionGo.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mPresenter.actionGoClick(getActivity, route);
-            }
-        });
-
-        fragment = rootView.findViewById(R.id.map_include);
-
-        View bottomSheet = rootView.findViewById(R.id.bottom_sheet);
-        behavior = BottomSheetBehaviorGoogleMaps.from(bottomSheet);
-        behavior.addBottomSheetCallback(mPresenter);
-        behavior.setState(BottomSheetBehaviorGoogleMaps.STATE_ANCHOR_POINT);
-    }
-
-    @Override
-    public void updateViewSize(float offset) {
-        LayoutParams params = fragment.getLayoutParams();
-        params.height = mPresenter.updateViewSize(offset, bounds);
-        fragment.setLayoutParams(params);
-    }
-
-    @Override
-    public void showBehavior() {
-        behavior.setHideable(false);
-        behavior.setState(BottomSheetBehaviorGoogleMaps.STATE_COLLAPSED);
-    }
-
-    @Override
-    public void hideBehavior() {
-        behavior.setHideable(true);
-        behavior.setState(BottomSheetBehaviorGoogleMaps.STATE_HIDDEN);
-    }
-
-    @Override
-    public int getBehaviorState() {
-        return behavior.getState();
-    }
-
-    @Override
-    public void updateMyLocationOverlay(Location location) {
-        myLocation.setLocation(location);
-    }
-
-    @Override
-    public void getSingleMyLocation() {
-        client.singleConnection();
-        String title = getString(R.string.device_searching);
-        String message = getString(R.string.wait_please);
-        showProgress(title, message);
-    }
-
-    @Override
-    public int getBehaviorAnchorPoint() {
-        return behavior.getAnchorPoint();
-    }
-
-    @Override
-    public void fabMyLocationScale(float scale) {
-        fabMyLocation.setClickable(scale > 0);
-        if (scale > 0) {
-            fabMyLocation.setScaleX(scale);
-            fabMyLocation.setScaleY(scale);
-        } else {
-            fabMyLocation.animate().setDuration(100).scaleX(scale).scaleY(scale).start();
-        }
-
-    }
-
-    @Override
-    public void fabActionGoScale(float scale) {
-        fabActionGo.setClickable(scale > 0);
-        if (scale > 0) {
-            fabActionGo.setScaleX(scale);
-            fabActionGo.setScaleY(scale);
-        } else {
-            fabActionGo.animate().setDuration(100).scaleX(scale).scaleY(scale).start();
-        }
-    }
-
-    @Override
-    public void fabMyLocationEnabled(boolean isEnabled) {
-        fabMyLocation.setEnabled(isEnabled);
-    }
-
-    @Override
-    public void mapMoveCamera(CameraUpdate cameraUpdate) {
-        mMap.moveCamera(cameraUpdate);
-    }
-
-    @Override
-    public int getCoordinatorLayoutHeight() {
-        return coordinatorLayout.getHeight();
-    }
-
-    @Override
-    public int getMapFragmentHeight() {
-        return fragment.getHeight();
-    }
-
-    @Override
-    public void setFabActionGoImage(int drawable) {
-        fabActionGo.setImageResource(drawable);
-    }
-
-    @Override
-    public float getActionBarSize() {
-        return getResources().getDimension(R.dimen.actionBarSize);
-    }
-
-    @Override
-    public int getBehaviorPeekHeight() {
-        return behavior.getPeekHeight();
     }
 
     public static RoutePreviewFragment newInstance(Bundle args) {
@@ -242,90 +105,147 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
     }
 
     @Override
-    public void onClick(View view) {
-        mPresenter.myLocationClick(getActivity);
+    public void setData(DtoRoute route) {
+        Names names = route.getNameRoute();
+        if (!names.getDescription().trim().isEmpty()) {
+            description.setText(names.getDescription());
+        }
+
+        Pair<String, String> pair = set(route);
+
+        distance.setText(pair.first);
+        duration.setText(pair.second);
+
+        startRoute.setVisibility(route.getIsFull() == 0 ? View.GONE : View.VISIBLE);
+        openPreview.setVisibility(route.getIsFull() == 0 ? View.VISIBLE : View.GONE);
+        updateRoute.setVisibility(route.getIsFull() == 1 ? View.VISIBLE : View.GONE);
+        downloadRoute.setVisibility(route.getIsFull() == 0 ? View.VISIBLE : View.GONE);
+
+        Picasso.get().load(route.getPhotoPath()).into(image);
     }
 
-    @Override
-    public void onChangedLocation(Location location) {
-        hideProgress();
-        mPresenter.onChangedLocation(location, bounds, getBorders());
+    @OnClick(R.id.btn_fragment_route_preview_download)
+    public void onClickDownload() {
+        mPresenter.downloadRoute(id);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-            @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        mPresenter.onRequestPermissionsResult(requestCode, grantResults);
+    @OnClick(R.id.btn_fragment_route_preview_map)
+    public void onClickOpenMap(View view) {
+        if (id != -1) {
+            if (CheckPermission.checkLocationPermission(getActivity)){
+                mPresenter.openPreviewRoute(id);
+            }else {
+                MySnackbar.makeL(getView(), R.string.error_snackbar_do_not_have_permission_access_location, getActivity);
+            }
+        } else {
+            view.setVisibility(View.GONE);
+        }
     }
 
-    @Override
-    public void onMapClick(LatLng latLng) {
-        mPresenter.onMapClick(latLng);
+    @OnClick(R.id.btn_fragment_route_preview_start)
+    public void onClickStartRoute(View view) {
+        if (id != -1) {
+            if (CheckPermission.checkLocationPermission(getActivity) && mBundle != null){
+                mPresenter.openRoute(mBundle);
+            }else {
+                MySnackbar.makeL(getView(), R.string.error_snackbar_do_not_have_permission_access_location, getActivity);
+            }
+        } else {
+            view.setVisibility(View.GONE);
+        }
     }
 
-    @Override
-    public void onGlobalLayout() {
-        behavior.setAnchorPoint();
-        LayoutParams params = fragment.getLayoutParams();
-        params.height = mPresenter.fragmentChangeSize();
-        fragment.setLayoutParams(params);
-        rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-    }
-
-    @Override
-    public void mapSettings(boolean flag) {
-        if (mMap != null) {
-            mMap.setOnMapClickListener(flag ? this : null);
-            mMap.getUiSettings().setScrollGesturesEnabled(flag);
-            mMap.getUiSettings().setAllGesturesEnabled(flag);
-            mMap.getUiSettings().setTiltGesturesEnabled(flag);
+    @OnClick(R.id.btn_fragment_route_preview_update)
+    public void onClickUpdateRoute() {
+        if (CheckPermission.checkStoragePermission(getActivity)) {
+            mPresenter.updateRoute(id);
         }
     }
 
     @Override
-    public void setContent(Route content) {
-        RequestCreator error = Picasso.get().load(content.getPhotoPath())
-                .placeholder(R.drawable.my_location)
-                .error(R.drawable.ic_launcher_background);
-        if (iv_bottom_sheet_route_image != null) {
-            error.into(iv_bottom_sheet_route_image);
+    public void showProgress(String title, String message) {
+        if (mProgressDialog == null || !mProgressDialog.isShowing()) {
+            mProgressDialog = new ProgressDialog(getActivity);
+            if (title != null) {
+                mProgressDialog.setTitle(title);
+            }
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setMessage(message);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
         }
+    }
 
+    @Override
+    public void closeFragment() {
+        getActivity.getSupportFragmentManager().popBackStack();
+        getActivity.finish();
+    }
+
+    @Override
+    public void openFragment(Object data) {
+        if (data instanceof Bundle) {
+            getActivity.onReplace(MapFragment.newInstance((Bundle) data));
+        }
+        if (data instanceof Integer) {
+            //showToast("Ещё в разработке");
+            getActivity.onReplace(OpenRouteFragment.newInstance((Integer)data));
+        }
+    }
+
+    @Override
+    public void visibleStartRouteButton(boolean isVisible) {
+        startRoute.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void visibleDownloadRouteButton(boolean isVisible) {
+        downloadRoute.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void visibleUpdateRouteButton(boolean isVisible) {
+        updateRoute.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void visiblePreviewRouteButton(boolean isVisible) {
+        openPreview.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    private Pair<String, String> set(DtoRoute route) {
         String duration;
         String distance;
-        switch (content.getIdRoute()) {
-            case 627: {
-                distance = String.format("%s: 3.1 %s", getString(R.string.distance),getString(R.string.short_kilometers));
-                duration = String.format("%s: 15 %s",  getString(R.string.duration),getString(R.string.short_minute));
+        switch (route.getIdRoute()) {
+            case 502: {
+                distance = String.format("%s: 72,7 %s", getString(R.string.distance),
+                        getString(R.string.short_kilometers));
+                duration = String.format("%s: 10 %s", getString(R.string.duration),
+                        getString(R.string.short_hour));
             }
             break;
             case 630: {
-                distance = String.format("%s: 49.9 %s",getString(R.string.distance), getString(R.string.short_kilometers));
-                duration = String.format("%s: 5 %s"   ,getString(R.string.duration), getString(R.string.short_hour));
+                distance = String.format("%s: 49.9 %s", getString(R.string.distance),
+                        getString(R.string.short_kilometers));
+                duration = String.format("%s: 5 %s", getString(R.string.duration),
+                        getString(R.string.short_hour));
             }
             break;
-            case 504: {
-                distance = String.format("%s: 12 %s",getString(R.string.distance), getString(R.string.short_kilometers));
-                duration = String.format("%s: 3 %s" ,getString(R.string.duration), getString(R.string.short_hour));
+            case 762: {
+                distance = String.format("%s: 12 %s", getString(R.string.distance),
+                        getString(R.string.short_kilometers));
+                duration = String.format("%s: 3 %s", getString(R.string.duration),
+                        getString(R.string.short_hour));
             }
             break;
             default: {
-                duration = toDuration(content.getDuration());
-                distance = toDistance(content.getDistance());
+                distance = toDistance(route.getDistance());
+                duration = toDuration(route.getDuration());
             }
         }
-
-        tv_bottom_sheet_title.setText(content.getNameRoute().getFullName());
-        tv_bottom_sheet_route_distance.setText(distance);
-        tv_bottom_sheet_route_duration.setText(duration);
-        tv_bottom_sheet_description.setText(content.getNameRoute().getFullDescription());
+        return new Pair<>(distance, duration);
     }
 
-    @Override
-    public void openMapFragment() {
-        getActivity.onReplace(MapFragment.newInstance(bundle));
-    }
 
     private String toDistance(Integer distance) {
         String pattern = "%s: %s %s";
@@ -341,7 +261,8 @@ public class RoutePreviewFragment extends MapPreviewFragment<RoutePreviewPresent
         String pattern = "%s: %s %s %s %s";
         if (distance > 60) {
             return String.format(pattern, getString(R.string.duration), distance / 60,
-                    getString(R.string.short_hour), distance % 60, getString(R.string.short_minute));
+                    getString(R.string.short_hour), distance % 60,
+                    getString(R.string.short_minute));
         }
         return String.format(pattern, getString(R.string.duration), distance,
                 getString(R.string.short_minute), "", "");

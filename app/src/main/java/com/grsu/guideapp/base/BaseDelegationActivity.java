@@ -2,6 +2,7 @@ package com.grsu.guideapp.base;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 
 public abstract class BaseDelegationActivity<
         V extends BaseView,
@@ -19,6 +20,12 @@ public abstract class BaseDelegationActivity<
     }
 
     protected abstract D instantiateDelegateInstance();
+
+    @Override
+    public void setSupportActionBar(@Nullable Toolbar toolbar) {
+        super.setSupportActionBar(toolbar);
+        mDelegate.setContentView();
+    }
 
     @Override
     protected void onDestroy() {

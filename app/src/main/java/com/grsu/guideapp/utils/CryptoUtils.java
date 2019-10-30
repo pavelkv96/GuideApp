@@ -106,7 +106,8 @@ public class CryptoUtils {
                 sb.append(Integer.toHexString((anArray & 0xFF) | 0x100).substring(1, 3));
             }
             return sb.toString();
-        } catch (NoSuchAlgorithmException ignore) {
+        } catch (NoSuchAlgorithmException | NullPointerException e) {
+            e.printStackTrace();
         }
         return value;
     }

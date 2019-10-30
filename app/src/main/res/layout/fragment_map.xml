@@ -1,53 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/constraint_layout"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:orientation="vertical"
-  android:weightSum="2">
-
-  <include
-    layout="@layout/map"
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="2"
-    android:layout_marginTop="@dimen/actionBarSize"/>
+  android:layout_height="match_parent">
 
   <LinearLayout
+    android:id="@+id/bottom_panel"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/include_map">
 
     <Button
       android:id="@+id/btn_fragment_map_start"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="@string/view_start"/>
+      android:text="@string/view_start"
+      android:visibility="gone" />
 
     <Button
       android:id="@+id/btn_fragment_map_stop"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="@string/view_stop"/>
-
-    <Button
-      android:id="@+id/btn_fragment_map_next"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/view_next"
-      android:visibility="gone"/>
+      android:text="@string/view_stop"
+      android:visibility="gone" />
 
     <Button
       android:id="@+id/btn_fragment_map_tilt"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="2D"
-      android:visibility="invisible"/>
-
-    <TextView
-      android:id="@+id/tv_fragment_map_distance"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="100"/>
+      android:text=""
+      android:visibility="gone" />
 
     <ImageView
       android:id="@+id/fragment_map_indicator"
@@ -56,7 +44,144 @@
       android:layout_gravity="center_vertical"
       android:contentDescription="@null"
       android:src="@drawable/ic_location_disabled"
-      android:visibility="gone"/>
+      android:visibility="gone" />
 
+    <TextView
+      android:id="@+id/tv_fragment_map_distance"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="100" />
   </LinearLayout>
-</LinearLayout>
+
+  <include
+    android:id="@+id/include_map"
+    layout="@layout/map"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    app:layout_constraintBottom_toTopOf="@id/bottom_panel"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:visibility="visible" />
+
+  <RelativeLayout
+    android:id="@+id/rl_map_info"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:visibility="gone"
+    app:layout_constraintBottom_toTopOf="@id/bottom_panel"
+    tools:visibility="gone">
+
+    <Button
+      android:id="@+id/btn_map_go_to"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:layout_marginStart="8dp"
+      android:layout_below="@id/tv_map_name"
+      android:layout_toEndOf="@id/iv_map_image"
+      android:text="@string/route"
+      android:textSize="12sp" />
+
+    <Button
+      android:id="@+id/btn_map_more"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:layout_marginStart="8dp"
+      android:layout_below="@id/tv_map_name"
+      android:layout_toEndOf="@id/btn_map_go_to"
+      android:src="@drawable/ic_info"
+      android:text="@string/details"
+      android:textSize="12sp" />
+
+    <ImageButton
+      android:id="@+id/btn_map_audio"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:layout_marginStart="8dp"
+      android:layout_below="@id/tv_map_name"
+      android:layout_toEndOf="@id/btn_map_more"
+      android:src="@drawable/ic_headset"
+      android:visibility="visible"
+      android:textSize="12sp" />
+
+    <ImageView
+      android:id="@+id/iv_map_image"
+      android:layout_width="120dp"
+      android:layout_height="120dp"
+      android:scaleType="fitXY"
+      tools:ignore="ContentDescription"
+      tools:src="@tools:sample/avatars" />
+
+    <TextView
+      android:id="@+id/tv_map_name"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:layout_marginStart="16dp"
+      android:layout_toEndOf="@id/iv_map_image"
+      android:lines="2"
+      android:textColor="@android:color/black"
+      android:textSize="16sp"
+      tools:text="@tools:sample/lorem/random" />
+
+  </RelativeLayout>
+</android.support.constraint.ConstraintLayout><!--
+    <LinearLayout
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical"
+      android:weightSum="2">
+
+      <include
+        layout="@layout/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"/>
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+          android:id="@+id/btn_fragment_map_start"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/view_start"
+          android:visibility="gone"/>
+
+        <Button
+          android:id="@+id/btn_fragment_map_stop"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/view_stop"
+          android:visibility="gone"/>
+
+        <Button
+          android:id="@+id/btn_fragment_map_tilt"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text=""
+          android:visibility="gone"/>
+
+        <TextView
+          android:id="@+id/tv_fragment_map_distance"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="100"/>
+
+        <ImageView
+          android:id="@+id/fragment_map_indicator"
+          android:layout_width="20dp"
+          android:layout_height="20dp"
+          android:layout_gravity="center_vertical"
+          android:contentDescription="@null"
+          android:src="@drawable/ic_location_disabled"
+          android:visibility="gone"/>
+
+      </LinearLayout>
+    </LinearLayout>-->

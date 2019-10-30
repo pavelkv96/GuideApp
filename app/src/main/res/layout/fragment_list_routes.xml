@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  tools:context=".fragments.tabs.list_routes.ListRoutesFragment">
+
+  <android.support.design.widget.TabLayout
+    android:id="@+id/tl_fragment_list_routes"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimaryDark"
+    app:tabIndicatorColor="@android:color/white"
+    app:tabSelectedTextColor="@android:color/white"
+    app:tabTextColor="@color/light_gray"/>
+
+  <android.support.v4.view.ViewPager
+    android:id="@+id/vp_fragment_list_routes"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+</LinearLayout>
+  <!--
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
@@ -7,7 +32,7 @@
   android:layout_marginStart="10dp"
   android:layout_marginEnd="10dp"
   android:orientation="vertical"
-  tools:context=".fragments.list_routes.ListRoutesFragment">
+  tools:context=".fragments.list_routes.AllRoutesFragment">
 
   <android.support.v7.widget.CardView
     android:id="@+id/cv_fragment_list_routes_about"
@@ -41,33 +66,4 @@
 
   </android.support.v4.widget.SwipeRefreshLayout>
 
-  <!--<android.support.v7.widget.CardView
-    android:id="@+id/cv_fragment_list_routes_load_more"
-    android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:layout_marginTop="5dp"
-    android:layout_alignParentBottom="true"
-    android:visibility="gone"
-    tools:visibility="visible">
-
-    <TextView
-      android:id="@+id/tv_fragment_list_routes_more"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:gravity="center"
-      android:text="@string/load_more"
-      android:textColor="@android:color/black"
-      android:textSize="25sp"
-      android:visibility="gone"
-      tools:visibility="visible"
-      />
-    <ProgressBar
-      android:id="@+id/pb_fragment_list_routes_progress"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:visibility="gone"
-      tools:visibility="visible"/>
-  </android.support.v7.widget.CardView>-->
-
-</RelativeLayout>
+</RelativeLayout>-->

@@ -3,6 +3,7 @@ package com.grsu.guideapp;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
@@ -17,7 +18,7 @@ import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.StorageUtils;
-import java.util.Locale;
+import com.grsu.guideapp.utils.extensions.Locale;
 
 public class App extends Application {
 
@@ -30,6 +31,10 @@ public class App extends Application {
         app = this;
         createNotificationChannel();
         createDBIfNeed();
+    }
+
+    public static App getInstance(){
+        return app;
     }
 
     private void createNotificationChannel() {
@@ -47,22 +52,24 @@ public class App extends Application {
         }
     }
 
-    public static void setLocale(SharedPreferences pref, Resources res) {
+    public Context setLocale(SharedPreferences pref, Context context) {
         Editor editor = pref.edit();
         if (!pref.contains(SharedPref.KEY_LANGUAGE)) {
-            editor.putString(SharedPref.KEY_LANGUAGE, res.getString(R.string.locale)).apply();
+            String locale = Locale.getCurrentLocale(java.util.Locale.getDefault());
+            editor.putString(SharedPref.KEY_LANGUAGE, locale).apply();
         }
-        Configuration conf = res.getConfiguration();
+        Configuration conf = getResources().getConfiguration();
 
-        String loc = pref.getString(SharedPref.KEY_LANGUAGE, res.getString(R.string.locale));
-        Locale locale = new Locale(loc);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        String loc = pref.getString(SharedPref.KEY_LANGUAGE, getResources().getString(R.string.locale));
+        java.util.Locale locale = new java.util.Locale(loc);
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN_MR1) {
             conf.setLocale(locale);
+            return createConfigurationContext(conf);
         } else {
             conf.locale = locale;
+            getResources().updateConfiguration(conf, getResources().getDisplayMetrics());
+            return context;
         }
-
-        res.updateConfiguration(conf, res.getDisplayMetrics());
     }
 
     public static AppExecutors getThread() {

@@ -17,4 +17,8 @@
       <enum name="stateHidden" value="6"/>
     </attr>
   </declare-styleable>
+
+  <declare-styleable name="AppButton">
+    <attr name="drawableTint" format="color"/>
+  </declare-styleable>
 </resources>

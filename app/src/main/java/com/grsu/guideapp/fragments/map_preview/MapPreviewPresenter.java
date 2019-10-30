@@ -5,11 +5,12 @@ import android.view.MenuItem;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.activities.route.RouteActivity;
+import com.grsu.guideapp.activities.details.DetailsActivity;
 import com.grsu.guideapp.base.BasePresenterImpl;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
-import com.grsu.guideapp.fragments.details.DetailsFragment;
+import com.grsu.guideapp.base.listeners.OnSuccessListener;
 import com.grsu.guideapp.fragments.map_preview.MapPreviewContract.MapPreviewViews;
+import com.grsu.guideapp.models.DtoObject;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
 import com.grsu.guideapp.models.Point;
@@ -20,8 +21,8 @@ import java.util.List;
 public class MapPreviewPresenter extends BasePresenterImpl<MapPreviewViews> implements
         MapPreviewContract.MapPreviewPresenter, OnFinishedListener<List<Poi>> {
 
-    private MapPreviewViews mapViews;
-    private MapPreviewInteractor mapInteractor;
+    protected MapPreviewViews mapViews;
+    protected MapPreviewInteractor mapInteractor;
 
     public MapPreviewPresenter(MapPreviewViews mapViews, MapPreviewInteractor mapInteractor) {
         this.mapViews = mapViews;
@@ -79,11 +80,25 @@ public class MapPreviewPresenter extends BasePresenterImpl<MapPreviewViews> impl
     }
 
     @Override
-    public void onMarkerClick(Context context, Marker marker) {
-        boolean isPoi = marker.getTag() != null ? (Boolean) marker.getTag() : false;
-        if (isPoi) {
-            String idPoint = CryptoUtils.encodeP(marker.getPosition());
-            ((RouteActivity) context).onReplace(DetailsFragment.newInstance(idPoint));
+    public void onMarkerClick(Context context, final Marker marker) {
+        int idPoint = marker.getTag() != null ? (int)marker.getTag() : -1;
+        if (idPoint != -1) {
+            mapInteractor.getObjectInfo(new OnSuccessListener<DtoObject>() {
+                @Override
+                public void onSuccess(DtoObject object) {
+                    marker.showInfoWindow();
+                    object.setLocation(marker.getPosition());
+                    mapViews.setInfoData(object);
+                    mapViews.showInfo();
+                }
+
+                @Override
+                public void onFailure(Throwable throwable) {
+                    mapViews.hideInfo();
+                }
+            }, idPoint, context.getString(R.string.locale));
+        } else {
+            mapViews.hideInfo();
         }
     }
 

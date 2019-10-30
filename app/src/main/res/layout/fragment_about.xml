@@ -2,11 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:orientation="vertical"
   xmlns:tools="http://schemas.android.com/tools">
 
   <android.support.v7.widget.RecyclerView
     android:id="@+id/fragment_about_rv"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:listitem="@layout/title_descr_list_item"/>
+    android:layout_height="wrap_content"
+    tools:listitem="@layout/item_about"
+    tools:itemCount="3"/>
+
+  <TextView
+    android:id="@+id/fragment_about_version"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="15dp"
+    android:gravity="center"
+    tools:text="@tools:sample/full_names"
+    android:textColor="#4D4D4D"
+    android:textSize="13sp"/>
 </LinearLayout>

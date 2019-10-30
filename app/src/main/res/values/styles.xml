@@ -27,25 +27,6 @@
     <item name="borderWidth">0dp</item>
   </style>
 
-  <style name="ActionGoFAB" parent="BaseFAB">
-    <item name="android:src">@drawable/ic_action_go</item>
-    <item name="android:tint">@android:color/white</item>
-    <item name="backgroundTint">@color/blue</item>
-    <item name="layout_anchorGravity">end</item>
-    <item name="layout_anchor">@id/bottom_sheet</item>
-  </style>
-
-  <style name="ActionMyLocation" parent="BaseFAB">
-    <item name="android:scaleX">0</item>
-    <item name="android:scaleY">0</item>
-    <item name="android:layout_gravity">end|top</item>
-    <item name="android:src">@drawable/ic_my_location</item>
-    <item name="android:tint">@color/grayDark</item>
-    <item name="backgroundTint">@android:color/white</item>
-    <item name="layout_anchor">@+id/dummy_view</item>
-    <item name="layout_anchorGravity">top|center</item>
-  </style>
-
   <style name="BaseButton" parent="Widget.AppCompat.Button">
     <item name="android:layout_width">wrap_content</item>
     <item name="android:layout_height">wrap_content</item>

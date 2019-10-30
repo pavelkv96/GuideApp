@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">Cycling routes of the Awgustow Canal</string>
+  <string name="app_name">Routes of the Awgustow Canal</string>
   <string name="title_activity_home">Home</string>
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
   <string name="nav_header_title">Grodno Visa Free official website</string>
   <string name="nav_header_subtitle">https://grodnovisafree.by</string>
   <string name="nav_header_desc">Navigation header</string>
+  <string name="title_about_app" translatable="false">Routes of the Awgustow Canal v%s (build %d)</string>
 
   <!--VIEW TEXT-->
   <string name="view_delete_database">Delete database</string>
@@ -22,16 +23,18 @@
   <!--MENU ITEM NAME-->
   <string name="menu_item_settings">Settings</string>
   <string name="menu_item_routes">Routes</string>
+  <string name="menu_item_categories">Catalog objects</string>
   <string name="menu_item_types_object">Types Object menu</string>
   <string name="menu_item_distance">Distance menu</string>
-  <string name="menu_item_showing_selected_poi">Showing all poi</string>
+  <string name="menu_item_showing_selected_poi">Showing all objects</string>
   <string name="menu_item_showing_all_turn">Showing all turn</string>
 
   <!--SCREEN NAME TITLE-->
   <string name="map_fragment">Map</string>
   <string name="details_fragment">Details</string>
   <string name="settings_fragment">Settings</string>
-  <string name="list_routes_fragment">List routes</string>
+  <string name="list_routes_fragment">Route Catalog</string>
+  <string name="list_objects_fragment">Catalog objects</string>
   <string name="about_fragment">About</string>
 
 
@@ -101,11 +104,34 @@
   <string name="download">Download</string>
   <string name="update">Update</string>
   <string name="no_internet_connection">No internet connection</string>
-  <string name="device_searching">Device searching</string>
+  <string name="device_searching">Positioning</string>
   <string name="wait_please">Wait please…</string>
   <string name="warning">Warning!</string>
   <string name="you_are_out_of_map">You are out of map</string>
   <string name="click_to_exit">Click to exit</string>
   <string name="load_route">Load route</string>
   <string name="updating_route">Updating route</string>
+  <string name="turn_on_gps">For correct work application turn on GPS</string>
+  <string name="empty_list">The list is empty</string>
+  <string name="open_on_map">Open on map</string>
+  <string name="go_to_route">Go to route</string>
+  <string name="provide_access">Provide access</string>
+  <string name="provide_access_description">Give the application access to the memory in the settings of your device, otherwise you will not be able to use the application.</string>
+  <string name="next">Next</string>
+  <string name="exit">Exit</string>
+  <string name="preview_provide_access">Give your application access to memory and location.</string>
+  <string name="preview_provide_access_description">To download maps, watch places around you and use navigation.</string>
+  <string name="radius_in_meters">radius %d meters</string>
+  <string name="my_tab">My routes</string>
+  <string name="all_tab">All routes</string>
+  <string name="route">Route</string>
+  <string name="details">Details</string>
+  <string name="address">Address</string>
+  <string name="email">Emails</string>
+  <string name="phone">Phones</string>
+  <string name="link">Links</string>
+  <string name="retry_again_later">Retry again later</string>
+  <string name="openstreetmap_contributors" translatable="false">© OpenStreetMap contributors</string>
+  <string name="error.message.update">Error updating data</string>
+  <string name="cancel">Cancel</string>
 </resources>

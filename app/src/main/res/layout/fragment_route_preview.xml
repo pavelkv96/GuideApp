@@ -1,34 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:map="http://schemas.android.com/apk/res-auto"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/coordinator_layout"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   tools:context=".fragments.route_preview.RoutePreviewFragment">
 
-  <include
-    layout="@layout/map"
+  <RelativeLayout
     android:layout_width="match_parent"
-    android:layout_height="244dp"
-    android:layout_marginTop="@dimen/actionBarSize"/>
+    android:layout_height="wrap_content">
 
-  <include layout="@layout/layout_bottom_sheet"/>
+    <ImageView
+      android:id="@+id/iv_fragment_route_preview_image"
+      android:layout_width="400dp"
+      android:layout_height="300dp"
+      android:layout_centerHorizontal="true"
+      android:contentDescription="@null"
+      tools:src="@tools:sample/avatars" />
 
-  <android.support.design.widget.FloatingActionButton
-    android:id="@+id/fab_action_go"
-    style="@style/ActionGoFAB"/>
+    <TextView
+      android:id="@+id/tv_fragment_route_preview_distance"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/iv_fragment_route_preview_image"
+      android:layout_marginStart="50dp"
+      android:layout_marginTop="16dp"
+      android:textColor="@android:color/black"
+      tools:text="Протяжённость: " />
 
-  <View
-    android:id="@+id/dummy_view"
-    android:layout_width="1dp"
-    android:layout_height="16dp"
-    map:layout_anchor="@id/fab_action_go"
-    map:layout_anchorGravity="top|right|end"/>
+    <TextView
+      android:id="@+id/tv_fragment_route_preview_duration"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/tv_fragment_route_preview_distance"
+      android:layout_marginStart="50dp"
+      android:textColor="@android:color/black"
+      tools:text="Продолжительность: " />
 
-  <android.support.design.widget.FloatingActionButton
-    android:id="@+id/fab_my_location"
-    style="@style/ActionMyLocation"/>
-</android.support.design.widget.CoordinatorLayout>
+    <LinearLayout
+      android:layout_below="@+id/tv_fragment_route_preview_duration"
+      android:id="@+id/ll_buttons"
+      android:layout_marginTop="16dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+      <Button
+        android:id="@+id/btn_fragment_route_preview_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="@string/go_to_route"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+      <Button
+        android:id="@+id/btn_fragment_route_preview_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="@string/open_on_map"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+      <Button
+        android:id="@+id/btn_fragment_route_preview_download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="@string/download"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+      <Button
+        android:id="@+id/btn_fragment_route_preview_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="@string/update"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+    </LinearLayout>
+
+    <TextView
+      android:id="@+id/tv_fragment_route_preview_description"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/ll_buttons"
+      android:layout_alignParentStart="true"
+      android:layout_marginStart="10dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginEnd="10dp"
+      android:layout_marginBottom="10dp"
+      android:gravity="start"
+      android:textColor="@android:color/black"
+      android:textSize="18sp"
+      tools:text="@tools:sample/lorem" />
+
+
+  </RelativeLayout>
+
+</android.support.v4.widget.NestedScrollView>

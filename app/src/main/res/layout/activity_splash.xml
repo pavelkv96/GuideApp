@@ -29,7 +29,7 @@
     android:layout_marginEnd="45dp"
     android:layout_centerInParent="true"
     android:gravity="center"
-    android:text="Предоставте приложению доступ к памяти и\n местоположению."
+    android:text="@string/preview_provide_access"
     android:textColor="@android:color/black"
     android:textSize="25sp"/>
 
@@ -43,11 +43,11 @@
     android:layout_below="@id/tv_activity_splash_title"
     android:layout_gravity="center"
     android:gravity="center"
-    android:text="Чтобы скачивать карты, смотреть места вокруг вас и пользоваться навигацией."
+    android:text="@string/preview_provide_access_description"
     android:textSize="15sp"
     app:layout_anchorGravity="bottom|center"/>
 
-  <TextView
+  <com.grsu.ui.view.AppButton
     android:id="@+id/btn_activity_splash_close"
     style="@style/MaterialButton"
     android:layout_marginBottom="16dp"
@@ -55,12 +55,11 @@
     android:layout_alignParentBottom="true"
     android:layout_alignParentStart="true"
     android:drawableStart="@drawable/ic_close"
-    android:drawableTint="#4c84ff"
-    android:text="Выход"
-    android:visibility="visible"
-    />
+    app:drawableTint="#4c84ff"
+    android:text="@string/exit"
+    android:visibility="visible"/>
 
-  <Button
+  <com.grsu.ui.view.AppButton
     android:id="@+id/btn_activity_splash_next"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -70,8 +69,8 @@
     android:layout_alignParentEnd="true"
     android:background="#fff"
     android:drawableEnd="@drawable/ic_arrow_forward"
-    android:drawableTint="#4c84ff"
-    android:text="Далее"
+    app:drawableTint="#4c84ff"
+    android:text="@string/next"
     android:textColor="#4c84ff"/>
 
   <Button
@@ -83,27 +82,8 @@
     android:layout_alignParentBottom="true"
     android:layout_alignParentEnd="true"
     android:background="#fff"
-    android:text="Настройки"
+    android:text="@string/settings_fragment"
     android:textColor="#4c84ff"
     android:visibility="gone"
     tools:visibility="visible"/>
 </RelativeLayout>
-  <!--
-  <?xml version="1.0" encoding="utf-8"?>
-  <android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/coordinator_layout_1"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.splash.SplashActivity">
-
-    <com.grsu.ui.progress.CustomProgressBar
-      android:id="@+id/current_progress"
-      android:layout_gravity="center"
-      android:layout_width="@dimen/width_height_progress"
-      android:layout_height="@dimen/width_height_progress"
-      />
-
-  </android.support.design.widget.CoordinatorLayout>
-  -->

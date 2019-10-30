@@ -96,21 +96,19 @@ public class Route implements Serializable {
 
     public static Route fromCursor(Cursor cur) {
         Names name = new Names();
-        name.setShortName(cur.getString(1));
-        name.setFullName(cur.getString(2));
-        name.setShortDescription(cur.getString(3));
-        name.setFullDescription(cur.getString(4));
+        name.setName(cur.getString(1));
+        name.setDescription(cur.getString(2));
 
         Route route = new Route();
 
         route.setIdRoute(cur.getInt(0));
         route.setNameRoute(name);
-        route.setDuration(cur.getInt(5));
-        route.setDistance(cur.getInt(6));
-        route.setReferencePhotoRoute(cur.getString(7));
-        route.setSouthwest(cur.getString(8));
-        route.setNortheast(cur.getString(9));
-        route.setIsFull(cur.getInt(10));
+        route.setDuration(cur.getInt(3));
+        route.setDistance(cur.getInt(4));
+        route.setReferencePhotoRoute(cur.getString(5));
+        route.setSouthwest(cur.getString(6));
+        route.setNortheast(cur.getString(7));
+        route.setIsFull(cur.getInt(8));
         return route;
     }
 }

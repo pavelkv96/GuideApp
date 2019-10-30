@@ -1,90 +1,53 @@
 package com.grsu.guideapp.fragments.route_preview;
 
-import android.content.Context;
-import android.location.Location;
-import android.support.annotation.DrawableRes;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.grsu.guideapp.base.listeners.OnFinishedListener;
+import android.os.Bundle;
+import com.grsu.guideapp.base.BasePresenter;
+import com.grsu.guideapp.base.BaseView;
 import com.grsu.guideapp.base.listeners.OnLoadRoute;
-import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewContract.MapPreviewInteractor;
-import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewContract.MapPreviewPresenter;
-import com.grsu.guideapp.fragments.map_preview_v1.MapPreviewContract.MapPreviewViews;
-import com.grsu.guideapp.models.Route;
+import com.grsu.guideapp.base.listeners.OnProgressListener;
+import com.grsu.guideapp.base.listeners.OnSuccessListener;
+import com.grsu.guideapp.models.DtoRoute;
 
-public interface RoutePreviewContract {
+interface RoutePreviewContract {
 
-    interface TestViews extends MapPreviewViews {
+    interface RouteViews extends BaseView {
 
-        float getActionBarSize();
+        void setData(DtoRoute route);
 
-        int getBehaviorAnchorPoint();
+        void closeFragment();
 
-        int getBehaviorPeekHeight();
+        void openFragment(Object data);
 
-        int getBehaviorState();
+        void visibleStartRouteButton(boolean isVisible);
 
-        int getCoordinatorLayoutHeight();
+        void visibleDownloadRouteButton(boolean isVisible);
 
-        int getMapFragmentHeight();
+        void visibleUpdateRouteButton(boolean isVisible);
 
-        void fabActionGoScale(float scale);
-
-        void fabMyLocationEnabled(boolean isEnabled);
-
-        void fabMyLocationScale(float scale);
-
-        void getSingleMyLocation();
-
-        void hideBehavior();
-
-        void mapMoveCamera(CameraUpdate cameraUpdate);
-
-        void setFabActionGoImage(@DrawableRes int drawable);
-
-        void showBehavior();
-
-        void updateMyLocationOverlay(Location location);
-
-        void updateViewSize(float offset);
-
-        void requestPermissions(String[] permissions, int requestCode);
-
-        void mapSettings(boolean isUsable);
-
-        void setContent(Route content);
-
-        void openMapFragment();
+        void visiblePreviewRouteButton(boolean isVisible);
     }
 
-    interface TestPresenter extends MapPreviewPresenter {
+    interface RoutePresenter extends BasePresenter<RouteViews> {
 
-        void isLoadRoute(int isLoad);
+        void getRouteById(int id, String locale);
 
-        void onMapClick(LatLng latLng);
+        void downloadRoute(int id);
 
-        void onChangedLocation(Location location, LatLngBounds routeBounds, LatLngBounds mapBounds);
+        void updateRoute(int id);
 
-        void myLocationClick(Context context);
+        void openPreviewRoute(int id);
 
-        void actionGoClick(Context context, int id_route);
-
-        void onRequestPermissionsResult(int requestCode, int[] grantResults);
-
-        int fragmentChangeSize();
-
-        int updateViewSize(float offset, LatLngBounds bounds);
-
-        void isDownLoad(int id_route, String locale);
+        void openRoute(Bundle bundle);
     }
 
-    interface TestInteractor extends MapPreviewInteractor {
+    interface RouteInteractor {
 
-        void isDownLoad(OnFinishedListener<Route> listener, int id_route, String locale);
+        void getRouteById(OnSuccessListener<DtoRoute> listener, int id, String locale);
 
-        void loadRoute(OnLoadRoute<String> listener, int id_route);
+        void saveRoute(OnLoadRoute<Integer> listener, int id_route);
 
-        void setFlag(Boolean flag);
+        void updateRoute(OnProgressListener<String> listener, int id);
+
+        void setCancel(boolean isCancel);
     }
 }

@@ -74,6 +74,11 @@ public abstract class BaseSettingsFragment<P extends BasePresenter, A extends Fr
     }
 
     @Override
+    public void changeProgress(int progress) {
+
+    }
+
+    @Override
     public void showToast(String message) {
         Toasts.makeL(getActivity, message);
     }
