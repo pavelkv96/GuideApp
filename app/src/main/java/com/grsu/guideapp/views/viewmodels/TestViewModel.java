@@ -1,6 +1,6 @@
 package com.grsu.guideapp.views.viewmodels;
 
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModel;
 import android.location.Location;
 import com.google.android.gms.maps.model.CameraPosition;
 

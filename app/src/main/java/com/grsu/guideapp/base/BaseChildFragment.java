@@ -2,22 +2,20 @@ package com.grsu.guideapp.base;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v4.app.Fragment;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 public abstract class BaseChildFragment<P extends BasePresenter, F extends BaseFragment>
         extends Fragment implements BaseView {
 
-    private Unbinder mUnBinder;
+//    private Unbinder mUnBinder;
 
     protected F getParent;
 
@@ -41,14 +39,14 @@ public abstract class BaseChildFragment<P extends BasePresenter, F extends BaseF
         mPresenter = getPresenterInstance();
         mPresenter.attachView(this);
 
-        mUnBinder = ButterKnife.bind(this, rootView);
+//        mUnBinder = ButterKnife.bind(this, rootView);
         return rootView;
     }
 
     @Override
     public void onDestroyView() {
         mPresenter.detachView();
-        mUnBinder.unbind();
+//        mUnBinder.unbind();
         super.onDestroyView();
     }
 

@@ -1,14 +1,13 @@
 package com.grsu.guideapp.fragments.tabs.my_routes;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.adapters.AllRoutesListAdapter;
@@ -28,7 +27,7 @@ public class MyRoutesFragment
 
     private List<Route> mRouteList;
 
-    @BindView(R.id.rv_fragment_list_routes)
+//    @BindView(R.id.rv_fragment_list_routes)
     RecyclerView mRecyclerView;
 
     private AllRoutesListAdapter mAdapter;

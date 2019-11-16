@@ -2,18 +2,16 @@ package com.grsu.guideapp.base;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import butterknife.BindView;
-import butterknife.OnClick;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener;
@@ -52,24 +50,24 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
     private float previousZoom = -1.0f;
     private Handler handler;
 
-    @BindView(R.id.map_zoom_control)
+//    @BindView(R.id.map_zoom_control)
     protected RelativeLayout map_zoom_control;
 
-    @OnClick(R.id.map_zoom_in)
+//    @OnClick(R.id.map_zoom_in)
     protected void zoomIn() {
         if (mMap != null) {
             mMap.animateCamera(CameraUpdateFactory.zoomIn());
         }
     }
 
-    @OnClick(R.id.map_zoom_out)
+//    @OnClick(R.id.map_zoom_out)
     protected void zoomOut() {
         if (mMap != null) {
             mMap.animateCamera(CameraUpdateFactory.zoomOut());
         }
     }
 
-    @BindView(R.id.scaleView)
+//    @BindView(R.id.scaleView)
     MapScaleView scaleView;
 
     protected abstract @IdRes

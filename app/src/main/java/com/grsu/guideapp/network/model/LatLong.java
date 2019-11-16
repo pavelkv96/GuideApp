@@ -1,7 +1,7 @@
 
 package com.grsu.guideapp.network.model;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

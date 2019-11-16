@@ -2,7 +2,7 @@ package com.grsu.guideapp;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.grsu.guideapp.network.APIService;
 import com.grsu.guideapp.project_settings.Settings;
 import java.util.concurrent.Executor;

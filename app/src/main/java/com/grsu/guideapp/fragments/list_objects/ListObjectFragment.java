@@ -2,14 +2,14 @@ package com.grsu.guideapp.fragments.list_objects;
 
 import android.app.SearchManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.SearchView.OnQueryTextListener;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
-import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.details.DetailsActivity;
 import com.grsu.guideapp.adapters.ObjectAdapter;
@@ -35,9 +34,9 @@ public class ListObjectFragment extends BaseFragment<ListObjectPresenter, Naviga
         implements ObjectView, ItemClickListener, OnQueryTextListener {
 
     private List<DtoObject> mObjects;
-    @BindView(R.id.fragment_list_object_rv)
+//    @BindView(R.id.fragment_list_object_rv)
     RecyclerView mRecyclerView;
-    @BindView(R.id.fragment_list_object_empty)
+//    @BindView(R.id.fragment_list_object_empty)
     TextView fragment_list_object_empty;
     private ObjectAdapter mAdapter;
 

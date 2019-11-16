@@ -1,8 +1,8 @@
 package com.grsu.guideapp.base;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
 public abstract class BaseDelegationActivity<
         V extends BaseView,

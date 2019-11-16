@@ -7,17 +7,14 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.utils.MapUtils;
@@ -30,7 +27,7 @@ import java.io.IOException;
 
 public class Tracker extends Fragment implements LocationListener {
 
-    @BindView(R.id.tv_fragment_tracker_data)
+//    @BindView(R.id.tv_fragment_tracker_data)
     TextView data;
     private LocationManager mLocationManager = null;
     private static final int INTERVAL = 1000;
@@ -42,11 +39,11 @@ public class Tracker extends Fragment implements LocationListener {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tracker, container, false);
-        ButterKnife.bind(this, view);
+//        ButterKnife.bind(this, view);
         return view;
     }
 
-    @OnClick(R.id.btn_fragment_tracker_start)
+//    @OnClick(R.id.btn_fragment_tracker_start)
     public void start() {
         initializeLocationManager();
 
@@ -64,7 +61,7 @@ public class Tracker extends Fragment implements LocationListener {
         }
     }
 
-    @OnClick(R.id.btn_fragment_tracker_stop)
+//    @OnClick(R.id.btn_fragment_tracker_stop)
     public void stop() {
 
         StreamUtils.closeStream(stream);

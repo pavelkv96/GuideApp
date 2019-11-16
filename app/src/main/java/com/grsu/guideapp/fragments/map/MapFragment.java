@@ -3,16 +3,14 @@ package com.grsu.guideapp.fragments.map;
 import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import butterknife.BindView;
-import butterknife.OnClick;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,16 +44,16 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     int i = 0;
     Animator animator;
 
-    @BindView(R.id.fragment_map_indicator)
+//    @BindView(R.id.fragment_map_indicator)
     ImageView found;
 
-    @BindView(R.id.btn_fragment_map_tilt)
+//    @BindView(R.id.btn_fragment_map_tilt)
     Button btn_fragment_map_tilt;
 
-    @BindView(R.id.btn_fragment_map_start)
+//    @BindView(R.id.btn_fragment_map_start)
     Button btn_fragment_map_start;
 
-    @BindView(R.id.btn_fragment_map_stop)
+//    @BindView(R.id.btn_fragment_map_stop)
     Button btn_fragment_map_stop;
 
     @NonNull
@@ -138,7 +136,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     //	Summary: implements OnClicks
     //-------------------------------------------
 
-    @OnClick(R.id.btn_fragment_map_stop)
+//    @OnClick(R.id.btn_fragment_map_stop)
     public void stopService() {
         btn_fragment_map_start.setVisibility(View.VISIBLE);
         btn_fragment_map_stop.setVisibility(View.GONE);
@@ -149,7 +147,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         }
     }
 
-    @OnClick(R.id.btn_fragment_map_start)
+//    @OnClick(R.id.btn_fragment_map_start)
     public void startService(View view) {
         if (CheckPermission.checkLocationPermission(getActivity)) {
             isMoving = true;
@@ -166,7 +164,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         }
     }
 
-    @OnClick(R.id.btn_fragment_map_tilt)
+//    @OnClick(R.id.btn_fragment_map_tilt)
     public void tilt(View view) {
         boolean mode = !read(SharedPref.KEY_IS_3D_MODE, Boolean.class);
         save(SharedPref.KEY_IS_3D_MODE, mode);

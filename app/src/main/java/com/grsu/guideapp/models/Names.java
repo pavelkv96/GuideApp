@@ -1,6 +1,6 @@
 package com.grsu.guideapp.models;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class Names implements Serializable {

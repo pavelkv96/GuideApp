@@ -4,9 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.Toolbar;
-import butterknife.BindView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseDelegationActivity;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
@@ -19,7 +18,7 @@ public class NavigationDrawerActivity
         NavigationDrawerDelegate>
         implements NavigationDrawerView, Runnable {
 
-    @BindView(R.id.toolbar)
+//    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
     private boolean doubleBackToExitPressedOnce = false;

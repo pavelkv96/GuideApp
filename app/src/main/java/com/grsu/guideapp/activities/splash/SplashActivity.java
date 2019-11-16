@@ -3,15 +3,13 @@ package com.grsu.guideapp.activities.splash;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.OnClick;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.R;
@@ -35,22 +33,22 @@ import retrofit2.Response;
 
 public class SplashActivity extends BaseActivity<SplashPresenter> implements SplashView, Runnable {
 
-    @BindView(R.id.current_progress)
+//    @BindView(R.id.current_progress)
     CustomProgressBar progress_view;
 
-    @BindView(R.id.btn_activity_splash_next)
+//    @BindView(R.id.btn_activity_splash_next)
     AppButton btn_activity_splash_next;
 
-    @BindView(R.id.btn_activity_splash_settings)
+//    @BindView(R.id.btn_activity_splash_settings)
     Button btn_activity_splash_settings;
 
-    @BindView(R.id.tv_activity_splash_title)
+//    @BindView(R.id.tv_activity_splash_title)
     TextView tv_activity_splash_title;
 
-    @BindView(R.id.tv_activity_splash_description)
+//    @BindView(R.id.tv_activity_splash_description)
     TextView tv_activity_splash_description;
 
-    @BindView(R.id.btn_activity_splash_close)
+//    @BindView(R.id.btn_activity_splash_close)
     AppButton btn_activity_splash_close;
 
     private Handler mHandler;
@@ -95,7 +93,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
         btn_activity_splash_settings.setVisibility(View.GONE);
     }
 
-    @OnClick(R.id.btn_activity_splash_next)
+//    @OnClick(R.id.btn_activity_splash_next)
     public void buttonNext() {
         if (CheckPermission.checkStoragePermission(this)) {
             otherContent();
@@ -104,12 +102,12 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
         }
     }
 
-    @OnClick(R.id.btn_activity_splash_close)
+//    @OnClick(R.id.btn_activity_splash_close)
     public void buttonClose() {
         finish();
     }
 
-    @OnClick(R.id.btn_activity_splash_settings)
+//    @OnClick(R.id.btn_activity_splash_settings)
     public void buttonSettings() {
         CheckPermission.settingsIntent(this);
     }

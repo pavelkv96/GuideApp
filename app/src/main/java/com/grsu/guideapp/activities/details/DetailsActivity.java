@@ -4,16 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.text.HtmlCompat;
-import android.support.v7.widget.Toolbar;
 import android.text.Spanned;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import butterknife.BindView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.text.HtmlCompat;
+
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.details.DetailsContract.DetailView;
 import com.grsu.guideapp.base.BaseActivity;
@@ -22,27 +23,26 @@ import com.grsu.guideapp.models.DtoDetail;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Constants.Language;
 import com.squareup.picasso.Picasso;
-import java.io.File;
 
 public class DetailsActivity extends BaseActivity<DetailsPresenter> implements DetailView {
 
-    @BindView(R.id.toolbar)
+//    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @BindView(R.id.tv_fragment_details_name)
+//    @BindView(R.id.tv_fragment_details_name)
     TextView nameTextView;
-    @BindView(R.id.tv_fragment_details_description)
+//    @BindView(R.id.tv_fragment_details_description)
     TextView descriptionTextView;
-    @BindView(R.id.tv_fragment_details_address)
+//    @BindView(R.id.tv_fragment_details_address)
     TextView addressTextView;
-    @BindView(R.id.tv_fragment_details_email)
+//    @BindView(R.id.tv_fragment_details_email)
     TextView emailTextView;
-    @BindView(R.id.tv_fragment_details_link)
+//    @BindView(R.id.tv_fragment_details_link)
     TextView linkTextView;
-    @BindView(R.id.tv_fragment_details_phone)
+//    @BindView(R.id.tv_fragment_details_phone)
     TextView phoneTextView;
 
-    @BindView(R.id.iv_fragment_details_image)
+//    @BindView(R.id.iv_fragment_details_image)
     ImageView image;
 
     //DownloadManager mManager;

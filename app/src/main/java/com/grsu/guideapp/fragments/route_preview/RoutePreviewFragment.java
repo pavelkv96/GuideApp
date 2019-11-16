@@ -2,17 +2,15 @@ package com.grsu.guideapp.fragments.route_preview;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.OnClick;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.base.BaseFragment;
@@ -33,28 +31,28 @@ public class RoutePreviewFragment extends BaseFragment<RoutePresenter, RouteActi
 
     private static final String TAG = RoutePreviewFragment.class.getSimpleName();
 
-    @BindView(R.id.tv_fragment_route_preview_description)
+//    @BindView(R.id.tv_fragment_route_preview_description)
     TextView description;
 
-    @BindView(R.id.tv_fragment_route_preview_distance)
+//    @BindView(R.id.tv_fragment_route_preview_distance)
     TextView distance;
 
-    @BindView(R.id.tv_fragment_route_preview_duration)
+//    @BindView(R.id.tv_fragment_route_preview_duration)
     TextView duration;
 
-    @BindView(R.id.iv_fragment_route_preview_image)
+//    @BindView(R.id.iv_fragment_route_preview_image)
     ImageView image;
 
-    @BindView(R.id.btn_fragment_route_preview_start)
+//    @BindView(R.id.btn_fragment_route_preview_start)
     Button startRoute;
 
-    @BindView(R.id.btn_fragment_route_preview_map)
+//    @BindView(R.id.btn_fragment_route_preview_map)
     Button openPreview;
 
-    @BindView(R.id.btn_fragment_route_preview_download)
+//    @BindView(R.id.btn_fragment_route_preview_download)
     Button downloadRoute;
 
-    @BindView(R.id.btn_fragment_route_preview_update)
+//    @BindView(R.id.btn_fragment_route_preview_update)
     Button updateRoute;
 
     private int id = -1;
@@ -124,12 +122,12 @@ public class RoutePreviewFragment extends BaseFragment<RoutePresenter, RouteActi
         Picasso.get().load(route.getPhotoPath()).into(image);
     }
 
-    @OnClick(R.id.btn_fragment_route_preview_download)
+//    @OnClick(R.id.btn_fragment_route_preview_download)
     public void onClickDownload() {
         mPresenter.downloadRoute(id);
     }
 
-    @OnClick(R.id.btn_fragment_route_preview_map)
+//    @OnClick(R.id.btn_fragment_route_preview_map)
     public void onClickOpenMap(View view) {
         if (id != -1) {
             if (CheckPermission.checkLocationPermission(getActivity)){
@@ -142,7 +140,7 @@ public class RoutePreviewFragment extends BaseFragment<RoutePresenter, RouteActi
         }
     }
 
-    @OnClick(R.id.btn_fragment_route_preview_start)
+//    @OnClick(R.id.btn_fragment_route_preview_start)
     public void onClickStartRoute(View view) {
         if (id != -1) {
             if (CheckPermission.checkLocationPermission(getActivity) && mBundle != null){
@@ -155,7 +153,7 @@ public class RoutePreviewFragment extends BaseFragment<RoutePresenter, RouteActi
         }
     }
 
-    @OnClick(R.id.btn_fragment_route_preview_update)
+//    @OnClick(R.id.btn_fragment_route_preview_update)
     public void onClickUpdateRoute() {
         if (CheckPermission.checkStoragePermission(getActivity)) {
             mPresenter.updateRoute(id);

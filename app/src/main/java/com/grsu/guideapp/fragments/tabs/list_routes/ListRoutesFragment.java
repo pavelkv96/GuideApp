@@ -1,17 +1,16 @@
 package com.grsu.guideapp.fragments.tabs.list_routes;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.tabs.TabLayout;
+import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.adapters.ViewPagerAdapter;
 import com.grsu.guideapp.base.BaseFragment;
@@ -25,10 +24,10 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
 
     private static final String TAG = ListRoutesFragment.class.getSimpleName();
 
-    @BindView(R.id.tl_fragment_list_routes)
+//    @BindView(R.id.tl_fragment_list_routes)
     TabLayout mTabLayout;
 
-    @BindView(R.id.vp_fragment_list_routes)
+//    @BindView(R.id.vp_fragment_list_routes)
     ViewPager mViewPager;
 
     @NonNull

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnShowListener;
 import android.os.Bundle;
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;

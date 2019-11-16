@@ -13,7 +13,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.project_settings.SharedPref;

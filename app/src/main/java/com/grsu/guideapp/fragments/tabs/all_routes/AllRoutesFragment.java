@@ -1,17 +1,16 @@
 package com.grsu.guideapp.fragments.tabs.all_routes;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import butterknife.BindView;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.R;
@@ -43,10 +42,10 @@ public class AllRoutesFragment extends BaseChildFragment<AllRoutesPresenter, Lis
     private List<Route> listRoutes;
 
     AllRoutesListAdapter adapter;
-    @BindView(R.id.rv_fragment_list_routes)
+//    @BindView(R.id.rv_fragment_list_routes)
     RecyclerView rw_fragment_list_routes;
 
-    @BindView(R.id.srl_fragment_all_routes)
+//    @BindView(R.id.srl_fragment_all_routes)
     SwipeRefreshLayout srl_fragment_list_routes;
 
     @Override

@@ -1,6 +1,6 @@
 package com.grsu.guideapp.fragments.about;
 
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 
 public class AboutItem {
 

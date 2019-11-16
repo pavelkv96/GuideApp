@@ -1,22 +1,21 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-def versions = rootProject.ext.versions
+apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion versions.compileSdk
+    compileSdkVersion rootProject.compileSdk
 
     defaultConfig {
         applicationId "com.grsu.guideapp"
-        minSdkVersion versions.minSdk
-        targetSdkVersion versions.targetSdk
+        minSdkVersion rootProject.minSdk
+        targetSdkVersion rootProject.targetSdk
         versionCode Integer.parseInt(version_code)
         versionName version_name
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
 
         vectorDrawables.useSupportLibrary = true
-        //multiDexEnabled true
     }
     buildTypes {
         debug {
@@ -41,36 +40,28 @@ dependencies {
     implementation project(':custom_lib')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
-    implementation "com.android.support:appcompat-v7:${versions.support}"
-    implementation "com.android.support:recyclerview-v7:${versions.support}"
-    implementation "com.android.support:cardview-v7:${versions.support}"
-    implementation "com.android.support:preference-v7:${versions.support}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${rootProject.kotlin}"
 
-    implementation "com.jakewharton:butterknife:${versions.butterknife}"
-    annotationProcessor "com.jakewharton:butterknife-compiler:${versions.butterknife}"
+    implementation "androidx.preference:preference-ktx:$androidxVersion"
+    implementation "androidx.recyclerview:recyclerview:$materialVersion"
+    implementation "com.google.android.material:material:$materialVersion"
 
-    implementation "com.google.android.gms:play-services-maps:${versions.google_maps}"
+    implementation "com.google.android.gms:play-services-maps:$google_maps"
 
-    implementation "org.mapsforge:mapsforge-map-android:${versions.mapsforge}"
-    implementation "org.mapsforge:mapsforge-map:${versions.mapsforge}"
-    implementation "org.mapsforge:mapsforge-themes:${versions.mapsforge}"
+    implementation "org.mapsforge:mapsforge-map-android:$mapsforge"
+    implementation "org.mapsforge:mapsforge-map:$mapsforge"
+    implementation "org.mapsforge:mapsforge-themes:$mapsforge"
 
-    implementation "com.android.support.constraint:constraint-layout:${versions.constraint}"
+    implementation "androidx.constraintlayout:constraintlayout:$constraint"
 
-    implementation "com.squareup.retrofit2:converter-gson:${versions.retrofit2}"
-    implementation "com.squareup.retrofit2:retrofit:${versions.retrofit2}"
-    implementation "com.squareup.retrofit2:retrofit-mock:${versions.retrofit2}"
-    implementation "com.squareup.picasso:picasso:${versions.picasso}"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit2"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit2"
+    implementation "com.squareup.picasso:picasso:$picasso"
 
-    implementation "android.arch.lifecycle:runtime:${versions.lifecycle}"
-    implementation "android.arch.lifecycle:extensions:${versions.lifecycle}"
-    annotationProcessor "android.arch.lifecycle:compiler:${versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-extensions:$livecycleVersion"
 
     testImplementation 'junit:junit:4.12'
 
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    testImplementation 'org.mockito:mockito-core:2.22.0'
-    testImplementation 'org.robolectric:robolectric:4.2.1'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }

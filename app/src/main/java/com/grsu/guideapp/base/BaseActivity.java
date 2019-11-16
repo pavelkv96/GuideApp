@@ -5,14 +5,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 
@@ -20,7 +18,7 @@ public abstract class BaseActivity<P extends BasePresenter>
         extends AppCompatActivity
         implements BaseView {
 
-    private Unbinder mUnBinder;
+//    private Unbinder mUnBinder;
 
     private ProgressDialog mProgressDialog = null;
     protected SharedPreferences preferences;
@@ -46,15 +44,15 @@ public abstract class BaseActivity<P extends BasePresenter>
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);
-        mUnBinder = ButterKnife.bind(this);
+//        mUnBinder = ButterKnife.bind(this);
     }
 
     @Override
     protected void onDestroy() {
         mPresenter.detachView();
-        if (mUnBinder != null) {
-            mUnBinder.unbind();
-        }
+//        if (mUnBinder != null) {
+//            mUnBinder.unbind();
+//        }
         super.onDestroy();
     }
 

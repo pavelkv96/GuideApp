@@ -2,8 +2,8 @@ package com.grsu.guideapp.utils;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
+import androidx.annotation.StringRes;
+import com.google.android.material.snackbar.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;

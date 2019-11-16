@@ -2,15 +2,15 @@ package com.grsu.guideapp.fragments.map_preview;
 
 import static android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
 
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,8 +20,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.OnClick;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
@@ -66,16 +64,16 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
     protected LatLngBounds bounds;
     Menu menu;
 
-    @BindView(R.id.tv_fragment_map_distance)
+//    @BindView(R.id.tv_fragment_map_distance)
     TextView distanceTextView;
 
-    @BindView(R.id.rl_map_info)
+//    @BindView(R.id.rl_map_info)
     RelativeLayout rlMapInfo;
 
-    @BindView(R.id.tv_map_name)
+//    @BindView(R.id.tv_map_name)
     TextView nameTextView;
 
-    @BindView(R.id.iv_map_image)
+//    @BindView(R.id.iv_map_image)
     ImageView image;
     private String name = null;
 
@@ -273,7 +271,7 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
         }
     }
 
-    @OnClick(R.id.btn_map_go_to)
+//    @OnClick(R.id.btn_map_go_to)
     void onClickGoTo() {
         if (rlMapInfo != null && rlMapInfo.getTag() != null) {
             if (App.isOnline()) {
@@ -292,14 +290,14 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
         }
     }
 
-    @OnClick(R.id.btn_map_more)
+//    @OnClick(R.id.btn_map_more)
     void onClickMore() {
         if (rlMapInfo != null && rlMapInfo.getTag() != null) {
             DetailsActivity.newInstance(getContext(), ((DtoObject) rlMapInfo.getTag()).getId());
         }
     }
 
-    @OnClick(R.id.btn_map_audio)
+//    @OnClick(R.id.btn_map_audio)
     void onClickAudio() {
         if (rlMapInfo != null && rlMapInfo.getTag() != null) {
             showToast("Находится в разработке");

@@ -1,7 +1,7 @@
 package com.grsu.guideapp.fragments.map_preview;
 
 import android.content.Context;
-import android.support.annotation.DrawableRes;
+import androidx.annotation.DrawableRes;
 import android.view.MenuItem;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;

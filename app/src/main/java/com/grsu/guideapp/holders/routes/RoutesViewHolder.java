@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseViewHolder;
 import com.grsu.guideapp.base.listeners.ItemClickListener;
@@ -17,13 +16,13 @@ import java.io.File;
 
 public class RoutesViewHolder extends BaseViewHolder<Route> {
 
-    @BindView(R.id.iv_item_preview_photo_route)
+//    @BindView(R.id.iv_item_preview_photo_route)
     protected ImageView iv_item_preview_photo_route;
-    @BindView(R.id.tv_item_routes_duration)
+//    @BindView(R.id.tv_item_routes_duration)
     protected TextView tv_item_routes_duration;
-    @BindView(R.id.tv_item_routes_distance)
+//    @BindView(R.id.tv_item_routes_distance)
     protected TextView tv_item_routes_distance;
-    @BindView(R.id.tv_item_routes_name_route)
+//    @BindView(R.id.tv_item_routes_name_route)
     protected TextView tv_item_routes_name_route;
 
     public RoutesViewHolder(View itemView, ItemClickListener listener) {

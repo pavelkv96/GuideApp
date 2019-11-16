@@ -5,15 +5,13 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.preference.PreferenceFragmentCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.preference.PreferenceFragmentCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.grsu.guideapp.base.BasePresenter;
-import com.grsu.guideapp.base.BaseView;
 import com.grsu.guideapp.utils.MessageViewer.Toasts;
 
 public abstract class BaseSettingsFragment<P extends BasePresenter, A extends FragmentActivity>

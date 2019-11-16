@@ -1,15 +1,14 @@
 package com.grsu.guideapp.delegation;
 
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
-import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseActivityDelegate;
 import com.grsu.guideapp.delegation.NavigationDrawerContract.NavigationDrawerView;
@@ -22,11 +21,11 @@ public class NavigationDrawerDelegate
         extends BaseActivityDelegate<NavigationDrawerView, NavigationDrawerPresenter>
         implements OnNavigationItemSelectedListener {
 
-    @BindView(R.id.drawer_layout)
+//    @BindView(R.id.drawer_layout)
     protected DrawerLayout mDrawerLayout;
-    @BindView(R.id.toolbar)
+//    @BindView(R.id.toolbar)
     protected Toolbar mToolBar;
-    @BindView(R.id.nav_view)
+//    @BindView(R.id.nav_view)
     protected NavigationView mNavigationView;
 
     @Override

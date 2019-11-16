@@ -1,9 +1,8 @@
 package com.grsu.guideapp.base;
 
-import android.support.v7.widget.RecyclerView.ViewHolder;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import android.view.View;
 import android.view.View.OnClickListener;
-import butterknife.ButterKnife;
 import com.grsu.guideapp.base.listeners.ItemClickListener;
 
 public abstract class BaseViewHolder<T> extends ViewHolder implements OnClickListener {
@@ -12,7 +11,7 @@ public abstract class BaseViewHolder<T> extends ViewHolder implements OnClickLis
 
     public BaseViewHolder(View itemView, ItemClickListener listener) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+//        ButterKnife.bind(this, itemView);
         this.listener = listener;
         itemView.setOnClickListener(this);
     }

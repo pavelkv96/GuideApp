@@ -1,11 +1,11 @@
 package com.grsu.guideapp.fragments.categories;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import butterknife.BindView;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.adapters.TypesAdapter;
 import com.grsu.guideapp.base.BaseFragment;
@@ -30,9 +29,9 @@ public class CatalogFragment extends BaseFragment<CategoriesPresenter, Navigatio
 
     private List<DtoType> mTypes;
     TypesAdapter adapter;
-    @BindView(R.id.fragment_catalog_rv)
+//    @BindView(R.id.fragment_catalog_rv)
     RecyclerView fragment_catalog_rv;
-    @BindView(R.id.fragment_catalog_empty_tv)
+//    @BindView(R.id.fragment_catalog_empty_tv)
     TextView fragment_catalog_empty_tv;
 
     @NonNull

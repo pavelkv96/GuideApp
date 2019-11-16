@@ -5,9 +5,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresPermission;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 
 public class MyService extends Service {

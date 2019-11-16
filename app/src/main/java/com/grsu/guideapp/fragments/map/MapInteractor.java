@@ -1,6 +1,6 @@
 package com.grsu.guideapp.fragments.map;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.fragments.map_preview.MapPreviewInteractor;
 

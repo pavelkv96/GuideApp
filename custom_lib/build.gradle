@@ -1,15 +1,9 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion versions.compileSdk
-
-    defaultConfig {
-        minSdkVersion versions.minSdk
-    }
+    compileSdkVersion rootProject.compileSdk
 }
 
 dependencies {
-    implementation "com.android.support:support-annotations:${versions.support}"
-    api "com.android.support:support-v4:${versions.support}"
-    api "com.android.support:design:${versions.support}"
+    api "androidx.appcompat:appcompat:$androidxVersion"
 }

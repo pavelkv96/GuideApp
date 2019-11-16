@@ -1,6 +1,6 @@
 package com.grsu.guideapp.utils;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.android.gms.maps.model.LatLng;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
