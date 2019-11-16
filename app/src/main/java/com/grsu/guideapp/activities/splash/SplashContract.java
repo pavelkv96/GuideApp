@@ -11,6 +11,8 @@ public interface SplashContract {
         void updateViewProgress(int progress);
 
         void openActivity();
+
+        void checkUpdate();
     }
 
     interface SplashPresenter extends BasePresenter<SplashView> {

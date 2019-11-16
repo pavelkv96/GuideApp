@@ -48,11 +48,11 @@ public class TileAdapter {
     public static void createInstance(File file, Context context, String provider) {
         XmlRenderTheme renderTheme = null;
         try {
-            renderTheme = new AssetsRenderTheme(context, Settings.THEME_FOLDR, Settings.THEME_FILE);
+//            renderTheme = new AssetsRenderTheme(context, Settings.THEME_FOLDR, Settings.THEME_FILE);
         } catch (Exception ignore) {
         } finally {
             if (renderTheme == null) {
-                renderTheme = InternalRenderTheme.DEFAULT;
+                renderTheme = InternalRenderTheme.OSMARENDER;
             }
         }
         mProvider = provider;

@@ -40,7 +40,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     private boolean isMoving = false;
     private boolean isAnimated = false;
     private boolean isFirst = false;
-    private List<LatLng> myMovement;
+//    private List<LatLng> myMovement;
 
     private LocationClient client;
     int i = 0;
@@ -81,7 +81,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
 
         getActivity.setTitleToolbar(getTitle());
 
-        myMovement = DataUtils.getList2();
+//        myMovement = DataUtils.getList2();
 
         if (savedInstanceState != null) {
             i = savedInstanceState.getInt("int", 0);
@@ -190,8 +190,6 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         mPresenter.getPoi();
     }
 
-    // TODO: 20.09.2019 Продублировать кнопку обновить на экрае загрузки маршрута
-
     @Override
     public void choiceItem(String itemValue) {
         super.choiceItem(itemValue);
@@ -262,16 +260,16 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
             animator.setTilt(mode ? 0f : 54f);
             isAnimated = true;
         }
-        //update(location);
+        update(location);
 
-        if (i < myMovement.size()) {
+        /*if (i < myMovement.size()) {
             update(MapUtils.toLocation(myMovement.get(i)));
             i++;
         } else {
             if (CheckPermission.checkLocationPermission(getActivity)) {
                 client.disconnect();
             }
-        }
+        }*/
     }
 
     @Override

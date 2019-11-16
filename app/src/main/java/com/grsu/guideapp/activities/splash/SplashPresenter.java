@@ -43,5 +43,6 @@ public class SplashPresenter extends BasePresenterImpl<SplashView> implements On
     @Override
     public void onFinished() {
         splashView.openActivity();
+        splashView.checkUpdate();
     }
 }

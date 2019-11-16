@@ -10,6 +10,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.grsu.guideapp.App;
@@ -172,12 +173,17 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
     public void otherContent() {
         progress_view.setVisibility(View.VISIBLE);
 
+        File data = new File(StorageUtils.getDatabasePath(this), Settings.DATABASE_INFORMATION_NAME);
+        mPresenter.copyFromAssets(data, Settings.DATABASE_INFORMATION_NAME);
         File file = new File(getFilesDir(), Settings.ZOOM_TABLE);
         File map = new File(StorageUtils.getDatabasePath(this), Settings.MAP_FILE);
-        File data = new File(StorageUtils.getDatabasePath(this), Settings.DATABASE_INFORMATION_NAME);
         App.getThread().diskIO(new Runnable() {
             @Override
             public void run() {
+                File mapData = new File(Settings.CACHE);
+                if (mapData.exists()){
+                    StorageUtils.deleteRecursive(mapData);
+                }
                 File photos = new File(Settings.CONTENT);
                 if (!photos.exists()) {
                     photos.mkdirs();
@@ -187,10 +193,10 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
         });
         mPresenter.copyFromAssets(file, Settings.ZOOM_TABLE);
         mPresenter.copyFromAssets(map, Settings.MAP_FILE);
-        mPresenter.copyFromAssets(data, Settings.DATABASE_INFORMATION_NAME);
     }
 
-    private void checkUpdate() {
+    @Override
+    public void checkUpdate() {
         String apiKey = BuildConfig.ApiKey;
         String datetime = new Test(this).getLastCheck();
         if (datetime == null) {
@@ -214,12 +220,13 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
                     }
                     new Test(SplashActivity.this).setHaveUpdate(updateIds);
                 }
-                //Log.e("TAG", "onResponse: " + new Gson().toJson(response.body()));
+                Toast.makeText(App.getInstance(), R.string.check_update, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(@NonNull Call<Root> call, @NonNull Throwable t) {
                 Log.e("TAG", "onFailure: " + t.getMessage(), t);
+                Toast.makeText(App.getInstance(), R.string.check_update_fail, Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -134,4 +134,6 @@
   <string name="openstreetmap_contributors" translatable="false">© OpenStreetMap contributors</string>
   <string name="error.message.update">Error updating data</string>
   <string name="cancel">Cancel</string>
+  <string name="check_update">Route update check completed</string>
+  <string name="check_update_fail">Failed to check for updates</string>
 </resources>

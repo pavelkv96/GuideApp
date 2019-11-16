@@ -114,4 +114,6 @@
   <string name="retry_again_later">Попробуйте позже</string>
   <string name="error.message.update">Ошибка обновления данных</string>
   <string name="cancel">Отмена</string>
+  <string name="check_update">Проверка обновлений маршрутов завершена</string>
+  <string name="check_update_fail">Не удалось проверить наличие обновлений</string>
 </resources>
