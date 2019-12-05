@@ -34,7 +34,6 @@ import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.views.overlay.MyLocationLayer;
 import com.grsu.guideapp.views.overlay.MyLocationLayer.Builder;
-import com.grsu.ui.scale.MapScaleView;
 import java.io.File;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
@@ -68,7 +67,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
     }
 
 //    @BindView(R.id.scaleView)
-    MapScaleView scaleView;
+    View scaleView;
 
     protected abstract @IdRes
     int getMap();
@@ -178,7 +177,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
             handler.removeCallbacks(this);
             scaleView.setVisibility(View.VISIBLE);
             handler.postDelayed(this, 3500);
-            scaleView.update(position.zoom, position.target.latitude);
+//            scaleView.update(position.zoom, position.target.latitude);
             previousZoom = position.zoom;
         }
     }

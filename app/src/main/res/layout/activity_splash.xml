@@ -7,10 +7,10 @@
   android:layout_height="match_parent"
   tools:context=".activities.splash.SplashActivity">
 
-  <com.grsu.ui.progress.CustomProgressBar
+  <ProgressBar
     android:id="@+id/current_progress"
-    android:layout_width="@dimen/width_height_progress"
-    android:layout_height="@dimen/width_height_progress"
+    android:layout_width="200dp"
+    android:layout_height="200dp"
     android:layout_marginBottom="20dp"
     android:layout_marginStart="50dp"
     android:layout_marginEnd="50dp"
@@ -18,7 +18,7 @@
     android:layout_centerHorizontal="true"
     android:layout_gravity="center"
     android:gravity="center"
-    android:visibility="invisible"
+    android:visibility="visible"
     app:layout_anchorGravity="bottom|center"/>
 
   <TextView
@@ -47,7 +47,7 @@
     android:textSize="15sp"
     app:layout_anchorGravity="bottom|center"/>
 
-  <com.grsu.ui.view.AppButton
+  <Button
     android:id="@+id/btn_activity_splash_close"
     style="@style/MaterialButton"
     android:layout_marginBottom="16dp"
@@ -59,7 +59,7 @@
     android:text="@string/exit"
     android:visibility="visible"/>
 
-  <com.grsu.ui.view.AppButton
+  <Button
     android:id="@+id/btn_activity_splash_next"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"

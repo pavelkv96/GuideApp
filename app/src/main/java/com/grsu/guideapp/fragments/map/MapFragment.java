@@ -27,12 +27,10 @@ import com.grsu.guideapp.utils.DataUtils;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
-import com.grsu.service.LocationClient;
-import com.grsu.service.OnLocationListener;
 import java.util.List;
 
 public class MapFragment extends MapPreviewFragment<MapPresenter>
-        implements MapViews, OnLocationListener, DialogInterface.OnClickListener {
+        implements MapViews,/* OnLocationListener,*/ DialogInterface.OnClickListener {
 
     private static final String TAG = MapFragment.class.getSimpleName();
     private boolean isMoving = false;
@@ -40,7 +38,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     private boolean isFirst = false;
     private List<LatLng> myMovement;
 
-    private LocationClient client;
+//    private LocationClient client;
     int i = 0;
     Animator animator;
 
@@ -72,10 +70,10 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
             @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        client = new LocationClient.Builder(getActivity)
-                .setInterval(2000)
-                .addListener(this)
-                .build();
+//        client = new LocationClient.Builder(getActivity)
+//                .setInterval(2000)
+//                .addListener(this)
+//                .build();
 
         getActivity.setTitleToolbar(getTitle());
 
@@ -85,7 +83,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
             i = savedInstanceState.getInt("int", 0);
 
             if (CheckPermission.checkLocationPermission(getActivity)) {
-                client.connect();
+//                client.connect();
                 String title = getString(R.string.device_searching);
                 String message = getString(R.string.wait_please);
                 showProgress(title, message, this);
@@ -143,7 +141,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         btn_fragment_map_tilt.setVisibility(View.GONE);
         isMoving = false;
         if (CheckPermission.checkLocationPermission(getActivity)) {
-            client.disconnect();
+//            client.disconnect();
         }
     }
 
@@ -154,7 +152,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
             String title = getString(R.string.device_searching);
             String message = getString(R.string.wait_please);
             showProgress(title, message, this);
-            client.connect();
+//            client.connect();
             isFirst = true;
             view.setVisibility(View.GONE);
         } else {
@@ -215,7 +213,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
             } catch (NullPointerException e) {
                 hideProgress();
                 if (CheckPermission.checkLocationPermission(getActivity)) {
-                    client.disconnect();
+//                    client.disconnect();
                 }
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity);
                 dialog.setTitle(R.string.warning);
@@ -234,43 +232,43 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         return fragment;
     }
 
-    @Override
-    public void onChangedLocation(Location location) {
-        hideProgress();
-
-        if (btn_fragment_map_stop.getVisibility() == View.GONE) {
-            btn_fragment_map_stop.setVisibility(View.VISIBLE);
-        }
-        if (btn_fragment_map_tilt.getVisibility() == View.GONE) {
-            btn_fragment_map_tilt.setVisibility(View.VISIBLE);
-        }
-
-        boolean mode = read(SharedPref.KEY_IS_3D_MODE, Boolean.class);
-        if (mMap != null && isFirst) {
-            LatLng latLng = MapUtils.toLatLng(location);
-            Builder builder = new Builder();
-            builder.target(latLng).tilt(mode ? 0f : 54f).zoom(19).bearing(location.getBearing());
-            isFirst = false;
-            mMap.moveCamera(CameraUpdateFactory.newCameraPosition( builder.build())/*, 500, null*/);
-        }
-
-        if (animator == null) {
-            btn_fragment_map_tilt.setVisibility(View.VISIBLE);
-            animator = new Animator(mMap, myLocation);
-            animator.setTilt(mode ? 0f : 54f);
-            isAnimated = true;
-        }
-        //update(location);
-
-        if (i < myMovement.size()) {
-            update(MapUtils.toLocation(myMovement.get(i)));
-            i++;
-        } else {
-            if (CheckPermission.checkLocationPermission(getActivity)) {
-                client.disconnect();
-            }
-        }
-    }
+//    @Override
+//    public void onChangedLocation(Location location) {
+//        hideProgress();
+//
+//        if (btn_fragment_map_stop.getVisibility() == View.GONE) {
+//            btn_fragment_map_stop.setVisibility(View.VISIBLE);
+//        }
+//        if (btn_fragment_map_tilt.getVisibility() == View.GONE) {
+//            btn_fragment_map_tilt.setVisibility(View.VISIBLE);
+//        }
+//
+//        boolean mode = read(SharedPref.KEY_IS_3D_MODE, Boolean.class);
+//        if (mMap != null && isFirst) {
+//            LatLng latLng = MapUtils.toLatLng(location);
+//            Builder builder = new Builder();
+//            builder.target(latLng).tilt(mode ? 0f : 54f).zoom(19).bearing(location.getBearing());
+//            isFirst = false;
+//            mMap.moveCamera(CameraUpdateFactory.newCameraPosition( builder.build())/*, 500, null*/);
+//        }
+//
+//        if (animator == null) {
+//            btn_fragment_map_tilt.setVisibility(View.VISIBLE);
+//            animator = new Animator(mMap, myLocation);
+//            animator.setTilt(mode ? 0f : 54f);
+//            isAnimated = true;
+//        }
+//        //update(location);
+//
+//        if (i < myMovement.size()) {
+//            update(MapUtils.toLocation(myMovement.get(i)));
+//            i++;
+//        } else {
+//            if (CheckPermission.checkLocationPermission(getActivity)) {
+//                client.disconnect();
+//            }
+//        }
+//    }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -285,7 +283,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
             Boolean mode = read(SharedPref.KEY_IS_3D_MODE, Boolean.class);
             btn_fragment_map_tilt.setText(mode ? "3D" : "2D");
             if (isMoving) {
-                client.connect();
+//                client.connect();
                 String title = getString(R.string.device_searching);
                 String message = getString(R.string.wait_please);
                 showProgress(title, message, this);
@@ -304,7 +302,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     @Override
     public void onStop() {
         if (CheckPermission.checkLocationPermission(getActivity)) {
-            client.disconnect();
+//            client.disconnect();
         }
         if (animator != null) {
             isAnimated = false;
@@ -313,27 +311,27 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         super.onStop();
     }
 
-    @Override
-    public void onProviderEnabled(final String var1) {
-        hideProgress();
-        Logs.e(TAG, "onProviderEnabled: " + var1);
-    }
-
-    @Override
-    public void onProviderDisabled(final String var1) {
-        if (var1.equals("gps")) {
-            hideProgress();
-            String title = getString(R.string.device_searching);
-            String message = getString(R.string.turn_on_gps);
-            showProgress(title, message, MapFragment.this);
-        }
-        Logs.e(TAG, "onProviderDisabled: " + var1);
-    }
-
-    @Override
-    public void onStatusChanged(final String provider, final int status, Bundle bundle) {
-        Logs.e(TAG, "onStatusChanged: " + provider + "   " + status);
-    }
+//    @Override
+//    public void onProviderEnabled(final String var1) {
+//        hideProgress();
+//        Logs.e(TAG, "onProviderEnabled: " + var1);
+//    }
+//
+//    @Override
+//    public void onProviderDisabled(final String var1) {
+//        if (var1.equals("gps")) {
+//            hideProgress();
+//            String title = getString(R.string.device_searching);
+//            String message = getString(R.string.turn_on_gps);
+//            showProgress(title, message, MapFragment.this);
+//        }
+//        Logs.e(TAG, "onProviderDisabled: " + var1);
+//    }
+//
+//    @Override
+//    public void onStatusChanged(final String provider, final int status, Bundle bundle) {
+//        Logs.e(TAG, "onStatusChanged: " + provider + "   " + status);
+//    }
 
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {

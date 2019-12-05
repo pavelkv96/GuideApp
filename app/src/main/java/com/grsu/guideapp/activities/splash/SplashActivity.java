@@ -9,6 +9,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.BuildConfig;
@@ -24,8 +25,6 @@ import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.StorageUtils;
-import com.grsu.ui.progress.CustomProgressBar;
-import com.grsu.ui.view.AppButton;
 import java.io.File;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,10 +33,10 @@ import retrofit2.Response;
 public class SplashActivity extends BaseActivity<SplashPresenter> implements SplashView, Runnable {
 
 //    @BindView(R.id.current_progress)
-    CustomProgressBar progress_view;
+    ProgressBar progress_view;
 
 //    @BindView(R.id.btn_activity_splash_next)
-    AppButton btn_activity_splash_next;
+    Button btn_activity_splash_next;
 
 //    @BindView(R.id.btn_activity_splash_settings)
     Button btn_activity_splash_settings;
@@ -49,7 +48,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
     TextView tv_activity_splash_description;
 
 //    @BindView(R.id.btn_activity_splash_close)
-    AppButton btn_activity_splash_close;
+    Button btn_activity_splash_close;
 
     private Handler mHandler;
 

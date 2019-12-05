@@ -5,5 +5,5 @@ android {
 }
 
 dependencies {
-    api "androidx.appcompat:appcompat:$androidxVersion"
+    implementation "androidx.appcompat:appcompat:$androidx_version"
 }
