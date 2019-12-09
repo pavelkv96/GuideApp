@@ -26,12 +26,10 @@ import com.google.android.gms.maps.model.Tile;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
-import com.grsu.guideapp.App;
-import com.grsu.guideapp.R;
 import com.grsu.guideapp.adapters.TileAdapter;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CheckPermission;
-import com.grsu.guideapp.utils.MapUtils;
+import com.grsu.guideapp.utils.Provider;
 import com.grsu.guideapp.views.overlay.MyLocationLayer;
 import com.grsu.guideapp.views.overlay.MyLocationLayer.Builder;
 import java.io.File;
@@ -99,7 +97,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
         mMap.setOnCameraIdleListener(this);
 
         File file = getActivity.getDatabasePath(Settings.MAP_FILE);
-        borders = TileAdapter.getBoundingBox(file);
+        borders = TileAdapter.INSTANCE.getBoundingBox(file);
         mMap.setLatLngBoundsForCameraTarget(borders);
 
         mMap.setOnMarkerClickListener(this);
@@ -119,7 +117,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
         }
 
         AndroidGraphicFactory.createInstance(getActivity.getApplication());
-        TileAdapter.createInstance(file, getActivity.getApplication(), Settings.CURRENT_PROVIDER);
+        TileAdapter.INSTANCE.createConnection(file, Provider.FORGE);
     }
 
     @Override
@@ -128,7 +126,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
         if (overlay != null) {
             overlay.clearTileCache();
         }
-        TileAdapter.dispose();
+        TileAdapter.INSTANCE.dispose();
         AndroidGraphicFactory.clearResourceMemoryCache();
         handler.removeCallbacks(this);
     }
@@ -140,10 +138,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
 
     @Override
     public Tile getTile(int x, int y, int zoom) {
-        long tileIndex = MapUtils.getTileIndex(zoom, x, y);
-        byte[] tile = TileAdapter.loadTile(tileIndex);
-
-        return tile != null ? new Tile(256, 256, tile) : NO_TILE;
+        return TileAdapter.INSTANCE.loadTile(x, y, zoom);
     }
 
     @Override
