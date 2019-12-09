@@ -8,7 +8,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CameraPosition.Builder;
 import com.google.android.gms.maps.model.LatLng;
-import com.grsu.guideapp.utils.MapUtils;
+import com.grsu.guideapp.utils.extensions.LatLngKt;
 import com.grsu.guideapp.views.overlay.MyLocationLayer;
 
 public class Animator implements Runnable {
@@ -57,7 +57,7 @@ public class Animator implements Runnable {
         double lng = t * endLatLng.longitude + (1 - t) * beginLatLng.longitude;
         LatLng newPosition = new LatLng(lat, lng);
 
-        Location location = MapUtils.toLocation(newPosition);
+        Location location = LatLngKt.toLocation(newPosition);
         location.setBearing(bearingBetweenLatLngs(beginLatLng, newPosition));
         overlay.setLocation(location);
 
@@ -78,8 +78,8 @@ public class Animator implements Runnable {
     }
 
     private static float bearingBetweenLatLngs(LatLng begin, LatLng end) {
-        Location beginL = MapUtils.toLocation(begin);
-        Location endL = MapUtils.toLocation(end);
+        Location beginL = LatLngKt.toLocation(begin);
+        Location endL = LatLngKt.toLocation(end);
         return beginL.bearingTo(endL);
     }
 }

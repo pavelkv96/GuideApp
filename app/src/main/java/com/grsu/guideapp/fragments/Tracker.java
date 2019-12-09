@@ -21,6 +21,8 @@ import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StorageUtils;
 import com.grsu.guideapp.utils.StreamUtils;
+import com.grsu.guideapp.utils.extensions.LocationKt;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -83,7 +85,7 @@ public class Tracker extends Fragment implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         Logs.e("TAG", location.toString());
-        LatLng latLng = MapUtils.toLatLng(location);
+        LatLng latLng = LocationKt.toLatLng(location);
         String text = location.getProvider() + "  " + location.getAccuracy() + "   " + latLng.toString() + "  " + location.getBearing();
         data.setText(text);
         try {

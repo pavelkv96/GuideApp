@@ -1,4 +1,4 @@
-@file:JvmName("Locale")
+//@file:JvmName("Locale")
 package com.grsu.guideapp.utils.extensions
 
 import com.grsu.guideapp.project_settings.Constants.Language

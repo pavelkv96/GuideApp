@@ -48,6 +48,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$livecycle_version"
 
     implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
     implementation "androidx.navigation:navigation-fragment:$nav_version"
@@ -64,6 +65,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofit2"
     implementation "com.squareup.retrofit2:retrofit:$retrofit2"
     implementation "com.squareup.picasso:picasso:$picasso"
+    implementation "com.squareup.leakcanary:leakcanary-android:1.6.3"
 
     testImplementation 'junit:junit:4.12'
 

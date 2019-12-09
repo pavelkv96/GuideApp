@@ -7,18 +7,22 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.StorageUtils;
-import com.grsu.guideapp.utils.extensions.Locale;
+import com.grsu.guideapp.utils.extensions.LocaleKt;
+
+import java.util.Locale;
 
 public class App extends Application {
 
@@ -33,7 +37,8 @@ public class App extends Application {
         createDBIfNeed();
     }
 
-    public static App getInstance(){
+    @NonNull
+    public static App getInstance() {
         return app;
     }
 
@@ -55,13 +60,13 @@ public class App extends Application {
     public Context setLocale(SharedPreferences pref, Context context) {
         Editor editor = pref.edit();
         if (!pref.contains(SharedPref.KEY_LANGUAGE)) {
-            String locale = Locale.getCurrentLocale(java.util.Locale.getDefault());
+            String locale = LocaleKt.getCurrentLocale(Locale.getDefault());
             editor.putString(SharedPref.KEY_LANGUAGE, locale).apply();
         }
         Configuration conf = getResources().getConfiguration();
 
         String loc = pref.getString(SharedPref.KEY_LANGUAGE, getResources().getString(R.string.locale));
-        java.util.Locale locale = new java.util.Locale(loc);
+        Locale locale = new Locale(loc);
         if (Build.VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN_MR1) {
             conf.setLocale(locale);
             return createConfigurationContext(conf);

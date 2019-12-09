@@ -1,6 +1,7 @@
 package com.grsu.guideapp.fragments.map;
 
 import android.location.Location;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.base.listeners.OnChangePolyline;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
@@ -11,6 +12,8 @@ import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Point;
 import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.MapUtils;
+import com.grsu.guideapp.utils.extensions.LatLngKt;
+
 import java.util.List;
 
 public class MapPresenter extends MapPreviewPresenter implements MapContract.MapsPresenter,
@@ -47,7 +50,7 @@ public class MapPresenter extends MapPreviewPresenter implements MapContract.Map
 
         //mapViews.setCurrentPoint(point.getPosition());
 
-        getCurrentTurn(MapUtils.toLocation(point.getPosition()));
+        getCurrentTurn(LatLngKt.toLocation(point.getPosition()));
     }
 
     @Override
@@ -62,7 +65,7 @@ public class MapPresenter extends MapPreviewPresenter implements MapContract.Map
     @Override
     public void getPoi() {
         if (logic.getCurrentPosition().getPosition() != null) {
-            getCurrentTurn(MapUtils.toLocation(logic.getCurrentPosition().getPosition()));
+            getCurrentTurn(LatLngKt.toLocation(logic.getCurrentPosition().getPosition()));
         }
     }
 

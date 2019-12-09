@@ -2,6 +2,7 @@ package com.grsu.guideapp.fragments.map;
 
 import android.location.Location;
 import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.base.listeners.OnChangePolyline;
 import com.grsu.guideapp.base.listeners.OnNotFound;
@@ -9,6 +10,8 @@ import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Point;
 import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.MapUtils;
+import com.grsu.guideapp.utils.extensions.LatLngKt;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,8 +56,8 @@ class Logic {
         Point shortestDistance = getShortestDistance(fivePoint, currentLocation);
         onNotFound.onNotFound(null);
 
-        Location endLocation = MapUtils.toLocation(shortestDistance.getPosition());
-        if (MapUtils.getDistanceBetween(currentLocation, endLocation) > 25) {
+        Location endLocation = LatLngKt.toLocation(shortestDistance.getPosition());
+        if (currentLocation.distanceTo(endLocation) > 25) {
             shortestDistance = getShortestDistance(allPoint, currentLocation);
 
             if (shortestDistance.getDistance() <= 25) {
@@ -92,14 +95,13 @@ class Logic {
 
     ///
     Point getShortestDistance(List<Point> latLngList, Location currentLocation) {
-        Location endLocation = MapUtils.toLocation(latLngList.get(0).getPosition());
-        float distance = MapUtils.getDistanceBetween(currentLocation, endLocation);
+        Location endLocation = LatLngKt.toLocation(latLngList.get(0).getPosition());
+        float distance = currentLocation.distanceTo(endLocation);
         Point startPoint = latLngList.get(0);
 
         for (Point point : latLngList) {
             if (MapUtils.isMoreDistance(distance, currentLocation, point.getPosition())) {
-                distance = MapUtils.getDistanceBetween(currentLocation,
-                        MapUtils.toLocation(point.getPosition()));
+                distance = currentLocation.distanceTo(LatLngKt.toLocation(point.getPosition()));
                 startPoint = point;
                 startPoint.setDistance(distance);
             }

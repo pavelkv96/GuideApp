@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseSettingsFragment;
-import com.grsu.guideapp.database.CacheDBHelper;
 import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.fragments.setting.SettingContract.SettingView;
 import com.grsu.guideapp.project_settings.Settings;
@@ -107,7 +106,7 @@ public class SettingFragment extends
             case SharedPref.KEY_MAP_CONTENT: {
                 File file = new File(Settings.CACHE, Settings.CACHE_DATABASE_NAME);
                 if (file.exists()) {
-                    CacheDBHelper.clearCache();
+                    //TODO clear cache database
                     Toasts.makeS(getActivity, R.string.success_database_deleted);
                 } else {
                     Toasts.makeS(getActivity, R.string.error_database_not_found);

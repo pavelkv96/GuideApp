@@ -2,29 +2,23 @@ package com.grsu.guideapp.utils;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class StorageUtils {
 
@@ -41,10 +35,6 @@ public class StorageUtils {
             file.mkdirs();
         }
         return file;
-    }
-
-    public static void removeDir(String path) {
-        deleteRecursive(new File(path));
     }
 
     public static void deleteRecursive(File fileOrDirectory) {
@@ -137,48 +127,6 @@ public class StorageUtils {
         return false;
     }
 
-    public static void unzip(File zipFile, File targetDirectory) throws IOException {
-        FileInputStream stream = new FileInputStream(zipFile);
-        BufferedInputStream in = new BufferedInputStream(stream);
-        ZipInputStream zis = new ZipInputStream(in);
-        try {
-            ZipEntry ze;
-            byte[] buffer = new byte[8192];
-            while ((ze = zis.getNextEntry()) != null) {
-                File file = new File(targetDirectory, ze.getName());
-                File dir = ze.isDirectory() ? file : file.getParentFile();
-                if (!dir.isDirectory() && !dir.mkdirs()) {
-                    String s = "Failed to ensure directory: " + dir.getAbsolutePath();
-                    throw new FileNotFoundException(s);
-                }
-                if (ze.isDirectory()) {
-                    continue;
-                }
-                FileOutputStream fout = new FileOutputStream(file);
-                try {
-                    StreamUtils.copyFile(zis, fout, buffer);
-                } finally {
-                    StreamUtils.closeStream(fout);
-                }
-            }
-        } finally {
-            StreamUtils.closeStream(zis);
-            StreamUtils.closeStream(in);
-            StreamUtils.closeStream(stream);
-        }
-    }
-
-    @Nullable
-    public static Bitmap getImageFromFile(String name) throws NullPointerException {
-        String child = String.format("%s.%s", name, Constants.JPG);
-        File file = new File(Settings.PHOTO_CONTENT, child);
-        if (file.exists()) {
-            return BitmapFactory.decodeFile(file.getAbsolutePath());
-        }
-
-        throw new NullPointerException("Image not found by path " + file.getAbsoluteFile());
-    }
-
     @NonNull
     public static File getAudioFile(String name) throws NullPointerException {
         String child = String.format("%s.%s", name, Constants.MP3);
@@ -201,13 +149,4 @@ public class StorageUtils {
 
         return bitmap;
     }
-
-    public static byte[] toByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] bitmapdata = stream.toByteArray();
-        StreamUtils.closeStream(stream);
-        return bitmapdata;
-    }
-
 }

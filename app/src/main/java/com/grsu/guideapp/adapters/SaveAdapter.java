@@ -6,15 +6,18 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.utils.CryptoUtils;
-import com.grsu.guideapp.utils.StorageUtils;
 import com.grsu.guideapp.utils.StreamUtils;
+import com.grsu.guideapp.utils.extensions.BitmapKt;
 import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.io.FileOutputStream;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -49,12 +52,12 @@ public class SaveAdapter {
         Resources resources = helper.mContext.getResources();
         try {
             Bitmap bitmap = Picasso.get().load(url).resize(59, 75).get();
-            bytes = StorageUtils.toByteArray(bitmap);
+            bytes = BitmapKt.toByteArray(bitmap);
         } catch (Exception e) {
             Log.e("TAG", "saveIcon: " + e.getMessage(), e);
             Drawable drawable = resources.getDrawable(R.drawable.noicon);
             Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-            bytes = StorageUtils.toByteArray(bitmap);
+            bytes = BitmapKt.toByteArray(bitmap);
         }
         return bytes;
     }

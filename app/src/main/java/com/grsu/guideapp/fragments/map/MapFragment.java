@@ -3,14 +3,16 @@ package com.grsu.guideapp.fragments.map;
 import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,8 +27,10 @@ import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.DataUtils;
 import com.grsu.guideapp.utils.MapUtils;
-import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
+import com.grsu.guideapp.utils.extensions.LatLngKt;
+import com.grsu.guideapp.utils.extensions.LocationKt;
+
 import java.util.List;
 
 public class MapFragment extends MapPreviewFragment<MapPresenter>
@@ -175,7 +179,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     public CameraUpdate createCamera(Location target, float tilt) {
         float zoom = mMap.getCameraPosition().zoom;
         Builder builder = new Builder();
-        builder.target(MapUtils.toLatLng(target)).tilt(tilt).zoom(zoom);
+        builder.target(LocationKt.toLatLng(target)).tilt(tilt).zoom(zoom);
         builder.bearing(target.getBearing());
         return CameraUpdateFactory.newCameraPosition(builder.build());
     }
@@ -199,17 +203,17 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         LatLng start = list.get(2).getPosition();
         LatLng end = list.get(3).getPosition();
 
-        Location location = MapUtils.toLocation(start);
-        float accuracy = MapUtils.getDistanceBetween(currentLocation, MapUtils.toLocation(start));
+        Location location = LatLngKt.toLocation(start);
+        float accuracy = currentLocation.distanceTo(LatLngKt.toLocation(start));
         location.setAccuracy(accuracy);
         if (accuracy <= 25 && isAnimated) {
             myLocation.setLocation(location);
             animator.startAnimation(start, end);
         } else {
             myLocation.setLocation(currentLocation);
-            LatLng latLng = MapUtils.toLatLng(currentLocation);
+            LatLng latLng = LocationKt.toLatLng(currentLocation);
             try {
-                MapUtils.getBounds(latLng, bounds, getBorders());
+                MapUtils.isContains(latLng, getBorders());
             } catch (NullPointerException e) {
                 hideProgress();
                 if (CheckPermission.checkLocationPermission(getActivity)) {
