@@ -31,7 +31,7 @@ public abstract class BaseActivity<P extends BasePresenter>
     @Override
     protected void attachBaseContext(Context newBase) {
         preferences = PreferenceManager.getDefaultSharedPreferences(newBase);
-        super.attachBaseContext(App.getInstance().setLocale(preferences, newBase));
+        super.attachBaseContext(App.getInstance().setLocale(preferences));
     }
 
     @Override

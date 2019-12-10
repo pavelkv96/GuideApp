@@ -10,5 +10,5 @@ import com.grsu.guideapp.database.cache.entities.CacheTile
 @Database(entities = [CacheTile::class], version = 1, exportSchema = false)
 @TypeConverters(value = [Converters::class])
 abstract class CacheDataBase : RoomDatabase() {
-    abstract val cache: CacheDao
+    abstract fun cache(): CacheDao
 }

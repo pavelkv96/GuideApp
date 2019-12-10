@@ -75,7 +75,7 @@ public class SettingFragment extends
                 prefLang.setSummary(prefLang.getEntry());
 
                 editor.putString(SharedPref.KEY_LANGUAGE, prefLang.getValue()).apply();
-                App.getInstance().setLocale(sharedPref, App.getInstance());
+                App.getInstance().setLocale(sharedPref);
                 getActivity.recreate();
             }
             break;

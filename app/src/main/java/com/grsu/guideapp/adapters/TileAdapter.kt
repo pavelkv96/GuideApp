@@ -77,7 +77,7 @@ object TileAdapter {
         Executors.newFixedThreadPool(3).execute(theme)
 
         dataBase = Room.databaseBuilder(App.getInstance(), CacheDataBase::class.java, "map cache.db").build()
-        cacheDao = dataBase.cache
+        cacheDao = dataBase.cache()
     }
 
     fun loadTile(x: Int, y: Int, zoom: Int): Tile {
