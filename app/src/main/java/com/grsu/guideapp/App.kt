@@ -7,7 +7,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import androidx.room.Room
 import com.grsu.guideapp.database.content.ContentDataBase
-import com.grsu.guideapp.database.content.migrations.MyCallBack
 import com.grsu.guideapp.project_settings.SharedPref
 import com.grsu.guideapp.utils.extensions.getCurrentLocale
 import java.util.*
@@ -43,7 +42,7 @@ class App : Application() {
         val dataBase = Room.databaseBuilder(this, ContentDataBase::class.java, "content.db")
 //            .createFromAsset("content.db")
             .allowMainThreadQueries()
-            .addCallback(MyCallBack())
+//            .addCallback(MyCallBack())
             .build()
 
         dataBase.routesDao().getRoutes()
