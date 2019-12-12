@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,13 +25,12 @@ import com.grsu.guideapp.adapters.ObjectAdapter;
 import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.base.listeners.ItemClickListener;
 import com.grsu.guideapp.database.Test;
-import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.fragments.list_objects.ListObjectContract.ObjectView;
 import com.grsu.guideapp.models.DtoObject;
 import com.grsu.guideapp.project_settings.Constants;
 import java.util.List;
 
-public class ListObjectFragment extends BaseFragment<ListObjectPresenter, NavigationDrawerActivity>
+public class ListObjectFragment extends BaseFragment<ListObjectPresenter, FragmentActivity>
         implements ObjectView, ItemClickListener, OnQueryTextListener {
 
     private List<DtoObject> mObjects;
@@ -71,7 +71,7 @@ public class ListObjectFragment extends BaseFragment<ListObjectPresenter, Naviga
             mPresenter.getObject(getString(R.string.locale), type);
         }
 
-        getActivity.setTitleToolbar(title);
+//        getActivity.setTitleToolbar(title);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity));
         mRecyclerView.addItemDecoration(
@@ -130,7 +130,7 @@ public class ListObjectFragment extends BaseFragment<ListObjectPresenter, Naviga
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (R.id.action_list_routes == item.getItemId()) {
-            getActivity.openListRoutesFragment();
+//            getActivity.openListRoutesFragment();
         }
 
         return super.onOptionsItemSelected(item);

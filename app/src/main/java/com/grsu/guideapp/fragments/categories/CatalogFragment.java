@@ -3,6 +3,7 @@ package com.grsu.guideapp.fragments.categories;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,13 +19,12 @@ import com.grsu.guideapp.adapters.TypesAdapter;
 import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.base.listeners.ItemClickListener;
 import com.grsu.guideapp.database.Test;
-import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.fragments.categories.CategoriesContract.CategoriesViews;
 import com.grsu.guideapp.fragments.list_objects.ListObjectFragment;
 import com.grsu.guideapp.models.DtoType;
 import java.util.List;
 
-public class CatalogFragment extends BaseFragment<CategoriesPresenter, NavigationDrawerActivity>
+public class CatalogFragment extends BaseFragment<CategoriesPresenter, FragmentActivity>
         implements CategoriesViews, ItemClickListener {
 
     private List<DtoType> mTypes;
@@ -56,7 +56,7 @@ public class CatalogFragment extends BaseFragment<CategoriesPresenter, Navigatio
         View view = super.onCreateView(inflater, container, savedInstanceState);
         setHasOptionsMenu(true);
 
-        getActivity.setTitleToolbar(getTitle());
+//        getActivity.setTitleToolbar(getTitle());
         fragment_catalog_rv.setHasFixedSize(true);
         fragment_catalog_rv.setLayoutManager(new LinearLayoutManager(getContext()));
         fragment_catalog_rv.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
@@ -86,7 +86,7 @@ public class CatalogFragment extends BaseFragment<CategoriesPresenter, Navigatio
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (R.id.action_list_routes == item.getItemId()) {
-            getActivity.openListRoutesFragment();
+//            getActivity.openListRoutesFragment();
         }
 
         return super.onOptionsItemSelected(item);

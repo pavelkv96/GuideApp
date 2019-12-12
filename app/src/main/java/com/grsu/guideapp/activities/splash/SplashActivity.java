@@ -17,7 +17,6 @@ import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.splash.SplashContract.SplashView;
 import com.grsu.guideapp.base.BaseActivity;
 import com.grsu.guideapp.database.Test;
-import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.network.model.Datum;
 import com.grsu.guideapp.network.model.Root;
 import com.grsu.guideapp.network.model.Timestamp;
@@ -223,7 +222,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
 
     @Override
     public void run() {
-        startActivity(NavigationDrawerActivity.newIntent(this));
+        //TODO start application
         finish();
     }
 }

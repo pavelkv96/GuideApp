@@ -4,6 +4,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.tabs.TabLayout;
+
+import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,12 +16,11 @@ import android.view.ViewGroup;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.adapters.ViewPagerAdapter;
 import com.grsu.guideapp.base.BaseFragment;
-import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.fragments.tabs.all_routes.AllRoutesFragment;
 import com.grsu.guideapp.fragments.tabs.list_routes.ListRoutesContract.ListRoutesViews;
 import com.grsu.guideapp.fragments.tabs.my_routes.MyRoutesFragment;
 
-public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, NavigationDrawerActivity>
+public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, FragmentActivity>
         implements ListRoutesViews {
 
     private static final String TAG = ListRoutesFragment.class.getSimpleName();
@@ -53,7 +54,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
 
         setHasOptionsMenu(true);
 
-        getActivity.setTitleToolbar(getTitle());
+//        getActivity.setTitleToolbar(getTitle());
         ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
         adapter.addFragment(MyRoutesFragment.newInstance(), getString(R.string.my_tab));
         adapter.addFragment(AllRoutesFragment.newInstance(), getString(R.string.all_tab));
@@ -72,7 +73,7 @@ public class ListRoutesFragment extends BaseFragment<ListRoutesPresenter, Naviga
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (R.id.action_list_objects == item.getItemId()) {
-            getActivity.openCatalogFragment();
+//            getActivity.openCatalogFragment();
         }
 
         return super.onOptionsItemSelected(item);

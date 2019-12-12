@@ -6,6 +6,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
@@ -16,7 +17,6 @@ import android.view.ViewGroup;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.BaseSettingsFragment;
-import com.grsu.guideapp.delegation.NavigationDrawerActivity;
 import com.grsu.guideapp.fragments.setting.SettingContract.SettingView;
 import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.project_settings.SharedPref;
@@ -25,7 +25,7 @@ import com.grsu.guideapp.utils.StorageUtils;
 import java.io.File;
 
 public class SettingFragment extends
-        BaseSettingsFragment<SettingPresenter, NavigationDrawerActivity>
+        BaseSettingsFragment<SettingPresenter, FragmentActivity>
         implements SettingView, OnPreferenceClickListener {
 
     private ListPreference prefLang;
@@ -52,7 +52,7 @@ public class SettingFragment extends
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
-        getActivity.setTitleToolbar(getTitle());
+//        getActivity.setTitleToolbar(getTitle());
         prefLang = (ListPreference) findPreference(SharedPref.KEY_LANGUAGE);
         prefLang.setSummary(prefLang.getEntry());
 
