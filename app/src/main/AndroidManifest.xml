@@ -23,12 +23,7 @@
     tools:ignore="AllowBackup,GoogleAppIndexingWarning,UnusedAttribute">
 
     <activity
-      android:name=".delegation.NavigationDrawerActivity"
-      android:screenOrientation="portrait"
-      android:theme="@style/AppTheme.NoActionBar"/>
-
-    <activity
-      android:name=".activities.TestActivity"
+      android:name=".activities.MainActivity"
       android:theme="@style/AppTheme.NoActionBar">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -58,7 +53,7 @@
 
     <meta-data
       android:name="com.google.android.geo.API_KEY"
-      android:value="EMPTY_API_KEY"/>
+      android:value="AIzaSyCSvN_-eS0IKwMzBLF10xkbpUZyPaHtVrs"/>
 
     <meta-data
       android:name="android.app.searchable"
