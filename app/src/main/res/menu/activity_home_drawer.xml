@@ -6,32 +6,32 @@
 
   <group android:checkableBehavior="single">
     <item
-      android:id="@+id/nav_camera"
-      android:icon="@drawable/ic_menu_camera"
-      android:title="Import"
-      android:visible="false"/>
+      android:id="@+id/nav_routes"
+      android:icon="@drawable/ic_menu_routes"
+      android:title="@string/menu_item_routes" />
     <item
-      android:id="@+id/nav_slideshow"
-      android:icon="@drawable/ic_menu_slideshow"
-      android:title="@string/menu_item_routes"/>
-    <item
-      android:id="@+id/nav_gallery"
-      android:icon="@drawable/ic_menu_gallery"
+      android:id="@+id/nav_objects"
+      android:icon="@drawable/ic_menu_objects"
       android:title="@string/menu_item_categories"
-      android:visible="true"/>
+      android:visible="true" />
     <item
       android:id="@+id/nav_settings"
-      android:icon="@drawable/ic_menu_manage"
-      android:title="@string/menu_item_settings"/>
+      android:icon="@drawable/ic_menu_settings"
+      android:title="@string/menu_item_settings" />
     <item
-      android:id="@+id/nav_share"
-      android:icon="@drawable/ic_menu_share"
-      android:title="@string/about_fragment"/>
+      android:id="@+id/nav_about"
+      android:icon="@drawable/ic_menu_about"
+      android:title="@string/about_fragment" />
     <item
       android:id="@+id/nav_send"
       android:icon="@drawable/ic_menu_send"
       android:title="Send"
-      android:visible="false"/>
+      android:visible="false" />
+    <item
+      android:id="@+id/nav_camera"
+      android:icon="@drawable/ic_menu_camera"
+      android:title="Import"
+      android:visible="false" />
   </group>
 
 </menu>
