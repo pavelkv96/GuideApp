@@ -73,10 +73,10 @@ public class RouteActivity extends AppCompatActivity implements OnFragmentReplac
     @Override
     public void onReplace(Fragment fragment) {
         String backStackName = fragment.getClass().getName();
-        fm.beginTransaction()
-                .replace(R.id.activity_route_container, fragment)
-                .addToBackStack(backStackName)
-                .commit();
+//        fm.beginTransaction()
+//                .replace(R.id.activity_route_container, fragment)
+//                .addToBackStack(backStackName)
+//                .commit();
     }
 
     @Override
