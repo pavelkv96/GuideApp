@@ -1,6 +1,6 @@
 package com.grsu.guideapp.utils;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +17,7 @@ import retrofit2.mock.Calls;
 public class Mocks {
 
     @NonNull
+    @SuppressWarnings("unchecked")
     public static <T extends Type, E> Call<E> getCall(final String pNameFile, T type) {
         return (Call<E>) Calls.response(getGsonObject(pNameFile, type));
     }

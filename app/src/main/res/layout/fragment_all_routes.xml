@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:id="@+id/srl_fragment_all_routes"
   android:layout_width="match_parent"
@@ -7,4 +7,4 @@
 
   <include layout="@layout/fragment_my_routes"/>
 
-</android.support.v4.widget.SwipeRefreshLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
