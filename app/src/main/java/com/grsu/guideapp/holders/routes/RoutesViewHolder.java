@@ -9,7 +9,7 @@ import com.grsu.guideapp.base.BaseViewHolder;
 import com.grsu.guideapp.base.listeners.ItemClickListener;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.project_settings.Settings;
-import com.grsu.guideapp.utils.CryptoUtils;
+import com.grsu.guideapp.utils.extensions.StringKt;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 import java.io.File;
@@ -60,7 +60,7 @@ public class RoutesViewHolder extends BaseViewHolder<Route> {
         tv_item_routes_distance.setText(distance);
         tv_item_routes_name_route.setText(String.valueOf(route.getNameRoute().getName()));
 
-        String photo = CryptoUtils.hash(route.getReferencePhotoRoute());
+        String photo = StringKt.toMD5(route.getReferencePhotoRoute());
         File file = new File(Settings.CONTENT, photo);
         Picasso picasso = Picasso.get();
 

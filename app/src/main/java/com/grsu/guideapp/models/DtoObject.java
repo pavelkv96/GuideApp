@@ -2,9 +2,9 @@ package com.grsu.guideapp.models;
 
 import android.database.Cursor;
 import com.google.android.gms.maps.model.LatLng;
-import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.Settings;
-import com.grsu.guideapp.utils.CryptoUtils;
+import com.grsu.guideapp.utils.extensions.StringKt;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +33,7 @@ public class DtoObject {
     }
 
     public File getPhoto() {
-        String hash = CryptoUtils.hash(photo);
-        if (hash != null) {
-            return new File(Settings.CONTENT, hash);
-        }
-        return null;
+        return new File(Settings.CONTENT, StringKt.toMD5(photo));
     }
 
     public void setPhoto(String photo) {

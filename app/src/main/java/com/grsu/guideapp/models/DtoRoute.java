@@ -2,7 +2,8 @@ package com.grsu.guideapp.models;
 
 import android.database.Cursor;
 import com.grsu.guideapp.project_settings.Settings;
-import com.grsu.guideapp.utils.CryptoUtils;
+import com.grsu.guideapp.utils.extensions.StringKt;
+
 import java.io.File;
 import java.io.Serializable;
 
@@ -89,8 +90,7 @@ public class DtoRoute implements Serializable {
     }
 
     public File getPhotoPath() {
-        String photo = CryptoUtils.hash(referencePhotoRoute);
-        return new File(Settings.CONTENT, photo);
+        return new File(Settings.CONTENT, StringKt.toMD5(referencePhotoRoute));
     }
 
     public static DtoRoute fromCursor(Cursor cur) {

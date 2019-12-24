@@ -2,7 +2,8 @@ package com.grsu.guideapp.models;
 
 import android.database.Cursor;
 import com.grsu.guideapp.project_settings.Settings;
-import com.grsu.guideapp.utils.CryptoUtils;
+import com.grsu.guideapp.utils.extensions.StringKt;
+
 import java.io.File;
 import java.io.Serializable;
 
@@ -29,11 +30,7 @@ public class DtoDetail implements Serializable {
     }
 
     public File getPhotoReference() {
-        String hash = CryptoUtils.hash(photoReference);
-        if (hash != null) {
-            return new File(Settings.CONTENT, hash);
-        }
-        return null;
+        return new File(Settings.CONTENT, StringKt.toMD5(photoReference));
     }
 
     public void setPhotoReference(String photoReference) {
