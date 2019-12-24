@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-  xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
@@ -21,21 +20,21 @@
       android:layout_gravity="center_horizontal"
       android:contentDescription="@null"
       android:scaleType="fitXY"
-      tools:src="@tools:sample/avatars"/>
+      tools:src="@tools:sample/avatars" />
 
     <TextView
       android:id="@+id/tv_fragment_details_name"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content"/>
+      android:layout_height="wrap_content" />
 
     <TextView
       android:id="@+id/tv_fragment_details_description"
       android:layout_width="wrap_content"
-      android:breakStrategy="balanced"
       android:layout_height="wrap_content"
+      android:breakStrategy="balanced"
       android:textColor="@android:color/black"
       tools:lines="5"
-      tools:text="@tools:sample/lorem/random"/>
+      tools:text="@tools:sample/lorem/random" />
 
     <TextView
       android:id="@+id/tv_fragment_details_address"
@@ -44,7 +43,7 @@
       android:layout_marginTop="20dp"
       android:textColor="@android:color/black"
       android:visibility="gone"
-      tools:text="@tools:sample/cities"/>
+      tools:text="@tools:sample/cities" />
 
     <TextView
       android:id="@+id/tv_fragment_details_email"
@@ -52,7 +51,7 @@
       android:layout_height="wrap_content"
       android:layout_marginTop="20dp"
       android:textColor="@android:color/black"
-      android:visibility="gone"/>
+      android:visibility="gone" />
 
     <TextView
       android:id="@+id/tv_fragment_details_link"
@@ -60,7 +59,7 @@
       android:layout_height="wrap_content"
       android:layout_marginTop="20dp"
       android:textColor="@android:color/black"
-      android:visibility="gone"/>
+      android:visibility="gone" />
 
     <TextView
       android:id="@+id/tv_fragment_details_phone"
@@ -68,6 +67,6 @@
       android:layout_height="wrap_content"
       android:layout_marginTop="20dp"
       android:textColor="@android:color/black"
-      android:visibility="gone"/>
+      android:visibility="gone" />
   </LinearLayout>
 </ScrollView>

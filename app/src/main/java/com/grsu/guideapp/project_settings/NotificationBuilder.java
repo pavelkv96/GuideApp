@@ -31,7 +31,7 @@ public class NotificationBuilder {
 
     public static RemoteViews getSmallView(Context ctx) {
         if (smallViews == null) {
-            smallViews = new RemoteViews(ctx.getPackageName(), R.layout.status_bar);
+            smallViews = new RemoteViews(ctx.getPackageName(), R.layout.small_notification);
         }
         return smallViews;
     }

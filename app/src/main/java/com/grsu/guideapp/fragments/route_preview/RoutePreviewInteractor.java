@@ -3,7 +3,6 @@ package com.grsu.guideapp.fragments.route_preview;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import com.grsu.guideapp.App;
-import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.base.listeners.OnLoadRoute;
 import com.grsu.guideapp.base.listeners.OnProgressListener;
 import com.grsu.guideapp.base.listeners.OnSuccessListener;
@@ -86,7 +85,7 @@ class RoutePreviewInteractor implements RouteInteractor {
                     try {
                         for (Integer id : poiFromBD) {
                             Response<Datum> datum = App.getThread().networkIO()
-                                    .getPoi(id, BuildConfig.ApiKey).execute();
+                                    .getPoi(id).execute();
                             if (!isCancel) {
                                 mHelper.insertPoiAndTypesTransaction(database, datum.body());
                                 listener.onProgress((int) (currentProgress += partProgress));

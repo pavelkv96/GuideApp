@@ -187,13 +187,12 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
     }
 
     private void checkUpdate() {
-        String apiKey = BuildConfig.ApiKey;
         String datetime = new Test(this).getLastCheck();
         if (datetime == null) {
             return;
         }
 
-        Call<Root> root = App.getThread().networkIO().checkUpdateRoute(apiKey, datetime);
+        Call<Root> root = App.getThread().networkIO().checkUpdateRoute(datetime);
         root.enqueue(new Callback<Root>() {
             @Override
             public void onResponse(@NonNull Call<Root> call, @NonNull Response<Root> response) {

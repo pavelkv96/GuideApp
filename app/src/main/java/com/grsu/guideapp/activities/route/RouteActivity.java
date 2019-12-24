@@ -2,17 +2,17 @@ package com.grsu.guideapp.activities.route;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.view.MenuItem;
+
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.view.MenuItem;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.base.listeners.OnFragmentReplace;
@@ -29,13 +29,12 @@ public class RouteActivity extends AppCompatActivity implements OnFragmentReplac
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(newBase);
-        super.attachBaseContext(App.getInstance().setLocale(preferences));
+        super.attachBaseContext(App.getInstance().setLocale(newBase));
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setContentView(R.layout.activity_route);
+        setContentView(R.layout.fragment_route);
         Drawable drawable = ContextCompat.getDrawable(this ,R.drawable.ic_filter);
         toolbar = findViewById(R.id.toolbar);
         toolbar.setOverflowIcon(drawable);

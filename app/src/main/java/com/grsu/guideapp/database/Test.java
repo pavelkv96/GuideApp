@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 import com.grsu.guideapp.App;
-import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.adapters.SaveAdapter;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.base.listeners.OnProgressListener;
@@ -393,12 +392,12 @@ public class Test extends DatabaseHelper {
             public void run() {
                 try {
                     APIService network = App.getThread().networkIO();
-                    Datum routeData = network.getRouteById(id, BuildConfig.ApiKey).execute().body();
+                    Datum routeData = network.getRouteById(id).execute().body();
                     if (routeData==null){
                         throw new NullPointerException("Null data for route");
                     }
 
-                    List<Datum> list = network.updatePoi(id, BuildConfig.ApiKey).execute().body();
+                    List<Datum> list = network.updatePoi(id).execute().body();
                     if (list == null || list.isEmpty()){
                         throw new NullPointerException("Null data for points");
                     }
@@ -440,8 +439,8 @@ public class Test extends DatabaseHelper {
                 }
                 /*try {
                     APIService networkIO = App.getThread().networkIO();
-                    Datum routeData = networkIO.getRouteById(id, BuildConfig.ApiKey).execute().body();
-                    List<Datum> listObjects = networkIO.updatePoi(id, BuildConfig.ApiKey).execute().body();
+                    Datum routeData = networkIO.getRouteById(id).execute().body();
+                    List<Datum> listObjects = networkIO.updatePoi(id).execute().body();
                     if (routeData != null && listObjects != null && !listObjects.isEmpty()) {
                         SQLiteDatabase database = getWritableDatabase();
                         try {

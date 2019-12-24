@@ -26,29 +26,6 @@ public class TypeHolder extends BaseViewHolder<DtoType> {
     }
 
     private int getImage(int idCategory) {
-        switch (idCategory) {
-            case 6:
-                return R.drawable.id_6;
-            case 107:
-                return R.drawable.id_107;
-            case 108:
-                return R.drawable.id_108;
-            case 109:
-                return R.drawable.id_109;
-            case 110:
-                return R.drawable.id_110;
-            case 111:
-                return R.drawable.id_111;
-            case 112:
-                return R.drawable.id_112;
-            case 113:
-                return R.drawable.id_113;
-            case 114:
-                return R.drawable.id_114;
-            case 115:
-                return R.drawable.id_115;
-            default:
-                return R.mipmap.ic_launcher;
-        }
+        return R.mipmap.ic_launcher;
     }
 }

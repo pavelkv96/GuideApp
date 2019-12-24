@@ -135,7 +135,7 @@ public class AllRoutesFragment extends BaseChildFragment<AllRoutesPresenter, Lis
     public void onRefresh() {
         srl_fragment_list_routes.setRefreshing(true);
         if (App.isOnline()) {
-            Call<Root> root = App.getThread().networkIO().getRoutes(BuildConfig.ApiKey);
+            Call<Root> root = App.getThread().networkIO().getRoutes();
             root.enqueue(this);
         } else {
             srl_fragment_list_routes.setRefreshing(false);
