@@ -18,10 +18,10 @@ import androidx.room.PrimaryKey
     ]
 )
 class RouteLanguage(
-    @PrimaryKey
-    @ColumnInfo(name = "id_translate") val id_translate: Int,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id_translate") val id_translate: Long,
 
-    @ColumnInfo(name = "id_route") val id_route: Int,
+    @ColumnInfo(name = "id_route") val id_route: Long,
     @ColumnInfo(name = "language") val language: String,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "description") val description: String

@@ -5,8 +5,8 @@ import androidx.room.Query
 import com.grsu.guideapp.database.content.entities.Routes
 
 @Dao
-interface RoutesDao {
+abstract class RoutesDao : BaseDao<Routes>(){
 
     @Query("SELECT * FROM routes")
-    fun getRoutes(): List<Routes>
+    abstract fun getRoutes(): List<Routes>
 }

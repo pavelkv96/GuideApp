@@ -25,11 +25,11 @@ import java.util.*
 )
 class Poi(
     @PrimaryKey
-    @ColumnInfo(name = "id_poi") val id_poi: Int,
+    @ColumnInfo(name = "id_poi") val id_poi: Long,
 
     @ColumnInfo(name = "location") val location: String,
     @ColumnInfo(name = "link_icon", index = true) val link_icon: String,
-    @ColumnInfo(name = "id_type", index = true) val id_type: Int,
+    @ColumnInfo(name = "id_type", index = true) val id_type: Long,
     @ColumnInfo(name = "last_update") val last_update: Date,
     @ColumnInfo(name = "last_download") val last_download: Date,
     @ColumnInfo(name = "number") val number: Int,

@@ -9,7 +9,7 @@ import com.grsu.guideapp.utils.Status
 class Routes(
     @PrimaryKey
     @ColumnInfo(name = "id_route")
-    val id_route: Int,
+    val id_route: Long,
 
     @ColumnInfo(name = "duration", defaultValue = "0") val duration: Int,
     @ColumnInfo(name = "distance", defaultValue = "0") val distance: Int,

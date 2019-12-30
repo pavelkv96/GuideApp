@@ -25,7 +25,7 @@ import androidx.room.ForeignKey
     ]
 )
 class ListLines(
-    @ColumnInfo(name = "id_line", index = true) val id_line: Int,
-    @ColumnInfo(name = "id_route", index = true) val id_route: Int,
+    @ColumnInfo(name = "id_line", index = true) val id_line: Long,
+    @ColumnInfo(name = "id_route", index = true) val id_route: Long,
     @ColumnInfo(name = "sequence") val sequence: Int
 )

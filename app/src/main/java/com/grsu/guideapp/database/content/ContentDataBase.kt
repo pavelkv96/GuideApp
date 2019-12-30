@@ -13,11 +13,16 @@ import com.grsu.guideapp.database.content.entities.*
         PoiLanguage::class, References::class, ReferencesList::class, RouteLanguage::class,
         Routes::class, Types::class
     ],
-    version = 1,
+    version = ContentDataBase.version,
     exportSchema = false
 )
 @TypeConverters(value = [Converters::class])
 abstract class ContentDataBase : RoomDatabase() {
+
+    companion object {
+        const val version: Int = 1
+        const val name: String = "content.db"
+    }
 
     abstract fun routesDao(): RoutesDao
 }

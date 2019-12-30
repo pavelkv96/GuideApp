@@ -2,11 +2,9 @@ package com.grsu.guideapp
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import androidx.room.Room
-import com.grsu.guideapp.database.content.ContentDataBase
+import androidx.preference.PreferenceManager
 import com.grsu.guideapp.project_settings.SharedPref
 import com.grsu.guideapp.utils.extensions.getCurrentLocale
 import java.util.*
@@ -57,7 +55,8 @@ class App : Application() {
         return activeNetwork?.isConnected == true
     }
 
-    fun setLocale(pref: SharedPreferences): Context {
+    fun setLocale(context: Context): Context {
+        val pref = PreferenceManager.getDefaultSharedPreferences(context)
         if (!pref.contains(SharedPref.KEY_LANGUAGE)) {
             val locale = Locale.getDefault().getCurrentLocale()
             pref.edit().putString(SharedPref.KEY_LANGUAGE, locale).apply()
@@ -67,6 +66,7 @@ class App : Application() {
 
         val loc = pref.getString(SharedPref.KEY_LANGUAGE, resources.getString(R.string.locale))
         val locale = Locale(loc)
+        Locale.setDefault(locale)
 
         conf.setLocale(locale)
         return createConfigurationContext(conf)

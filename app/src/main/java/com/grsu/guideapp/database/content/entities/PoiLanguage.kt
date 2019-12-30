@@ -18,10 +18,10 @@ import androidx.room.PrimaryKey
     ]
 )
 class PoiLanguage(
-    @PrimaryKey
-    @ColumnInfo(name = "id_translate") val id_translate: Int,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id_translate") val id_translate: Long = 0,
 
-    @ColumnInfo(name = "id_poi") val id_poi: Int,
+    @ColumnInfo(name = "id_poi") val id_poi: Long,
     @ColumnInfo(name = "language") val language: String,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "description") val description: String

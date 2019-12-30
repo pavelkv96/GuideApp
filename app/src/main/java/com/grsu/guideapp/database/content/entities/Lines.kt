@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 class Lines(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id_line")
-    val id_line: Int,
+    val id_line: Long,
 
     @ColumnInfo(name = "start_point") val start_point: String,
     @ColumnInfo(name = "end_point") val end_point: String,

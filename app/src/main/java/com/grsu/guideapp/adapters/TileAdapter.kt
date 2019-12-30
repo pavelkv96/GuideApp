@@ -12,7 +12,7 @@ import com.grsu.guideapp.App
 import com.grsu.guideapp.database.cache.CacheDataBase
 import com.grsu.guideapp.database.cache.dao.CacheDao
 import com.grsu.guideapp.database.cache.entities.CacheTile
-import com.grsu.guideapp.project_settings.Settings
+import com.grsu.guideapp.project_settings.NewSettings
 import com.grsu.guideapp.utils.MapUtils
 import com.grsu.guideapp.utils.MessageViewer.Logs
 import com.grsu.guideapp.utils.Provider
@@ -47,13 +47,13 @@ object TileAdapter {
     private var imageSize = if (VERSION.SDK_INT < VERSION_CODES.M) 256 else 512
 
     private var mapDatabase: MultiMapDataStore? = null
-    private lateinit var dataBase: CacheDataBase
+    private var dataBase: CacheDataBase? = null
     private lateinit var cacheDao: CacheDao
 
     fun createConnection(file: File, pProvider: Provider = Provider.FORGE) {
         var renderTheme: XmlRenderTheme? = null
         try {
-            renderTheme = AssetsRenderTheme(App.getInstance(), Settings.THEME_FOLDR, Settings.THEME_FILE)
+            renderTheme = AssetsRenderTheme(App.getInstance(), NewSettings.MAPSFORGE_FOLDER, NewSettings.THEME_FILE)
         } catch (ignore: Exception) {
         } finally {
             if (renderTheme == null) {
@@ -63,7 +63,7 @@ object TileAdapter {
 
         mProvider = pProvider
 
-        if (mapDatabase == null) {
+        if (mapDatabase == null && file.exists()) {
             mapDatabase = MultiMapDataStore(DataPolicy.RETURN_ALL)
             mapDatabase!!.addMapDataStore(MapFile(file), false, false)
         }
@@ -77,7 +77,7 @@ object TileAdapter {
         Executors.newFixedThreadPool(3).execute(theme)
 
         dataBase = Room.databaseBuilder(App.getInstance(), CacheDataBase::class.java, "map cache.db").build()
-        cacheDao = dataBase.cache()
+        dataBase?.apply { cacheDao = cache() }
     }
 
     fun loadTile(x: Int, y: Int, zoom: Int): Tile {
@@ -105,7 +105,7 @@ object TileAdapter {
     }
 
     fun dispose() {
-        dataBase.close()
+        dataBase?.close()
         theme?.decrementRefCount()
         theme = null
         renderer = null
@@ -113,12 +113,12 @@ object TileAdapter {
         mapDatabase = null
     }
 
-    fun getBoundingBox(file: File): LatLngBounds {
-        if (mapDatabase == null) {
+    fun getBoundingBox(file: File): LatLngBounds? {
+        if (mapDatabase == null && file.exists()) {
             mapDatabase = MultiMapDataStore(DataPolicy.RETURN_ALL)
             mapDatabase?.addMapDataStore(MapFile(file), false, false)
         }
-        return mapDatabase!!.let {
+        return mapDatabase?.let {
             val box = it.boundingBox()
             val nw = LatLng(box.minLatitude, box.minLongitude)
             val se = LatLng(box.maxLatitude, box.maxLongitude)

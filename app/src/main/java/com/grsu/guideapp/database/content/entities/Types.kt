@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
 )
 class Types(
     @PrimaryKey
-    @ColumnInfo(name = "id_type") val id_type: Int,
+    @ColumnInfo(name = "id_type") val id_type: Long,
 
     @ColumnInfo(name = "picture") val picture: ByteArray,
     @ColumnInfo(name = "language_ru") val language_ru: String,

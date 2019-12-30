@@ -25,6 +25,6 @@ import androidx.room.ForeignKey
     ]
 )
 class ReferencesList(
-    @ColumnInfo(name = "id_poi") val id_poi: Int,
+    @ColumnInfo(name = "id_poi") val id_poi: Long,
     @ColumnInfo(name = "id_reference") val id_reference: String
 )
