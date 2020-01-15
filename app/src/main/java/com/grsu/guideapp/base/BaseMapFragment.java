@@ -112,7 +112,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
     public void onStart() {
         super.onStart();
         File file = getActivity.getDatabasePath(Settings.MAP_FILE);
-        if (!CheckPermission.checkStoragePermission(getContext()) || !file.exists()) {
+        if (!CheckPermission.INSTANCE.checkStoragePermission(getContext()) || !file.exists()) {
             getActivity.finish();
             return;
         }

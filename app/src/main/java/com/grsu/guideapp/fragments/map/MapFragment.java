@@ -85,7 +85,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         if (savedInstanceState != null) {
             i = savedInstanceState.getInt("int", 0);
 
-            if (CheckPermission.checkLocationPermission(getActivity)) {
+            if (CheckPermission.INSTANCE.checkLocationPermission(getActivity)) {
 //                client.connect();
                 String title = getString(R.string.device_searching);
                 String message = getString(R.string.wait_please);
@@ -100,7 +100,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     public void onMapReady(GoogleMap googleMap) {
         super.onMapReady(googleMap);
         map_zoom_control.setVisibility(View.VISIBLE);
-        if (CheckPermission.checkLocationPermission(getActivity)) {
+        if (CheckPermission.INSTANCE.checkLocationPermission(getActivity)) {
             mMap.setMyLocationEnabled(false);
         }
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -143,14 +143,14 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         btn_fragment_map_stop.setVisibility(View.GONE);
         btn_fragment_map_tilt.setVisibility(View.GONE);
         isMoving = false;
-        if (CheckPermission.checkLocationPermission(getActivity)) {
+        if (CheckPermission.INSTANCE.checkLocationPermission(getActivity)) {
 //            client.disconnect();
         }
     }
 
 //    @OnClick(R.id.btn_fragment_map_start)
     public void startService(View view) {
-        if (CheckPermission.checkLocationPermission(getActivity)) {
+        if (CheckPermission.INSTANCE.checkLocationPermission(getActivity)) {
             isMoving = true;
             String title = getString(R.string.device_searching);
             String message = getString(R.string.wait_please);
@@ -215,7 +215,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
                 MapUtils.isContains(latLng, getBorders());
             } catch (NullPointerException e) {
                 hideProgress();
-                if (CheckPermission.checkLocationPermission(getActivity)) {
+                if (CheckPermission.INSTANCE.checkLocationPermission(getActivity)) {
 //                    client.disconnect();
                 }
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity);
@@ -282,7 +282,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     @Override
     public void onStart() {
         super.onStart();
-        if (CheckPermission.checkLocationPermission(getActivity)) {
+        if (CheckPermission.INSTANCE.checkLocationPermission(getActivity)) {
             Boolean mode = read(SharedPref.KEY_IS_3D_MODE, Boolean.class);
             btn_fragment_map_tilt.setText(mode ? "3D" : "2D");
             if (isMoving) {
@@ -304,7 +304,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
 
     @Override
     public void onStop() {
-        if (CheckPermission.checkLocationPermission(getActivity)) {
+        if (CheckPermission.INSTANCE.checkLocationPermission(getActivity)) {
 //            client.disconnect();
         }
         if (animator != null) {

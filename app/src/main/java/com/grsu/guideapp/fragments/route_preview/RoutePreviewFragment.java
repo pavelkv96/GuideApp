@@ -128,7 +128,7 @@ public class RoutePreviewFragment extends BaseFragment<RoutePresenter, RouteActi
 //    @OnClick(R.id.btn_fragment_route_preview_map)
     public void onClickOpenMap(View view) {
         if (id != -1) {
-            if (CheckPermission.checkLocationPermission(getActivity)){
+            if (CheckPermission.INSTANCE.checkLocationPermission(getActivity)){
                 mPresenter.openPreviewRoute(id);
             }else {
                 MySnackbar.makeL(getView(), R.string.error_snackbar_do_not_have_permission_access_location, getActivity);
@@ -141,7 +141,7 @@ public class RoutePreviewFragment extends BaseFragment<RoutePresenter, RouteActi
 //    @OnClick(R.id.btn_fragment_route_preview_start)
     public void onClickStartRoute(View view) {
         if (id != -1) {
-            if (CheckPermission.checkLocationPermission(getActivity) && mBundle != null){
+            if (CheckPermission.INSTANCE.checkLocationPermission(getActivity) && mBundle != null){
                 mPresenter.openRoute(mBundle);
             }else {
                 MySnackbar.makeL(getView(), R.string.error_snackbar_do_not_have_permission_access_location, getActivity);
@@ -153,7 +153,7 @@ public class RoutePreviewFragment extends BaseFragment<RoutePresenter, RouteActi
 
 //    @OnClick(R.id.btn_fragment_route_preview_update)
     public void onClickUpdateRoute() {
-        if (CheckPermission.checkStoragePermission(getActivity)) {
+        if (CheckPermission.INSTANCE.checkStoragePermission(getActivity)) {
             mPresenter.updateRoute(id);
         }
     }

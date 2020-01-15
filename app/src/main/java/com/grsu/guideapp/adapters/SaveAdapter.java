@@ -9,9 +9,9 @@ import android.graphics.drawable.Drawable;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.project_settings.Settings;
-import com.grsu.guideapp.utils.CryptoUtils;
 import com.grsu.guideapp.utils.StreamUtils;
 import com.grsu.guideapp.utils.extensions.BitmapKt;
+import com.grsu.guideapp.utils.extensions.StringKt;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -34,7 +34,7 @@ public class SaveAdapter {
             if (!file.exists()) {
                 file.mkdirs();
             }
-            File file1 = new File(file, CryptoUtils.hash(url));
+            File file1 = new File(file, StringKt.toMD5(url));
             file1.createNewFile();
 
             ostream = new FileOutputStream(file1);

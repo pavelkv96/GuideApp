@@ -23,6 +23,8 @@ import com.grsu.guideapp.project_settings.Settings;
 import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.CheckPermission;
 import com.grsu.guideapp.utils.StorageUtils;
+import com.grsu.guideapp.utils.extensions.ContextKt;
+
 import java.io.File;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,7 +73,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
             }
         }
         boolean isContains = preferences.contains(SharedPref.KEY_SPLASH);
-        if (isContains && CheckPermission.checkStoragePermission(this)) {
+        if (isContains && CheckPermission.INSTANCE.checkStoragePermission(this)) {
             openActivity();
             if (App.isOnline()) {
                 App.getThread().diskIO(new Runnable() {
@@ -93,10 +95,10 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
 
 //    @OnClick(R.id.btn_activity_splash_next)
     public void buttonNext() {
-        if (CheckPermission.checkStoragePermission(this)) {
+        if (CheckPermission.INSTANCE.checkStoragePermission(this)) {
             otherContent();
         } else {
-            ActivityCompat.requestPermissions(this, CheckPermission.groupStorageAndLocation, 1);
+            ActivityCompat.requestPermissions(this, CheckPermission.INSTANCE.getAllPermission(), 1);
         }
     }
 
@@ -107,7 +109,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
 
 //    @OnClick(R.id.btn_activity_splash_settings)
     public void buttonSettings() {
-        CheckPermission.settingsIntent(this);
+        ContextKt.goToSettings(this);
     }
 
     @Override
@@ -115,7 +117,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
             @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1) {
-            if (CheckPermission.checkStoragePermission(this)) {
+            if (CheckPermission.INSTANCE.checkStoragePermission(this)) {
                 btn_activity_splash_next.setEnabled(false);
                 otherContent();
                 return;

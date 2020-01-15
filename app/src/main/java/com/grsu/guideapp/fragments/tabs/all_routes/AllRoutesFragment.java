@@ -142,7 +142,7 @@ public class AllRoutesFragment extends BaseChildFragment<AllRoutesPresenter, Bas
 
     @Override
     public void onItemClick(View view, int position) {
-        if (CheckPermission.checkStoragePermission(getActivity()) && listRoutes != null) {
+        if (CheckPermission.INSTANCE.checkStoragePermission(getActivity()) && listRoutes != null) {
             startActivity(RouteActivity.newIntent(getActivity(), listRoutes.get(position)));
         } else {
             int message = R.string.error_snackbar_do_not_have_permission_write_on_the_storage;
