@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.NonNull;
-import android.util.Log;
 import com.grsu.guideapp.models.DtoDetail;
 import com.grsu.guideapp.models.DtoObject;
 import com.grsu.guideapp.models.DtoRoute;
@@ -17,6 +16,8 @@ import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.project_settings.Settings;
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 class DatabaseHelper extends SQLiteOpenHelper implements Table {
 
@@ -43,7 +44,7 @@ class DatabaseHelper extends SQLiteOpenHelper implements Table {
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
         db.execSQL("PRAGMA foreign_keys = ON;");
-        Log.e(DB_NAME, "onOpen: ");
+        Timber.e("onOpen: ");
     }
 
     private void openDatabase() {

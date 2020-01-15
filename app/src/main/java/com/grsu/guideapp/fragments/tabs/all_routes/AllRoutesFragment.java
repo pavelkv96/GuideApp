@@ -7,37 +7,34 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.grsu.guideapp.App;
-import com.grsu.guideapp.BuildConfig;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.activities.route.RouteActivity;
 import com.grsu.guideapp.adapters.AllRoutesListAdapter;
 import com.grsu.guideapp.base.BaseChildFragment;
+import com.grsu.guideapp.base.BaseFragment;
 import com.grsu.guideapp.base.listeners.ItemClickListener;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.fragments.tabs.all_routes.AllRoutesContract.AllRoutesViews;
-import com.grsu.guideapp.fragments.tabs.list_routes.ListRoutesFragment;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.network.model.Datum;
 import com.grsu.guideapp.network.model.Root;
 import com.grsu.guideapp.utils.CheckPermission;
-import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
-public class AllRoutesFragment extends BaseChildFragment<AllRoutesPresenter, ListRoutesFragment>
+public class AllRoutesFragment extends BaseChildFragment<AllRoutesPresenter, BaseFragment>
         implements AllRoutesViews, Callback<Root>, OnFinishedListener<Integer>, OnRefreshListener,
         ItemClickListener {
 
-    private static final String TAG = AllRoutesFragment.class.getSimpleName();
     private Test helper;
     private List<Route> listRoutes;
 
@@ -81,7 +78,7 @@ public class AllRoutesFragment extends BaseChildFragment<AllRoutesPresenter, Lis
 
     @Override
     public void showMessage(Throwable throwable) {
-        Logs.e(TAG, throwable.getMessage(), throwable);
+        Timber.e(throwable);
     }
 
     @Override
@@ -93,7 +90,7 @@ public class AllRoutesFragment extends BaseChildFragment<AllRoutesPresenter, Lis
 
     @Override
     public void onResponse(@NonNull Call<Root> call, @NonNull Response<Root> response) {
-        Log.e("TAG", "onResponse: ");
+        Timber.e("onResponse: ");
         if (response.isSuccessful()) {
             if (response.body() != null && adapter != null) {
                 List<Datum> datums = response.body().getDatums();
@@ -108,9 +105,9 @@ public class AllRoutesFragment extends BaseChildFragment<AllRoutesPresenter, Lis
     @Override
     public void onFailure(@NonNull Call<Root> call, @NonNull Throwable t) {
         if (!call.isCanceled()) {
-            Log.e("TAG", "onFailure: ", t);
+            Timber.e(t, "onFailure: ");
         } else {
-            Log.e("TAG", "onFailure: IS CANCELED");
+            Timber.e("onFailure: IS CANCELED");
         }
         srl_fragment_list_routes.setRefreshing(false);
     }

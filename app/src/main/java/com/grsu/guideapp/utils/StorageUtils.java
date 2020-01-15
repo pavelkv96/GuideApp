@@ -20,9 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class StorageUtils {
+import timber.log.Timber;
 
-    private static final String TAG = StorageUtils.class.getSimpleName();
+public class StorageUtils {
 
     public static File getStorage() {
         File parent = Environment.getExternalStoragePublicDirectory("Android/data");
@@ -57,7 +57,7 @@ public class StorageUtils {
             out = new FileOutputStream(outFile);
             StreamUtils.copyFile(in, out);
         } catch (IOException e) {
-            Logs.e(TAG, "Failed to copy asset file: " + fileName, e);
+            Timber.e(e, "Failed to copy asset file: %s", fileName);
         } finally {
             StreamUtils.closeStream(in);
             StreamUtils.closeStream(out);
@@ -69,11 +69,11 @@ public class StorageUtils {
         try {
             files = assetManager.list(assetsPath);
         } catch (IOException e) {
-            Logs.e(TAG, "Failed to get asset file list.", e);
+            Timber.e(e, "Failed to get asset file list.");
         }
         if (files != null) {
             for (String filename : files) {
-                Logs.e(TAG, filename);
+                Timber.e(filename);
 
                 InputStream in = null;
                 OutputStream out = null;
@@ -88,7 +88,7 @@ public class StorageUtils {
                     out = new FileOutputStream(outFile);
                     StreamUtils.copyFile(in, out);
                 } catch (IOException e) {
-                    Logs.e(TAG, "Failed to copy asset file: " + filename, e);
+                    Timber.e(e, "Failed to copy asset file: %s", filename);
                 } finally {
                     StreamUtils.closeStream(in);
                     StreamUtils.closeStream(out);

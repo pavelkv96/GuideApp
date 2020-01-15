@@ -2,13 +2,13 @@ package com.grsu.guideapp.activities.splash;
 
 import android.content.res.AssetManager;
 import com.grsu.guideapp.App;
-import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StorageUtils;
 import java.io.File;
 
+import timber.log.Timber;
+
 public class SplashInteractor implements SplashContract.SplashInteractor {
 
-    private static final String TAG = SplashInteractor.class.getSimpleName();
     private AssetManager manager;
 
     SplashInteractor(AssetManager manager) {
@@ -19,7 +19,7 @@ public class SplashInteractor implements SplashContract.SplashInteractor {
         if (!path.exists()) {
             StorageUtils.copyAssets(path.getAbsolutePath(), name, manager);
         }
-        Logs.e(TAG, "Copy finished by " + path.getAbsolutePath());
+        Timber.e("Copy finished by %s", path.getAbsolutePath());
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.grsu.guideapp.fragments.route_preview;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.base.listeners.OnLoadRoute;
 import com.grsu.guideapp.base.listeners.OnProgressListener;
@@ -13,6 +12,7 @@ import com.grsu.guideapp.models.DtoRoute;
 import com.grsu.guideapp.network.model.Datum;
 import java.util.List;
 import retrofit2.Response;
+import timber.log.Timber;
 
 class RoutePreviewInteractor implements RouteInteractor {
 
@@ -90,7 +90,7 @@ class RoutePreviewInteractor implements RouteInteractor {
                                 mHelper.insertPoiAndTypesTransaction(database, datum.body());
                                 listener.onProgress((int) (currentProgress += partProgress));
                             } else {
-                                Log.e(TAG, "run: " + datum.errorBody());
+                                Timber.e("run: %s", datum.errorBody());
                                 listener.onCancelLoad();
                                 break;
                             }
@@ -106,7 +106,7 @@ class RoutePreviewInteractor implements RouteInteractor {
                         listener.onSuccess(android.R.string.ok);
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "onFailure: ", e);
+                    Timber.e(e,"onFailure: ");
                     listener.onFailure(e);
                 }
             }

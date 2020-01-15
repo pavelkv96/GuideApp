@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import androidx.annotation.Nullable;
-import android.util.Log;
 import android.util.SparseArray;
 import com.grsu.guideapp.App;
 import com.grsu.guideapp.adapters.SaveAdapter;
@@ -28,9 +27,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Test extends DatabaseHelper {
+import timber.log.Timber;
 
-    private static final String TAG = Test.class.getSimpleName();
+public class Test extends DatabaseHelper {
 
     public Test(Context context) {
         super(context);
@@ -96,7 +95,7 @@ public class Test extends DatabaseHelper {
 
         Cursor cursor = getReadableDatabase().rawQuery(query, null);
         long last_update;
-        Log.e(TAG, "insertRoute: " + id + "   " + cursor.moveToFirst());
+        Timber.e("insertRoute: " + id + "   " + cursor.moveToFirst());
         if (cursor.moveToFirst()) {
             last_update = cursor.getLong(0);
             cursor.close();

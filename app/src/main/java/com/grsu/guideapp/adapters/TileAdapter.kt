@@ -14,7 +14,6 @@ import com.grsu.guideapp.database.cache.dao.CacheDao
 import com.grsu.guideapp.database.cache.entities.CacheTile
 import com.grsu.guideapp.project_settings.NewSettings
 import com.grsu.guideapp.utils.MapUtils
-import com.grsu.guideapp.utils.MessageViewer.Logs
 import com.grsu.guideapp.utils.Provider
 import com.grsu.guideapp.utils.extensions.toByteArray
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory
@@ -31,13 +30,12 @@ import org.mapsforge.map.reader.MapFile
 import org.mapsforge.map.rendertheme.InternalRenderTheme
 import org.mapsforge.map.rendertheme.XmlRenderTheme
 import org.mapsforge.map.rendertheme.rule.RenderThemeFuture
+import timber.log.Timber
 import java.io.File
 import java.util.*
 import java.util.concurrent.Executors
 
 object TileAdapter {
-
-    private val TAG = TileAdapter::class.java.simpleName
 
     private val model = DisplayModel()
     private val scale = DisplayModel.getDefaultUserScaleFactor()
@@ -85,7 +83,7 @@ object TileAdapter {
 
         var bytes = cacheDao.getTile(MapUtils.getIndex(tileIndex), mProvider)
         if (bytes != null) {
-            Logs.e(TAG, "load next tile ${MapUtils.getIndex(tileIndex)}")
+            Timber.e("load next tile ${MapUtils.getIndex(tileIndex)}")
             return Tile(256, 256, bytes)
         }
 
@@ -94,10 +92,10 @@ object TileAdapter {
             try {
                 bytes = image.toByteArray()
                 cacheDao.saveTile(CacheTile(MapUtils.getIndex(tileIndex), mProvider, bytes, Date()))
-                Logs.e(TAG, "Saved tile ${MapUtils.getIndex(tileIndex)}")
+                Timber.e("Saved tile ${MapUtils.getIndex(tileIndex)}")
                 return Tile(256, 256, bytes)
             } catch (ex: Exception) {
-                Logs.e(TAG, "Error storing tile cache", ex)
+                Timber.e(ex, "Error storing tile cache")
             }
         }
 
@@ -139,7 +137,7 @@ object TileAdapter {
                 return AndroidGraphicFactory.getBitmap(bmp)
             }
         } catch (ex: Exception) {
-            Logs.e(TAG, "Mapsforge tile generation failed", ex)
+            Timber.e(ex, "Mapsforge tile generation failed")
         }
         return null
     }

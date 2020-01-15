@@ -29,8 +29,6 @@ import com.squareup.picasso.Picasso;
 public class RoutePreviewFragment extends BaseFragment<RoutePresenter, RouteActivity>
         implements RouteViews {
 
-    private static final String TAG = RoutePreviewFragment.class.getSimpleName();
-
 //    @BindView(R.id.tv_fragment_route_preview_description)
     TextView description;
 

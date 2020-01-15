@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +27,7 @@ import java.io.File;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class SplashActivity extends BaseActivity<SplashPresenter> implements SplashView, Runnable {
 
@@ -196,11 +196,11 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
         root.enqueue(new Callback<Root>() {
             @Override
             public void onResponse(@NonNull Call<Root> call, @NonNull Response<Root> response) {
-                Log.e("TAG", "onResponse: " + call.request().url());
+                Timber.e( "onResponse: %s", call.request().url());
                 if (response.body() != null) {
                     SparseArray<Timestamp> updateIds = new SparseArray<>();
                     for (Datum datum : response.body().getDatums()) {
-                        Log.e("TAG", "onResponse: " + datum.getId() + "   " + datum.getTimestamp().getUpdatedAt());
+                        Timber.e("onResponse: " + datum.getId() + "   " + datum.getTimestamp().getUpdatedAt());
                         if (datum.getData() != null && datum.getData().getRoute() != null)
 //                        updateIds.put(datum.getId(), datum.getData().getRoute().getTimestamp());
                         {
@@ -214,7 +214,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
 
             @Override
             public void onFailure(@NonNull Call<Root> call, @NonNull Throwable t) {
-                Log.e("TAG", "onFailure: " + t.getMessage(), t);
+                Timber.e(t, "onFailure: %s", t.getMessage());
             }
         });
     }

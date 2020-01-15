@@ -100,7 +100,7 @@
   <string name="provide_access_description">Предоставте приложению доступ к памяти в настройках вашего устройства, иначе использовать приложение будет невозможно.</string>
   <string name="next">Далее</string>
   <string name="exit">Выход</string>
-  <string name="preview_provide_access">Предоставте приложению доступ к памяти и\n местоположению.</string>
+  <string name="preview_provide_access">Предоставте приложению доступ к памяти и местоположению.</string>
   <string name="preview_provide_access_description">Чтобы скачивать карты, смотреть места вокруг вас и пользоваться навигацией.</string>
   <string name="radius_in_meters">радиус %d метров</string>
   <string name="my_tab">Мои маршруты</string>

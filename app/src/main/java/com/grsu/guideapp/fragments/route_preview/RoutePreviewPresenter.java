@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnShowListener;
 import android.os.Bundle;
 import androidx.annotation.StringRes;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -20,6 +19,8 @@ import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.RouteInter
 import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.RoutePresenter;
 import com.grsu.guideapp.fragments.route_preview.RoutePreviewContract.RouteViews;
 import com.grsu.guideapp.models.DtoRoute;
+
+import timber.log.Timber;
 
 class RoutePreviewPresenter extends BasePresenterImpl<RouteViews>
         implements RoutePresenter, OnLoadRoute<Integer>, OnShowListener {
@@ -85,7 +86,7 @@ class RoutePreviewPresenter extends BasePresenterImpl<RouteViews>
 
             @Override
             public void onSuccess(String s) {
-                Log.e(TAG, "onSuccess: ");
+                Timber.e("onSuccess: ");
                 App.getThread().mainThread(new Runnable() {
                     @Override
                     public void run() {
@@ -104,7 +105,7 @@ class RoutePreviewPresenter extends BasePresenterImpl<RouteViews>
                     public void run() {
                         mView.hideProgress();
                         mView.showToast(R.string.error_message_update);
-                        Log.e(TAG, "onFailure: " + throwable.getMessage(), throwable);
+                        Timber.e(throwable, "onFailure: %s", throwable.getMessage());
                     }
                 });
             }}, id);

@@ -19,11 +19,11 @@ import com.grsu.guideapp.base.listeners.OnFragmentReplace;
 import com.grsu.guideapp.fragments.route_preview.RoutePreviewFragment;
 import com.grsu.guideapp.models.Route;
 import com.grsu.guideapp.project_settings.Constants;
-import com.grsu.guideapp.utils.MessageViewer.Logs;
+
+import timber.log.Timber;
 
 public class RouteActivity extends AppCompatActivity implements OnFragmentReplace {
 
-    private static final String TAG = RouteActivity.class.getSimpleName();
     FragmentManager fm;
     private Toolbar toolbar;
 
@@ -43,7 +43,7 @@ public class RouteActivity extends AppCompatActivity implements OnFragmentReplac
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         super.onCreate(savedInstanceState);
-        Logs.e(TAG, "onCreate: ");
+        Timber.e("onCreate: ");
 
         fm = getSupportFragmentManager();
 
@@ -88,7 +88,7 @@ public class RouteActivity extends AppCompatActivity implements OnFragmentReplac
 
     @Override
     public void onBackPressed() {
-        Logs.e(TAG, "onBackPressed: ");
+        Timber.e("onBackPressed: ");
         if (fm.getBackStackEntryCount() > 1) {
             super.onBackPressed();
         } else {

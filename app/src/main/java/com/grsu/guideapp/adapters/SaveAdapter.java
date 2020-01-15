@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.database.Test;
@@ -23,6 +22,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okio.BufferedSink;
 import okio.Okio;
+import timber.log.Timber;
 
 public class SaveAdapter {
 
@@ -54,7 +54,7 @@ public class SaveAdapter {
             Bitmap bitmap = Picasso.get().load(url).resize(59, 75).get();
             bytes = BitmapKt.toByteArray(bitmap);
         } catch (Exception e) {
-            Log.e("TAG", "saveIcon: " + e.getMessage(), e);
+            Timber.e(e, "saveIcon: %s", e.getMessage());
             Drawable drawable = resources.getDrawable(R.drawable.noicon);
             Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
             bytes = BitmapKt.toByteArray(bitmap);
@@ -78,8 +78,8 @@ public class SaveAdapter {
             Response response = new OkHttpClient().newCall(request).execute();
 
             if (response.isSuccessful() && response.body() != null) {
-                File downloadedFile = new File(Settings.CONTENT, CryptoUtils.hash(url));
-                Log.e("TAG", "saveAudio: " + CryptoUtils.hash(url));
+                File downloadedFile = new File(Settings.CONTENT, StringKt.toMD5(url));
+                Timber.e("saveAudio: %s", StringKt.toMD5(url));
                 sink = Okio.buffer(Okio.sink(downloadedFile));
                 sink.writeAll(response.body().source());
             }

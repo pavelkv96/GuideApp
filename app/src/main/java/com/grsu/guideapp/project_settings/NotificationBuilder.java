@@ -24,14 +24,14 @@ public class NotificationBuilder {
 
     public static RemoteViews getBigView(Context ctx) {
         if (remoteViews == null) {
-            remoteViews = new RemoteViews(ctx.getPackageName(), R.layout.big_notification);
+            remoteViews = new RemoteViews(ctx.getPackageName(), R.layout.notification_big);
         }
         return remoteViews;
     }
 
     public static RemoteViews getSmallView(Context ctx) {
         if (smallViews == null) {
-            smallViews = new RemoteViews(ctx.getPackageName(), R.layout.small_notification);
+            smallViews = new RemoteViews(ctx.getPackageName(), R.layout.notification_small);
         }
         return smallViews;
     }

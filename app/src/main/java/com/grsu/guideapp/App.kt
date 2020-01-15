@@ -7,6 +7,7 @@ import android.net.NetworkInfo
 import androidx.preference.PreferenceManager
 import com.grsu.guideapp.project_settings.SharedPref
 import com.grsu.guideapp.utils.extensions.getCurrentLocale
+import timber.log.Timber
 import java.util.*
 
 @Suppress("unused")
@@ -37,11 +38,7 @@ class App : Application() {
         super.onCreate()
         app = this
 
-        val dataBase = Room.databaseBuilder(this, ContentDataBase::class.java, "content.db")
-//            .createFromAsset("content.db")
-            .allowMainThreadQueries()
-//            .addCallback(MyCallBack())
-            .build()
+        if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
 
         dataBase.routesDao().getRoutes()
 

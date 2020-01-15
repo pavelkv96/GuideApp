@@ -10,19 +10,13 @@ import java.util.*
 class Converters {
 
     @TypeConverter
-    fun fromTimestamp(value: Long): Date {
-        return Date(value)
-    }
+    fun fromTimestamp(value: Long): Date = Date(value)
 
     @TypeConverter
-    fun dateToTimestamp(value: Date): Long {
-        return value.time
-    }
+    fun dateToTimestamp(value: Date): Long = value.time / 1000
 
     @TypeConverter
-    fun fromProviderToString(provider: Provider): String {
-        return provider.value
-    }
+    fun fromProviderToString(provider: Provider): String = provider.value
 
     @TypeConverter
     fun fromStringToProvider(provider: String): Provider {
@@ -31,22 +25,14 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromStatus(status: Status): Int {
-        return status.value
-    }
+    fun fromStatus(status: Status): Int = status.value
 
     @TypeConverter
-    fun toStatus(status: Int): Status {
-        return Status.search(status)
-    }
+    fun toStatus(status: Int): Status = Status.search(status)
 
     @TypeConverter
-    fun fromTypeResource(resource: TypeResource): Int {
-        return resource.value
-    }
+    fun fromTypeResource(resource: TypeResource): Int = resource.value
 
     @TypeConverter
-    fun toTypeResource(resource: Int): TypeResource {
-        return TypeResource.search(resource)
-    }
+    fun toTypeResource(resource: Int): TypeResource = TypeResource.search(resource)
 }

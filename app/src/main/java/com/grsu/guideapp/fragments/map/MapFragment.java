@@ -36,7 +36,6 @@ import java.util.List;
 public class MapFragment extends MapPreviewFragment<MapPresenter>
         implements MapViews,/* OnLocationListener,*/ DialogInterface.OnClickListener {
 
-    private static final String TAG = MapFragment.class.getSimpleName();
     private boolean isMoving = false;
     private boolean isAnimated = false;
     private boolean isFirst = false;

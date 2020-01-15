@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.utils.MapUtils;
-import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.StorageUtils;
 import com.grsu.guideapp.utils.StreamUtils;
 import com.grsu.guideapp.utils.extensions.LocationKt;
@@ -26,6 +25,8 @@ import com.grsu.guideapp.utils.extensions.LocationKt;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import timber.log.Timber;
 
 public class Tracker extends Fragment implements LocationListener {
 
@@ -84,7 +85,7 @@ public class Tracker extends Fragment implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        Logs.e("TAG", location.toString());
+        Timber.e(location.toString());
         LatLng latLng = LocationKt.toLatLng(location);
         String text = location.getProvider() + "  " + location.getAccuracy() + "   " + latLng.toString() + "  " + location.getBearing();
         data.setText(text);

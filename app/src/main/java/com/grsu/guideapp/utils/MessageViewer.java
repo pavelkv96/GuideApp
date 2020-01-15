@@ -4,13 +4,14 @@ import android.content.Context;
 import android.graphics.Color;
 import androidx.annotation.StringRes;
 import com.google.android.material.snackbar.Snackbar;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
-import com.grsu.guideapp.BuildConfig;
+
+import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
 
+@SuppressWarnings("unused")
 public class MessageViewer {
 
     public static class Toasts {
@@ -37,23 +38,6 @@ public class MessageViewer {
 
         private static void makeToast(Context context, @StringRes int message, int length) {
             Toast.makeText(context, message, length).show();
-        }
-    }
-
-    public static class Logs {
-
-        public static void e(String tag, String message, Throwable t) {
-            eAbstract(tag, message, t);
-        }
-
-        public static void e(String tag, String message) {
-            eAbstract(tag, message, null);
-        }
-
-        private static void eAbstract(String tag, String message, Throwable t) {
-            if (BuildConfig.DEBUG) {
-                Log.e(tag, message, t);
-            }
         }
     }
 

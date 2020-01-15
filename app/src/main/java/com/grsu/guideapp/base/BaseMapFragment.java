@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +33,8 @@ import com.grsu.guideapp.views.overlay.MyLocationLayer;
 import com.grsu.guideapp.views.overlay.MyLocationLayer.Builder;
 import java.io.File;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+
+import timber.log.Timber;
 
 public abstract class BaseMapFragment<P extends BasePresenter, A extends FragmentActivity>
         extends BaseFragment<P, A>
@@ -160,7 +161,7 @@ public abstract class BaseMapFragment<P extends BasePresenter, A extends Fragmen
 
     @Override
     public void onCameraIdle() {
-        Log.e("TAG", "onCameraIdle: ");
+        Timber.e("onCameraIdle: ");
         if (scaleView != null && scaleView.getVisibility() != View.GONE) {
             updateScaleView();
         }

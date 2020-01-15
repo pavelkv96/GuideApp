@@ -55,7 +55,6 @@ public abstract class MapPreviewFragment<P extends MapPreviewPresenter> extends
         implements MapPreviewViews, OnChoiceItemListener, OnMultiChoiceItemsListener,
         OnMapClickListener {
 
-    private static final String TAG = MapPreviewFragment.class.getSimpleName();
     private List<Marker> nearPoi = new ArrayList<>();
     private List<Marker> turnPoint = new ArrayList<>();
     private TestViewModel model;

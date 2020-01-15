@@ -16,21 +16,20 @@ import android.widget.RemoteViews;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.project_settings.NotificationBuilder;
-import com.grsu.guideapp.utils.MessageViewer.Logs;
 import java.io.File;
 import java.io.IOException;
 
+import timber.log.Timber;
+
 public class DetailsPlayerService extends Service implements OnPreparedListener,
         OnCompletionListener {
-
-    private static final String TAG = DetailsPlayerService.class.getSimpleName();
 
     MediaPlayer player = null;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Logs.e(TAG, "onCreate:");
+        Timber.e("onCreate:");
         RemoteViews bigView = NotificationBuilder.getBigView(this);
         RemoteViews smallView = NotificationBuilder.getSmallView(this);
         Notification notification = createNotification(this, bigView, smallView);
@@ -41,7 +40,7 @@ public class DetailsPlayerService extends Service implements OnPreparedListener,
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
         if (action != null) {
-            Logs.e(TAG, "onStartCommand:" + action);
+            Timber.e("onStartCommand:%s", action);
             switch (action) {
                 case Constants.NOTIFY_PLAY:
                     play();
@@ -70,7 +69,7 @@ public class DetailsPlayerService extends Service implements OnPreparedListener,
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Logs.e(TAG, "onBind: " + intent.getAction());
+        Timber.e("onBind: %s", intent.getAction());
         return null;
     }
 
@@ -82,7 +81,7 @@ public class DetailsPlayerService extends Service implements OnPreparedListener,
 
     @Override
     public void onDestroy() {
-        Logs.e(TAG, "onDestroy:");
+        Timber.e("onDestroy:");
         release();
         super.onDestroy();
     }
@@ -113,7 +112,7 @@ public class DetailsPlayerService extends Service implements OnPreparedListener,
             //mp.setDataSource(pathToRecord.getAbsolutePath());
             mp.prepareAsync();
         } catch (IOException e) {
-            Logs.e(TAG, "create: " + e.getMessage(), e);
+            Timber.e(e, "create: %s", e.getMessage());
         }
         return mp;
     }
@@ -156,7 +155,7 @@ public class DetailsPlayerService extends Service implements OnPreparedListener,
         String namePlace = intent.getStringExtra(Constants.KEY_NAME_PLACE_RECORD);
         File pathToAudio = new File("");
         if (pathToAudio != null/* && pathToAudio.exists()*/) {
-            Logs.e(TAG, "onStartCommand: " + pathToAudio);
+            Timber.e("onStartCommand: %s", pathToAudio);
 
             player = create(pathToAudio);
             player.setOnPreparedListener(this);

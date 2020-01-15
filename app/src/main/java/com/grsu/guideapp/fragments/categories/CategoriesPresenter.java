@@ -10,7 +10,6 @@ import java.util.List;
 public class CategoriesPresenter extends BasePresenterImpl<CategoriesViews> implements
         CategoriesContract.CategoriesPresenter, OnSuccessListener<List<DtoType>> {
 
-    private static final String TAG = CategoriesPresenter.class.getSimpleName();
     private CategoriesViews mViews;
     private CategoriesInteractor mInteractor;
 
