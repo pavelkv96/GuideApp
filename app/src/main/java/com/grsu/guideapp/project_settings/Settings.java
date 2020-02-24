@@ -61,6 +61,4 @@ public class Settings {
 
     public static final float MIN_ZOOM_LEVEL = 10;
     public static final float MAX_ZOOM_LEVEL = 20;
-
-    public static final String BASE_URL = "http://api.grodnovisafree.by/";
 }

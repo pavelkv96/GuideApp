@@ -33,3 +33,20 @@ enum class Status(val value: Int) {
         }
     }
 }
+
+enum class Type(val value: Int) {
+    UNDEFINED(0),
+    ONLY_TEXT(1),
+    ONLY_TEXT_AND_IMAGES(2),
+    ALL_DATA(3);
+
+    companion object {
+        fun search(value: Int): Type {
+            return values().find { it.value == value } ?: UNDEFINED
+        }
+    }
+}
+
+enum class Language {
+    ru, en, zh, pl, lt
+}

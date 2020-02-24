@@ -4,10 +4,6 @@ import com.grsu.guideapp.BuildConfig;
 
 public class Constants {
 
-    public enum Language {
-        ru, en, zh, pl, lt
-    }
-
     public static final String EMPTY_STRING = "";
     public static final String PACKAGE = "package";
     public static final String PACKAGE_NAME = BuildConfig.APPLICATION_ID;

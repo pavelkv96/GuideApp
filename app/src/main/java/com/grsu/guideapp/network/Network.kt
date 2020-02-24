@@ -1,7 +1,6 @@
 package com.grsu.guideapp.network
 
 import com.grsu.guideapp.network.interceptors.ApiInterceptor
-import com.grsu.guideapp.project_settings.Settings
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,11 +16,14 @@ object Network {
             build()
         }
         retrofit = with(Retrofit.Builder()) {
-            baseUrl(Settings.BASE_URL)
+            baseUrl(BASE_URL)
             addConverterFactory(GsonConverterFactory.create())
             client(client)
             build()
         }
         api = retrofit.create(APIService::class.java)
     }
+
+    private const val BASE_URL = "http://api.grodnovisafree.by/"
+//    private const val PATTERN = "dd-MM-yyyy_HH:mm:ss"
 }
