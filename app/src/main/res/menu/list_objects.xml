@@ -3,8 +3,8 @@
   xmlns:app="http://schemas.android.com/apk/res-auto">
   <item
     android:id="@+id/action_list_objects"
-    android:icon="@drawable/ic_menu_routes"
+    android:icon="@drawable/ic_menu_objects"
     android:orderInCategory="100"
     android:title="@string/menu_item_categories"
-    app:showAsAction="always"/>
+    app:showAsAction="always" />
 </menu>

@@ -55,8 +55,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$androidx_version"
     implementation "com.google.android.material:material:$material_version"
 
-    implementation "androidx.lifecycle:lifecycle-extensions:$livecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$livecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.work:work-runtime-ktx:$work_version"
 
     //Database
@@ -71,7 +70,7 @@ dependencies {
     //Navigation
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
-//    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     //Google maps

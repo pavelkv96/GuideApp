@@ -10,7 +10,7 @@
       android:icon="@drawable/ic_menu_routes"
       android:title="@string/menu_item_routes" />
     <item
-      android:id="@+id/nav_objects"
+      android:id="@+id/nav_catalogs"
       android:icon="@drawable/ic_menu_objects"
       android:title="@string/menu_item_categories"
       android:visible="true" />
@@ -22,16 +22,6 @@
       android:id="@+id/nav_about"
       android:icon="@drawable/ic_menu_about"
       android:title="@string/about_fragment" />
-    <item
-      android:id="@+id/nav_send"
-      android:icon="@drawable/ic_menu_send"
-      android:title="Send"
-      android:visible="false" />
-    <item
-      android:id="@+id/nav_camera"
-      android:icon="@drawable/ic_menu_camera"
-      android:title="Import"
-      android:visible="false" />
   </group>
 
 </menu>
