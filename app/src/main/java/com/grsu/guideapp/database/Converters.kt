@@ -1,7 +1,7 @@
 package com.grsu.guideapp.database
 
 import androidx.room.TypeConverter
-import com.grsu.guideapp.utils.Provider
+import com.grsu.guideapp.map.Provider
 import com.grsu.guideapp.utils.Status
 import com.grsu.guideapp.utils.TypeResource
 import java.util.*
@@ -16,13 +16,10 @@ class Converters {
     fun dateToTimestamp(value: Date): Long = value.time / 1000
 
     @TypeConverter
-    fun fromProviderToString(provider: Provider): String = provider.value
+    fun fromProviderToString(provider: Provider): String = provider.name
 
     @TypeConverter
-    fun fromStringToProvider(provider: String): Provider {
-        //TODO fix bug with getting provider
-        return Provider.valueOf(provider)
-    }
+    fun fromStringToProvider(provider: String): Provider = Provider.valueOf(provider)
 
     @TypeConverter
     fun fromStatus(status: Status): Int = status.value

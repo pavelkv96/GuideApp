@@ -10,8 +10,9 @@ import com.grsu.guideapp.network.model.Data;
 import com.grsu.guideapp.network.model.Name;
 import com.grsu.guideapp.network.model.Turn;
 import com.grsu.guideapp.network.model.Value;
-import com.grsu.guideapp.project_settings.Constants;
 import com.grsu.guideapp.utils.CryptoUtils;
+import com.grsu.guideapp.utils.Language;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +76,7 @@ class Content {
     private static ContentValues setRUContent(Name name, About about, int id, String key) {
         ContentValues values = new ContentValues();
         values.put(key, id);
-        values.put(RoutesLanguage.language, Constants.Language.ru.toString());
+        values.put(RoutesLanguage.language, Language.ru.toString());
 
         if (name.getFull() != null) {
             values.put(RoutesLanguage.name, name.getFull().getRu());
@@ -94,7 +95,7 @@ class Content {
     private static ContentValues setENContent(Name name, About about, int id, String key) {
         ContentValues values = new ContentValues();
         values.put(key, id);
-        values.put(RoutesLanguage.language, Constants.Language.en.toString());
+        values.put(RoutesLanguage.language, Language.en.toString());
 
         if (name.getFull() != null) {
             values.put(RoutesLanguage.name, name.getFull().getEn());
@@ -113,7 +114,7 @@ class Content {
     private static ContentValues setZHContent(Name name, About about, int id, String key) {
         ContentValues values = new ContentValues();
         values.put(key, id);
-        values.put(RoutesLanguage.language, Constants.Language.zh.toString());
+        values.put(RoutesLanguage.language, Language.zh.toString());
 
         if (name.getFull() != null) {
             values.put(RoutesLanguage.name, name.getFull().getCn());
@@ -132,7 +133,7 @@ class Content {
     private static ContentValues setPLContent(Name name, About about, int id, String key) {
         ContentValues values = new ContentValues();
         values.put(key, id);
-        values.put(RoutesLanguage.language, Constants.Language.pl.toString());
+        values.put(RoutesLanguage.language, Language.pl.toString());
 
         if (name.getFull() != null) {
             values.put(RoutesLanguage.name, name.getFull().getPl());
@@ -151,7 +152,7 @@ class Content {
     private static ContentValues setLTContent(Name name, About about, int id, String key) {
         ContentValues values = new ContentValues();
         values.put(key, id);
-        values.put(RoutesLanguage.language, Constants.Language.lt.toString());
+        values.put(RoutesLanguage.language, Language.lt.toString());
 
         if (name.getFull() != null) {
             values.put(RoutesLanguage.name, name.getFull().getLt());

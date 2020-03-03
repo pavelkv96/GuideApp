@@ -1,3 +1,4 @@
+/*
 package com.grsu.guideapp.project_settings;
 
 import static com.grsu.guideapp.project_settings.Constants.CHANNEL_ID;
@@ -13,8 +14,7 @@ import androidx.core.app.NotificationCompat.Builder;
 import android.view.View;
 import android.widget.RemoteViews;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.activities.details.DetailsPlayerService;
-import com.grsu.guideapp.activities.route.RouteActivity;
+import com.grsu.guideapp.activities.MainActivity;
 
 public class NotificationBuilder {
 
@@ -37,9 +37,9 @@ public class NotificationBuilder {
     }
 
     @SuppressLint("RestrictedApi")
-    public static Notification createNotification(Context ctx, RemoteViews big, RemoteViews small) {
+    public Notification createNotification(Context ctx, RemoteViews big, RemoteViews small) {
         if (notification == null) {
-            Intent i = new Intent(ctx, RouteActivity.class);
+            Intent i = new Intent(ctx, MainActivity.class);
             PendingIntent pendingIntent =PendingIntent.getActivity(ctx, 0, i, 0);
             notification = new NotificationCompat.Builder(ctx, CHANNEL_ID);
             notification.setContentIntent(pendingIntent);
@@ -56,9 +56,9 @@ public class NotificationBuilder {
         return notification.build();
     }
 
-    private static void setListeners(Context context, RemoteViews big, RemoteViews small) {
+    private void setListeners(Context context, RemoteViews big, RemoteViews small) {
 
-        Class<DetailsPlayerService> aClass = DetailsPlayerService.class;
+        Class<NotificationBuilder> aClass = this::getClass;
         Intent delete = new Intent(context, aClass).setAction(Constants.NOTIFY_DELETE);
         Intent next = new Intent(context, aClass).setAction(Constants.NOTIFY_NEXT);
         Intent pause = new Intent(context, aClass).setAction(Constants.NOTIFY_PAUSE);
@@ -127,3 +127,4 @@ public class NotificationBuilder {
         update(ctx, notification);
     }
 }
+*/
