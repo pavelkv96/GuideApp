@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:orientation="vertical"
-  android:gravity="center">
+  android:layout_height="match_parent">
 
-  <androidx.recyclerView.widget.RecyclerView
-    android:id="@+id/fragment_catalog_rv"
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/rv_fragment_catalog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:listitem="@layout/item_type"
-    tools:visibility="gone"/>
+    tools:visibility="invisible" />
 
   <TextView
-    android:id="@+id/fragment_catalog_empty_tv"
+    android:id="@+id/tv_fragment_catalog_text_error"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
     android:visibility="gone"
-    tools:visibility="visible"/>
-</LinearLayout>
+    tools:text="Some error"
+    tools:visibility="visible" />
+
+  <ProgressBar
+    android:id="@+id/pb_fragment_catalog_progress"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:layout_gravity="center"
+    android:visibility="gone" />
+</RelativeLayout>

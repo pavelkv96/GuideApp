@@ -3,13 +3,12 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:background="@mipmap/background">
+  android:layout_height="match_parent">
 
   <androidx.recyclerview.widget.RecyclerView
     android:id="@+id/rv_fragment_list_routes"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:itemCount="2"
-    tools:listitem="@layout/item_routes_downloaded"/>
+    tools:listitem="@layout/item_route" />
 </LinearLayout>

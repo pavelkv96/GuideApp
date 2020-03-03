@@ -93,7 +93,7 @@
       android:layout_marginStart="8dp"
       android:layout_below="@id/tv_map_name"
       android:layout_toEndOf="@id/btn_map_go_to"
-      android:src="@drawable/ic_info"
+      android:src="@drawable/ic_menu_about"
       android:text="@string/details"
       android:textSize="12sp" />
 
@@ -105,7 +105,6 @@
       android:layout_marginStart="8dp"
       android:layout_below="@id/tv_map_name"
       android:layout_toEndOf="@id/btn_map_more"
-      android:src="@drawable/ic_headset"
       android:visibility="visible"
       android:textSize="12sp" />
 
