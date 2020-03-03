@@ -3,7 +3,7 @@ package com.grsu.guideapp.base
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 
-abstract class NewBaseViewHolder<T>(
+abstract class BaseViewHolder<T>(
     itemView: View,
     protected val listener: ((View, Int) -> Unit)?
 ) : ViewHolder(itemView) {

@@ -2,7 +2,7 @@ buildscript {
     ext {
         compileSdk = 28
         buildTools = '28.0.3'
-        minSdk = 21
+        minSdk = 23
         targetSdk = 28
 
         androidx_version = '1.1.0'
@@ -28,7 +28,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.android.tools.build:gradle:3.6.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
     }

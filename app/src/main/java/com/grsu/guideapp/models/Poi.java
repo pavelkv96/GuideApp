@@ -2,9 +2,10 @@ package com.grsu.guideapp.models;
 
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.grsu.guideapp.utils.CryptoUtils;
+import com.grsu.guideapp.utils.extensions.ByteArrayKt;
+
 import java.io.Serializable;
 
 public class Poi implements Serializable {
@@ -33,7 +34,7 @@ public class Poi implements Serializable {
 
     public static Poi fromCursor(Cursor cursor) {
         byte[] blob = cursor.getBlob(2);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(blob, 0, blob.length);
+        Bitmap bitmap = ByteArrayKt.toBitmap(blob);
 
         return new Poi(cursor.getInt(0), cursor.getString(1), bitmap);
     }

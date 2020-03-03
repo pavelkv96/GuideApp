@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.grsu.guideapp.database.cache.entities.CacheTile
-import com.grsu.guideapp.utils.Provider
+import com.grsu.guideapp.map.Provider
 
 @Dao
 interface CacheDao {
