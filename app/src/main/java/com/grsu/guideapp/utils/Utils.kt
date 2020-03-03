@@ -2,12 +2,6 @@ package com.grsu.guideapp.utils
 
 internal fun toRadians(angdeg: Double): Double = angdeg / 180.0 * Math.PI
 
-enum class Provider(val value: String) {
-    FORGE("mapsforge"),
-    OSM("osmdroid"),
-    DEFAULT("default")
-}
-
 enum class TypeResource(val value: Int) {
     UNDEFINED(0),
     PHOTO(1),
