@@ -1,4 +1,4 @@
-package com.grsu.ui.scale;
+package com.grsu.guideapp.views.scale;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -6,6 +6,9 @@ import androidx.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.view.View;
 
+import kotlin.Suppress;
+
+@SuppressWarnings("unused")
 public class MapScaleView extends View {
 
     private final MapScaleModel mapScaleModel;

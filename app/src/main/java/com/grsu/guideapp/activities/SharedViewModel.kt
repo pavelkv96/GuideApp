@@ -1,19 +1,58 @@
 package com.grsu.guideapp.activities
 
-import android.util.Log
+import android.os.Handler
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.grsu.guideapp.views.dialogs.MultiChoiceItemsDialogFragment.OnMultiChoiceItemsListener
+import com.grsu.guideapp.App
+import com.grsu.guideapp.R
+import com.grsu.guideapp.data.local.PreferenceManager
+import com.grsu.guideapp.fragments.setting.PreStart
+import com.grsu.guideapp.fragments.setting.Result
+import com.grsu.guideapp.utils.MessageViewer
+import com.grsu.guideapp.views.dialogs.DialogResult
 
-class SharedViewModel : ViewModel(), OnMultiChoiceItemsListener {
+class SharedViewModel : ViewModel(), Runnable {
 
-    private val TAG = SharedViewModel::class.java.simpleName
+    private var doubleBackToExitPressedOnce = false
+    private val showDrawerLayout: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val finishApplication: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val handler = Handler()
+    private val progress = MutableLiveData<Result>(PreStart)
 
-    override fun onCleared() {
-        Log.e(TAG, "onCleared: ")
-        super.onCleared()
+    fun isPreference() = PreferenceManager.getSplash()
+
+    fun setPreference() = run { PreferenceManager.setSplash(true) }
+
+    fun isShowDrawerLayout() = showDrawerLayout
+
+    fun isFinishApplication() = finishApplication
+
+    fun finishApplication() {
+        if (!doubleBackToExitPressedOnce) {
+            doubleBackToExitPressedOnce = true
+            MessageViewer.Toasts.makeS(App.getInstance(), R.string.message_once_more_to_exit)
+            handler.postDelayed(this, 2000)
+        } else finishApplication.postValue(true)
     }
 
-    override fun onOk() {
+    fun showDrawerLayout() = run { showDrawerLayout.value = true }
 
+    override fun run() {
+        doubleBackToExitPressedOnce = false
     }
+
+    fun setArgs(result: Result) {
+        progress.value = result
+    }
+
+    fun getArgs() = progress
+
+    private val choiceDialogResult = MutableLiveData<DialogResult>()
+
+    fun getChoiceDialogResult() = choiceDialogResult
+
+    fun choiceDialogResult(result: DialogResult) {
+        choiceDialogResult.value = result
+    }
+
 }

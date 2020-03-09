@@ -1,4 +1,4 @@
-package com.grsu.ui.scale;
+package com.grsu.guideapp.views.scale;
 
 class Scales {
     private final Scale top, bottom;

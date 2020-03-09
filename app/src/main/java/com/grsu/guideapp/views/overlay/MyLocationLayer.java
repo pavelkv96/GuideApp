@@ -32,7 +32,7 @@ public class MyLocationLayer {
 
     private MyLocationLayer(Resources res) {
         LatLng latLng = new LatLng(0, 0);
-        Bitmap bitmap = StorageUtils.getBitmap(res.getDrawable(R.drawable.my_location1));
+        Bitmap bitmap = StorageUtils.getBitmap(res.getDrawable(R.drawable.ic_navigation));
         BitmapDescriptor descriptor = BitmapDescriptorFactory.fromBitmap(bitmap);
 
         if (circleOptions == null) {

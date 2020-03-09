@@ -1,1 +1,1 @@
-include ':app', ':custom_lib'
+include ':app'

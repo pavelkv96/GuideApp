@@ -1,6 +1,0 @@
-<resources>
-  <dimen name="text_size_progress">30dp</dimen>
-  <dimen name="width_height_progress">200dp</dimen>
-  <dimen name="width_arc_primary">7dp</dimen>
-  <dimen name="width_arc_background">7dp</dimen>
-</resources>

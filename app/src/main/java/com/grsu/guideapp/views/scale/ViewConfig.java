@@ -1,10 +1,10 @@
-package com.grsu.ui.scale;
+package com.grsu.guideapp.views.scale;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import com.grsu.R;
+import com.grsu.guideapp.R;
 
 class ViewConfig {
 

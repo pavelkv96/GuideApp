@@ -1,4 +1,4 @@
-package com.grsu.ui.scale;
+package com.grsu.guideapp.views.scale;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

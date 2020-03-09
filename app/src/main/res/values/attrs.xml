@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
-  <declare-styleable name="CustomProgressBar">
-    <!--<attr name="piv_interactiveAnimation" format="boolean" />
-    <attr name="piv_animationDuration" format="integer" />
-    <attr name="piv_animationType">
-      <enum name="none" value="0" />
-      <enum name="color" value="1" />
-      <enum name="scale" value="2" />
-      <enum name="worm" value="3" />
-      <enum name="slide" value="4" />
-      <enum name="fill" value="5" />
-      <enum name="thinWorm" value="6" />
-      <enum name="drop" value="7" />
-      <enum name="swap" value="8" />
-      <enum name="scale_down" value="9" />
-    </attr>-->
-
+  <declare-styleable name="MapScaleView">
+    <attr name="scale_textSize" format="dimension"/>
+    <attr name="scale_strokeWidth" format="dimension"/>
+    <attr name="scale_color" format="color"/>
+    <attr name="scale_miles" format="boolean"/>
+    <attr name="scale_outline" format="boolean"/>
+    <attr name="scale_expandRtl" format="boolean"/>
   </declare-styleable>
-
 </resources>

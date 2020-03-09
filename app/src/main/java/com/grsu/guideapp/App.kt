@@ -2,6 +2,7 @@ package com.grsu.guideapp
 
 import android.app.Application
 import android.content.Context
+import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import androidx.preference.PreferenceManager
@@ -9,9 +10,13 @@ import com.grsu.guideapp.project_settings.SharedPref
 import com.grsu.guideapp.utils.extensions.getCurrentLocale
 import timber.log.Timber
 import java.util.*
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 @Suppress("unused")
 class App : Application() {
+
+    private lateinit var executors: Executor
 
     companion object {
         private lateinit var app: App
@@ -25,18 +30,14 @@ class App : Application() {
         fun getThread(): AppExecutors {
             return AppExecutors.INSTANCE
         }
-
-        @JvmStatic
-        fun isOnline(): Boolean {
-            val mn = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val activeNetwork: NetworkInfo? = mn.activeNetworkInfo
-            return activeNetwork?.isConnected == true
-        }
     }
+
+    override fun attachBaseContext(base: Context) = super.attachBaseContext(setLocale(base))
 
     override fun onCreate() {
         super.onCreate()
         app = this
+        executors = Executors.newFixedThreadPool(4)
 
         if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
 
@@ -45,13 +46,13 @@ class App : Application() {
         dataBase.close()
     }
 
-    @JvmName("isNewOnline")
     fun isOnline(): Boolean {
         val mn = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork: NetworkInfo? = mn.activeNetworkInfo
         return activeNetwork?.isConnected == true
     }
 
+    @Suppress("DEPRECATION")
     fun setLocale(context: Context): Context {
         val pref = PreferenceManager.getDefaultSharedPreferences(context)
         if (!pref.contains(SharedPref.KEY_LANGUAGE)) {
@@ -59,13 +60,20 @@ class App : Application() {
             pref.edit().putString(SharedPref.KEY_LANGUAGE, locale).apply()
         }
 
-        val conf = resources.configuration
-
-        val loc = pref.getString(SharedPref.KEY_LANGUAGE, resources.getString(R.string.locale))
+        val loc = pref.getString(SharedPref.KEY_LANGUAGE, "en")
         val locale = Locale(loc)
         Locale.setDefault(locale)
 
+        val conf = context.resources.configuration
         conf.setLocale(locale)
-        return createConfigurationContext(conf)
+        context.resources.updateConfiguration(conf, context.resources.displayMetrics)
+        return context
+    }
+
+    fun getExecutor() = executors
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        setLocale(this)
     }
 }

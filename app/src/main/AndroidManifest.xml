@@ -33,17 +33,11 @@
     </activity>
 
     <service
-      android:name=".activities.details.DetailsPlayerService"
-      android:process=":my_service"/>
-
-    <!--<receiver
-      android:enabled="false"
-      android:name=".holders.BroadcastManager">
-      <intent-filter>
-        <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-        <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
-      </intent-filter>
-    </receiver>-->
+      android:name=".service.LocationUpdatesService"
+      android:enabled="true"
+      android:exported="true"
+      tools:ignore="UnusedAttribute" />
+    <!--android:foregroundServiceType="location"-->
 
     <meta-data
       android:name="com.google.android.geo.API_KEY"
