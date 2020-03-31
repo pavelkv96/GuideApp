@@ -31,8 +31,8 @@ object MyLocationLayer {
             .center(LatLng(0.0, 0.0))
             .zIndex(1F)
             .strokeWidth(1F)
-            .fillColor(Color.parseColor("#55DCE5F4"))
-            .strokeColor(Color.parseColor("#97BAF4"))
+            .fillColor(App.getInstance().getColor(R.color.myLocation))
+            .strokeColor(App.getInstance().getColor(R.color.myLocation1))
             .radius(10.0)
             .clickable(false)
     }
@@ -41,7 +41,7 @@ object MyLocationLayer {
         var drawable = ContextCompat.getDrawable(App.getInstance(), R.drawable.ic_navigation)!!
         drawable = DrawableCompat.wrap(drawable)
         DrawableCompat.setTint(drawable, Color.RED)
-        drawable = DrawableCompat.unwrap<Drawable>(drawable)
+        drawable = DrawableCompat.unwrap(drawable)
         val canvas = Canvas()
 
         return with(drawable) {

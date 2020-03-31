@@ -21,14 +21,12 @@ abstract class CacheDataBase : RoomDatabase() {
         @Volatile
         private var instance: CacheDataBase? = null
 
-        fun getInstance(): CacheDataBase {
-            return instance ?: synchronized(this) {
-                instance ?: buildDatabase().also { instance = it }
-            }
-        }
+        fun getInstance() = instance ?: synchronized(this) { instance ?: buildDatabase().also { instance = it } }
 
         private fun buildDatabase(): CacheDataBase {
-            return Room.databaseBuilder(App.getInstance(), CacheDataBase::class.java, name).build()
+            return Room.databaseBuilder(App.getInstance(), CacheDataBase::class.java, name)
+                .setJournalMode(JournalMode.WRITE_AHEAD_LOGGING)
+                .build()
         }
     }
 }

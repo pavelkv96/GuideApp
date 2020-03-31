@@ -6,7 +6,7 @@ import java.io.InputStream
 
 enum class Provider(private val path: String) : XmlRenderTheme {
 
-    MAPSFORGE("/assets/custom/custom.xml"),
+    MAPSFORGE("/assets/custom/mapsforge.xml"),
     OSM("/assets/mapsforge/osmarender.xml"),
     DEFAULT("/assets/mapsforge/default.xml");
 
