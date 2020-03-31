@@ -3,13 +3,14 @@ package com.grsu.guideapp.utils.extensions
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.Settings
 import android.util.TypedValue
-import com.grsu.guideapp.project_settings.Constants
+import com.grsu.guideapp.BuildConfig
 
-fun Context.goToSettings(){
+fun Context.goToSettings() {
     val intent = Intent().apply {
-        action = Constants.ACTION_APPLICATION_DETAILS_SETTINGS
-        data = Uri.fromParts(Constants.PACKAGE, Constants.PACKAGE_NAME, null)
+        action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+        data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
     }
     startActivity(intent)
 }

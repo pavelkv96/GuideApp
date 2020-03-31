@@ -5,10 +5,9 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 
 class PagerAdapter(
+    private var fragmentsAndTitles: List<Pair<Fragment, String>> = mutableListOf(),
     manager: FragmentManager
 ) : FragmentPagerAdapter(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-
-    private val fragmentsAndTitles: MutableList<Pair<Fragment, String>> = mutableListOf()
 
     override fun getCount(): Int = fragmentsAndTitles.size
 
@@ -16,5 +15,10 @@ class PagerAdapter(
 
     override fun getPageTitle(position: Int): CharSequence = fragmentsAndTitles[position].second
 
-    fun addFragment(fragment: Pair<Fragment, String>) = fragmentsAndTitles.add(fragment)
+    fun submitList(fragments: List<Pair<Fragment, String>>) {
+        fragmentsAndTitles = fragments
+        notifyDataSetChanged()
+    }
+
+//    fun addFragment(fragment: Pair<Fragment, String>) = fragmentsAndTitles.add(fragment)
 }

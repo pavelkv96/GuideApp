@@ -1,7 +1,6 @@
 /*
 package com.grsu.guideapp.project_settings;
 
-import static com.grsu.guideapp.project_settings.Constants.CHANNEL_ID;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -59,11 +58,11 @@ public class NotificationBuilder {
     private void setListeners(Context context, RemoteViews big, RemoteViews small) {
 
         Class<NotificationBuilder> aClass = this::getClass;
-        Intent delete = new Intent(context, aClass).setAction(Constants.NOTIFY_DELETE);
-        Intent next = new Intent(context, aClass).setAction(Constants.NOTIFY_NEXT);
-        Intent pause = new Intent(context, aClass).setAction(Constants.NOTIFY_PAUSE);
-        Intent play = new Intent(context, aClass).setAction(Constants.NOTIFY_PLAY);
-        Intent previous = new Intent(context, aClass).setAction(Constants.NOTIFY_PREVIOUS);
+        Intent delete = new Intent(context, aClass).setAction("NOTIFY_DELETE");
+        Intent next = new Intent(context, aClass).setAction("NOTIFY_NEXT);
+        Intent pause = new Intent(context, aClass).setAction("NOTIFY_PAUSE");
+        Intent play = new Intent(context, aClass).setAction("NOTIFY_PLAY");
+        Intent previous = new Intent(context, aClass).setAction("NOTIFY_PREVIOUS");
 
         PendingIntent pDelete = PendingIntent.getService(context, 0, delete, 0);
         big.setOnClickPendingIntent(R.id.btnDelete, pDelete);
@@ -116,7 +115,7 @@ public class NotificationBuilder {
         Object systemService = ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationManager manager = (NotificationManager) systemService;
         if (manager != null) {
-            manager.notify(Constants.NOTIFICATION_ID, notificationBuilder.build());
+            manager.notify("NOTIFICATION_ID", notificationBuilder.build());
         }
     }
 
