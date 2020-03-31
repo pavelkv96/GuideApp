@@ -5,7 +5,6 @@ import com.grsu.guideapp.App
 import com.grsu.guideapp.map.Provider
 import com.grsu.guideapp.utils.extensions.edit
 
-@Suppress("unused")
 object PreferenceManager {
     private val preference = PreferenceManager.getDefaultSharedPreferences(App.getInstance())
     private const val key_layer = "layer"

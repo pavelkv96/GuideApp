@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                 navController.setGraph(R.navigation.nav_main_graph)
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
                 appBarConfiguration = AppBarConfiguration(
-                    setOf(R.id.nav_routes, R.id.nav_catalogs, R.id.nav_settings, R.id.nav_about),
+                    setOf(R.id.nav_favorite, R.id.nav_routes, R.id.nav_catalogs, R.id.nav_settings, R.id.nav_about),
                     drawerLayout
                 )
                 appBarConfiguration?.also { configuration ->
@@ -68,9 +68,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
-        return appBarConfiguration?.let {
-            navController.navigateUp(it)
-        } ?: super.onSupportNavigateUp()
+        return appBarConfiguration?.let { navController.navigateUp(it) } ?: super.onSupportNavigateUp()
     }
 
     override fun onBackPressed() {

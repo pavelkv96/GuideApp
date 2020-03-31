@@ -1,6 +1,7 @@
 package com.grsu.guideapp.activities
 
 import android.os.Handler
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.grsu.guideapp.App
@@ -8,7 +9,6 @@ import com.grsu.guideapp.R
 import com.grsu.guideapp.data.local.PreferenceManager
 import com.grsu.guideapp.fragments.setting.PreStart
 import com.grsu.guideapp.fragments.setting.Result
-import com.grsu.guideapp.utils.MessageViewer
 import com.grsu.guideapp.views.dialogs.DialogResult
 
 class SharedViewModel : ViewModel(), Runnable {
@@ -30,7 +30,7 @@ class SharedViewModel : ViewModel(), Runnable {
     fun finishApplication() {
         if (!doubleBackToExitPressedOnce) {
             doubleBackToExitPressedOnce = true
-            MessageViewer.Toasts.makeS(App.getInstance(), R.string.message_once_more_to_exit)
+            Toast.makeText(App.getInstance(), R.string.message_once_more_to_exit, Toast.LENGTH_SHORT).show()
             handler.postDelayed(this, 2000)
         } else finishApplication.postValue(true)
     }

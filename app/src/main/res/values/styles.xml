@@ -72,9 +72,37 @@
     <item name="android:layout_margin">16dp</item>
   </style>
 
+  <style name="RoundMapButton" parent="Widget.MaterialComponents.FloatingActionButton">
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="rippleColor">@color/colorPrimary</item>
+    <item name="tint">@color/colorPrimary</item>
+    <item name="backgroundTint">@android:color/white</item>
+    <item name="borderWidth">0dp</item>
+    <item name="fabCustomSize">@dimen/round_button_size</item>
+  </style>
+
   <style name="FloatingActionButton.ObjectDetails">
     <item name="backgroundTint">@android:color/white</item>
-    <item name="android:tint">@color/colorPrimary</item>
+    <item name="tint">@color/colorPrimary</item>
+    <item name="rippleColor">@color/colorPrimary</item>
+    <item name="layout_anchorGravity">bottom|right|end</item>
+    <item name="borderWidth">0dp</item>
+  </style>
+
+  <style name="FloatingActionButton.RouteDetails">
+    <item name="backgroundTint">@android:color/white</item>
+    <item name="tint">@color/colorPrimary</item>
+    <item name="rippleColor">@color/colorPrimary</item>
+    <item name="layout_anchorGravity">end</item>
+    <item name="android:layout_marginEnd">16dp</item>
+    <item name="elevation">8dp</item>
+    <item name="borderWidth">0dp</item>
+  </style>
+
+  <style name="FloatingActionButton.Order">
+    <item name="backgroundTint">@android:color/white</item>
+    <item name="tint">@color/colorPrimary</item>
     <item name="rippleColor">@color/colorPrimary</item>
     <item name="layout_anchorGravity">bottom|right|end</item>
     <item name="borderWidth">0dp</item>

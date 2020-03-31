@@ -66,22 +66,6 @@
   <string name="lang_en" translatable="false">English</string>
   <string name="lang_ru_short" translatable="false">ru</string>
   <string name="lang_en_short" translatable="false">en</string>
-  <string-array name="pref_languages_titles">
-    <item>@string/lang_ru</item>
-    <item>@string/lang_en</item>
-  </string-array>
-  <string-array name="pref_languages_values">
-    <item>@string/lang_ru_short</item>
-    <item>@string/lang_en_short</item>
-  </string-array>
-
-
-  <string-array name="single_items">
-    <item>1000</item>
-    <item>500</item>
-    <item>250</item>
-    <item>100</item>
-  </string-array>
 
 
 <!--NEED SORT BY GROUP (IT'S STACK)-->
@@ -126,12 +110,15 @@
   <string name="all_tab">All routes</string>
   <string name="route">Route</string>
   <string name="details">Details</string>
-  <string name="address">Address</string>
-  <string name="email">Emails</string>
-  <string name="phone">Phones</string>
-  <string name="link">Links</string>
   <string name="retry_again_later">Retry again later</string>
-  <string name="openstreetmap_contributors" translatable="false">© OpenStreetMap contributors</string>
+  <string name="osm_map_copyright" translatable="false">© OpenStreetMap contributors</string>
   <string name="error.message.update">Error updating data</string>
+  <string name="map_style">Map Style</string>
   <string name="cancel">Cancel</string>
+  <string name="select_all">Select all</string>
+
+  <string name="to_map">To map</string>
+  <string name="calling">Calling</string>
+  <string name="to_web">To web</string>
+  <string name="writing">Writing</string>
 </resources>

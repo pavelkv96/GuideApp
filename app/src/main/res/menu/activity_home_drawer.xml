@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools"
-  tools:showIn="navigation_view">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
   <group android:checkableBehavior="single">
+    <item
+      android:id="@+id/nav_favorite"
+      android:icon="@drawable/ic_favorite_remove"
+      android:title="Favorite" />
     <item
       android:id="@+id/nav_routes"
       android:icon="@drawable/ic_menu_routes"
@@ -12,8 +13,7 @@
     <item
       android:id="@+id/nav_catalogs"
       android:icon="@drawable/ic_menu_objects"
-      android:title="@string/menu_item_categories"
-      android:visible="true" />
+      android:title="@string/menu_item_categories" />
     <item
       android:id="@+id/nav_settings"
       android:icon="@drawable/ic_menu_settings"

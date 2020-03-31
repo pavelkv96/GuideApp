@@ -59,14 +59,6 @@
   <string name="locale">ru</string>
   <string name="message_once_more_to_exit">Еще раз, чтобы выйти</string>
 
-  <string-array name="single_items">
-    <item>1000</item>
-    <item>500</item>
-    <item>250</item>
-    <item>100</item>
-  </string-array>
-
-
   <!--NEED SORT BY GROUP (IT'S STACK)-->
   <string name="action_about_openURL">Открыть в браузере</string>
   <string name="title_about_contact_developer">Связаться с разработчиком</string>
@@ -107,11 +99,14 @@
   <string name="all_tab">Все маршруты</string>
   <string name="route">Маршрут</string>
   <string name="details">Подробнее</string>
-  <string name="address">Адрес</string>
-  <string name="email">Электронная почта</string>
-  <string name="phone">Телефоны</string>
-  <string name="link">Ссылки</string>
   <string name="retry_again_later">Попробуйте позже</string>
   <string name="error.message.update">Ошибка обновления данных</string>
   <string name="cancel">Отмена</string>
+
+  <string name="select_all">Выбрать всё</string>
+  <string name="map_style">Стиль карты</string>
+  <string name="to_map">Карта</string>
+  <string name="calling">Позвонить</string>
+  <string name="to_web">Открыть</string>
+  <string name="writing">Написать</string>
 </resources>
