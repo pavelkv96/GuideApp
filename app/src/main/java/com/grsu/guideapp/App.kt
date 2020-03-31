@@ -1,14 +1,19 @@
 package com.grsu.guideapp
 
+//import com.squareup.leakcanary.LeakCanary
 import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import androidx.preference.PreferenceManager
+import com.grsu.guideapp.project_settings.Settings
 import com.grsu.guideapp.project_settings.SharedPref
+import com.grsu.guideapp.utils.StorageUtils
 import com.grsu.guideapp.utils.extensions.getCurrentLocale
+import com.squareup.picasso.Picasso
 import timber.log.Timber
+import java.io.File
 import java.util.*
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
@@ -17,6 +22,8 @@ import java.util.concurrent.Executors
 class App : Application() {
 
     private lateinit var executors: Executor
+    private lateinit var picasso: Picasso
+    private lateinit var storageUtils: StorageUtils
 
     companion object {
         private lateinit var app: App
@@ -25,11 +32,6 @@ class App : Application() {
         fun getInstance(): App {
             return app
         }
-
-        @JvmStatic
-        fun getThread(): AppExecutors {
-            return AppExecutors.INSTANCE
-        }
     }
 
     override fun attachBaseContext(base: Context) = super.attachBaseContext(setLocale(base))
@@ -37,13 +39,24 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         app = this
-        executors = Executors.newFixedThreadPool(4)
+        executors = Executors.newFixedThreadPool(3)
+
+        storageUtils = StorageUtils(this)
+
+        picasso = Picasso.Builder(this)
+            .indicatorsEnabled(true)
+            .build()
+        Picasso.setSingletonInstance(picasso)
 
         if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
 
-        dataBase.routesDao().getRoutes()
+//        if (!LeakCanary.isInAnalyzerProcess(this)) LeakCanary.install(this)
 
-        dataBase.close()
+        val mapFile = File(filesDir, Settings.MAP_FILE)
+        if (!mapFile.exists()) {
+            assets.open(Settings.CACHE_FOLDER + Settings.MAP_FILE).use { it.copyTo(mapFile.outputStream()) }
+        }
+
     }
 
     fun isOnline(): Boolean {
@@ -71,6 +84,10 @@ class App : Application() {
     }
 
     fun getExecutor() = executors
+
+    fun getPicasso(): Picasso = Picasso.get()
+
+    fun getStorage() = storageUtils
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)

@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.*
 
 @Entity(
     tableName = "marker",
@@ -16,5 +17,5 @@ class Marker(
     @ColumnInfo(name = "link_icon") val link: String,
 
     @ColumnInfo(name = "icon") val icon: ByteArray,
-    @ColumnInfo(name = "last_update") val last_update: Long
+    @ColumnInfo(name = "last_update") val last_update: Date
 )

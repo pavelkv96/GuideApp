@@ -1,5 +1,7 @@
 package com.grsu.guideapp.database.content.dao
 
+import androidx.room.Dao
 import com.grsu.guideapp.database.content.entities.RouteLanguage
 
-abstract class RouteLanguageDao : BaseDao<RouteLanguage>()
+@Dao
+abstract class RouteLanguageDao : BaseDao<RouteLanguage>

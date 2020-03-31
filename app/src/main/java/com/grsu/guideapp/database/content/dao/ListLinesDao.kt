@@ -1,5 +1,7 @@
 package com.grsu.guideapp.database.content.dao
 
+import androidx.room.Dao
 import com.grsu.guideapp.database.content.entities.ListLines
 
-abstract class ListLinesDao : BaseDao<ListLines>()
+@Dao
+abstract class ListLinesDao : BaseDao<ListLines>

@@ -1,12 +1,11 @@
 package com.grsu.guideapp.database.content.entities
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(
     tableName = "route_language",
+    indices = [Index("id_route", "language", unique = true)],
+    primaryKeys = ["id_route", "language"],
     foreignKeys = [
         ForeignKey(
             entity = Routes::class,
@@ -18,11 +17,8 @@ import androidx.room.PrimaryKey
     ]
 )
 class RouteLanguage(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id_translate") val id_translate: Long,
-
     @ColumnInfo(name = "id_route") val id_route: Long,
     @ColumnInfo(name = "language") val language: String,
-    @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "description") val description: String
+    @ColumnInfo(name = "name", defaultValue = "") val name: String?,
+    @ColumnInfo(name = "description", defaultValue = "") val description: String?
 )

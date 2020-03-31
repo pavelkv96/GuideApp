@@ -28,5 +28,5 @@ class ListPoi(
     @ColumnInfo(name = "id_route", index = true) val id_route: Long,
     @ColumnInfo(name = "id_poi", index = true) val id_poi: Long,
     @ColumnInfo(name = "id_point") val id_point: String,
-    @ColumnInfo(name = "distance") val distance: Int
+    @ColumnInfo(name = "distance") val distance: Double
 )

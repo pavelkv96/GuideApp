@@ -1,12 +1,11 @@
 package com.grsu.guideapp.database.content.entities
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(
     tableName = "poi_language",
+    indices = [Index("id_poi", "language", unique = true)],
+    primaryKeys = ["id_poi", "language"],
     foreignKeys = [
         ForeignKey(
             entity = Poi::class,
@@ -18,11 +17,10 @@ import androidx.room.PrimaryKey
     ]
 )
 class PoiLanguage(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id_translate") val id_translate: Long = 0,
-
     @ColumnInfo(name = "id_poi") val id_poi: Long,
     @ColumnInfo(name = "language") val language: String,
-    @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "description") val description: String
-)
+    @ColumnInfo(name = "name", defaultValue = "") val name: String?,
+    @ColumnInfo(name = "description", defaultValue = "") val description: String?
+) {
+    override fun toString() = "id_poi =$id_poi, language =$language, name =$name, description =$description"
+}

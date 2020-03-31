@@ -23,7 +23,7 @@ import java.util.*
         )
     ]
 )
-class Poi(
+data class Poi(
     @PrimaryKey
     @ColumnInfo(name = "id_poi") val id_poi: Long,
 
@@ -32,9 +32,31 @@ class Poi(
     @ColumnInfo(name = "id_type", index = true) val id_type: Long,
     @ColumnInfo(name = "last_update") val last_update: Date,
     @ColumnInfo(name = "last_download") val last_download: Date,
-    @ColumnInfo(name = "number") val number: Int,
-    @ColumnInfo(name = "address") val address: String,
-    @ColumnInfo(name = "email") val email: String,
-    @ColumnInfo(name = "link") val link: String,
-    @ColumnInfo(name = "phone") val phone: String
-)
+    @ColumnInfo(name = "number") val number: Int?,
+    @ColumnInfo(name = "address") val address: String?,
+    @ColumnInfo(name = "email") val email: String?,
+    @ColumnInfo(name = "link") val link: String?,
+    @ColumnInfo(name = "phone") val phone: String?
+) {
+    @Ignore
+    constructor(
+        id_poi: Long,
+        location: String,
+        link_icon: String,
+        id_type: Long,
+        last_update: Date,
+        last_download: Date
+    ) : this(
+        id_poi,
+        location,
+        link_icon,
+        id_type,
+        last_update,
+        last_download,
+        null,
+        null,
+        null,
+        null,
+        null
+    )
+}

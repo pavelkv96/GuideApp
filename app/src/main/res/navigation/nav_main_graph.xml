@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/nav_main_graph"
+  app:startDestination="@id/nav_routes"
+  tools:ignore="UnusedNavigation">
+
+  <fragment android:id="@+id/nav_favorite"
+    android:name="com.grsu.guideapp.fragments.favorite.FavoriteFragment"
+    android:label="Favorite"
+    tools:layout="@layout/fragment_favorite" />
+
+  <fragment
+    android:id="@+id/nav_routes"
+    android:name="com.grsu.guideapp.fragments.tabs.RoutesTabFragment"
+    android:label="@string/list_routes_fragment"
+    tools:layout="@layout/fragment_routes_tab">
+    <action
+      android:id="@+id/action_routes_to_catalog"
+      app:destination="@id/nav_catalogs"
+      app:popUpTo="@id/nav_routes"
+      app:popUpToInclusive="true" />
+    <action
+      android:id="@+id/action_routes_to_graph_route"
+      app:destination="@id/nav_route_graph">
+      <argument
+        android:name="route_id"
+        app:argType="integer" />
+
+      <argument
+        android:name="title"
+        app:argType="string" />
+    </action>
+  </fragment>
+
+  <fragment
+    android:id="@+id/nav_catalogs"
+    android:name="com.grsu.guideapp.fragments.catalog.CatalogFragment"
+    android:label="@string/list_objects_fragment"
+    tools:layout="@layout/fragment_catalog">
+    <action
+      android:id="@+id/action_catalog_to_routes"
+      app:destination="@id/nav_routes"
+      app:popUpTo="@id/nav_catalogs"
+      app:popUpToInclusive="true" />
+    <action
+      android:id="@+id/action_catalog_to_objects"
+      app:destination="@id/nav_object_graph">
+      <argument
+        android:name="catalog_id"
+        app:argType="integer" />
+      <argument
+        android:name="title"
+        app:argType="string" />
+    </action>
+  </fragment>
+
+  <fragment
+    android:id="@+id/nav_settings"
+    android:name="com.grsu.guideapp.fragments.setting.SettingsFragment"
+    android:label="@string/settings_fragment" />
+
+  <fragment
+    android:id="@+id/nav_about"
+    android:name="com.grsu.guideapp.fragments.about.AboutFragment"
+    android:label="@string/about_fragment"
+    tools:layout="fragment_about" />
+
+  <action
+    android:id="@+id/action_to_progress_dialog"
+    app:destination="@id/nav_progress_dialog" />
+
+  <action
+    android:id="@+id/action_to_single_choice_dialog"
+    app:destination="@id/nav_single_choice_dialog" />
+
+  <action
+    android:id="@+id/action_to_multi_choice_dialog"
+    app:destination="@id/nav_multi_choice_dialog" />
+
+  <dialog
+    android:id="@+id/nav_single_choice_dialog"
+    android:name="com.grsu.guideapp.views.dialogs.SingleChoiceDialogFragment">
+    <argument
+      android:name="request_code"
+      app:argType="integer" />
+    <argument
+      android:name="label"
+      app:argType="reference" />
+    <argument
+      android:name="titles"
+      app:argType="string[]" />
+    <argument
+      android:name="choices"
+      app:argType="string" />
+  </dialog>
+
+  <dialog
+    android:id="@+id/nav_progress_dialog"
+    android:name="com.grsu.guideapp.views.dialogs.ProgressDialogFragment"
+    android:label="ProgressDialogFragment" />
+
+  <dialog
+    android:id="@+id/nav_multi_choice_dialog"
+    android:name="com.grsu.guideapp.views.dialogs.MultipleChoiceDialogFragment">
+    <argument
+      android:name="request_code"
+      app:argType="integer" />
+    <argument
+      android:name="label"
+      app:argType="reference" />
+    <argument
+      android:name="titles"
+      app:argType="string[]" />
+    <argument
+      android:name="choices"
+      app:argType="string[]" />
+
+    <argument
+      android:name="show_select_all"
+      android:defaultValue="false"
+      app:argType="boolean" />
+    <argument
+      android:name="choice_select_all"
+      android:defaultValue="false"
+      app:argType="boolean" />
+  </dialog>
+
+  <include app:graph="@navigation/nav_route_graph" />
+
+  <include app:graph="@navigation/nav_object_graph" />
+</navigation>

@@ -1,9 +1,6 @@
 package com.grsu.guideapp.database.content.entities
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(
     tableName = "types",
@@ -20,4 +17,18 @@ class Types(
     @ColumnInfo(name = "language_lt") val language_lt: String,
     @ColumnInfo(name = "language_pl") val language_pl: String,
     @ColumnInfo(name = "is_checked") val is_checked: Int
-)
+) {
+    @Ignore
+    constructor(
+        id_type: Long
+    ) : this(
+        id_type, ByteArray(0), "", "", "", "", "", 1
+    )
+
+    @Ignore
+    constructor(
+        id_type: Long, picture: ByteArray
+    ) : this(
+        id_type, picture, "", "", "", "", "", 1
+    )
+}
