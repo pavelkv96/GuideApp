@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.model.Tile
 import com.grsu.guideapp.App
 import com.grsu.guideapp.data.local.PreferenceManager
-import com.grsu.guideapp.database.cache.CacheDataBase
-import com.grsu.guideapp.database.cache.dao.CacheDao
+import com.grsu.guideapp.data.local.database.cache.CacheDataBase
+import com.grsu.guideapp.data.local.database.cache.dao.CacheDao
 import com.grsu.guideapp.project_settings.RequestsCodes
-import com.grsu.guideapp.views.dialogs.DialogResult
-import com.grsu.guideapp.views.dialogs.TypeDialog
+import com.grsu.guideapp.ui.custom.dialogs.DialogResult
+import com.grsu.guideapp.ui.custom.dialogs.TypeDialog
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory
 import java.io.File
 

@@ -7,13 +7,13 @@
   tools:ignore="UnusedNavigation">
 
   <fragment android:id="@+id/nav_favorite"
-    android:name="com.grsu.guideapp.fragments.favorite.FavoriteFragment"
+    android:name="com.grsu.guideapp.ui.fragments.favorite.FavoriteFragment"
     android:label="Favorite"
     tools:layout="@layout/fragment_favorite" />
 
   <fragment
     android:id="@+id/nav_routes"
-    android:name="com.grsu.guideapp.fragments.tabs.RoutesTabFragment"
+    android:name="com.grsu.guideapp.ui.fragments.tabs.RoutesTabFragment"
     android:label="@string/list_routes_fragment"
     tools:layout="@layout/fragment_routes_tab">
     <action
@@ -36,7 +36,7 @@
 
   <fragment
     android:id="@+id/nav_catalogs"
-    android:name="com.grsu.guideapp.fragments.catalog.CatalogFragment"
+    android:name="com.grsu.guideapp.ui.fragments.catalog.CatalogFragment"
     android:label="@string/list_objects_fragment"
     tools:layout="@layout/fragment_catalog">
     <action
@@ -58,12 +58,12 @@
 
   <fragment
     android:id="@+id/nav_settings"
-    android:name="com.grsu.guideapp.fragments.setting.SettingsFragment"
+    android:name="com.grsu.guideapp.ui.fragments.setting.SettingsFragment"
     android:label="@string/settings_fragment" />
 
   <fragment
     android:id="@+id/nav_about"
-    android:name="com.grsu.guideapp.fragments.about.AboutFragment"
+    android:name="com.grsu.guideapp.ui.fragments.about.AboutFragment"
     android:label="@string/about_fragment"
     tools:layout="fragment_about" />
 
@@ -81,7 +81,7 @@
 
   <dialog
     android:id="@+id/nav_single_choice_dialog"
-    android:name="com.grsu.guideapp.views.dialogs.SingleChoiceDialogFragment">
+    android:name="com.grsu.guideapp.ui.custom.dialogs.SingleChoiceDialogFragment">
     <argument
       android:name="request_code"
       app:argType="integer" />
@@ -98,12 +98,12 @@
 
   <dialog
     android:id="@+id/nav_progress_dialog"
-    android:name="com.grsu.guideapp.views.dialogs.ProgressDialogFragment"
+    android:name="com.grsu.guideapp.ui.custom.dialogs.ProgressDialogFragment"
     android:label="ProgressDialogFragment" />
 
   <dialog
     android:id="@+id/nav_multi_choice_dialog"
-    android:name="com.grsu.guideapp.views.dialogs.MultipleChoiceDialogFragment">
+    android:name="com.grsu.guideapp.ui.custom.dialogs.MultipleChoiceDialogFragment">
     <argument
       android:name="request_code"
       app:argType="integer" />

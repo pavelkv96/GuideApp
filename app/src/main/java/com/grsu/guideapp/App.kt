@@ -27,11 +27,7 @@ class App : Application() {
 
     companion object {
         private lateinit var app: App
-
-        @JvmStatic
-        fun getInstance(): App {
-            return app
-        }
+        fun getInstance(): App = app
     }
 
     override fun attachBaseContext(base: Context) = super.attachBaseContext(setLocale(base))

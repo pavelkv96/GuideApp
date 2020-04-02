@@ -13,7 +13,7 @@ import androidx.core.app.NotificationCompat.Builder;
 import android.view.View;
 import android.widget.RemoteViews;
 import com.grsu.guideapp.R;
-import com.grsu.guideapp.activities.MainActivity;
+import com.grsu.guideapp.ui.activities.MainActivity;
 
 public class NotificationBuilder {
 

@@ -6,8 +6,8 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Tile
 import com.google.android.gms.maps.model.TileProvider
 import com.grsu.guideapp.App
-import com.grsu.guideapp.database.cache.dao.CacheDao
-import com.grsu.guideapp.database.cache.entities.CacheTile
+import com.grsu.guideapp.data.local.database.cache.dao.CacheDao
+import com.grsu.guideapp.data.local.database.cache.entities.CacheTile
 import com.grsu.guideapp.utils.MapUtils
 import com.grsu.guideapp.utils.extensions.toByteArray
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory

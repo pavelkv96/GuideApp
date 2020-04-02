@@ -8,7 +8,7 @@
 
   <fragment
     android:id="@+id/nav_route_details"
-    android:name="com.grsu.guideapp.fragments.route_details.RouteDetailsFragment"
+    android:name="com.grsu.guideapp.ui.fragments.route_details.RouteDetailsFragment"
     android:label="{title}">
 
     <argument
@@ -26,6 +26,6 @@
 
   <fragment
     android:id="@+id/nav_test"
-    android:name="com.grsu.guideapp.fragments.order.OrderFragment" />
+    android:name="com.grsu.guideapp.ui.fragments.order.OrderFragment" />
 
 </navigation>

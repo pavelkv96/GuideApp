@@ -5,9 +5,8 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.grsu.guideapp.App
-import com.grsu.guideapp.network.pojo.AbstractObject
-import com.grsu.guideapp.network.pojo.Category
-import java.io.InputStream
+import com.grsu.guideapp.data.remote.pojo.AbstractObject
+import com.grsu.guideapp.data.remote.pojo.Category
 
 object AssetsManager {
 

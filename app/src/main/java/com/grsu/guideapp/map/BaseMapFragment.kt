@@ -21,7 +21,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.grsu.guideapp.App
 import com.grsu.guideapp.NavMainGraphDirections
 import com.grsu.guideapp.R
-import com.grsu.guideapp.activities.SharedViewModel
+import com.grsu.guideapp.ui.activities.SharedViewModel
 import com.grsu.guideapp.data.local.PreferenceManager
 import com.grsu.guideapp.project_settings.Settings
 import com.grsu.guideapp.project_settings.RequestsCodes
@@ -30,7 +30,7 @@ import com.grsu.guideapp.utils.extensions.hide
 import com.grsu.guideapp.utils.extensions.navigate
 import com.grsu.guideapp.utils.extensions.popBackStack
 import com.grsu.guideapp.utils.extensions.show
-import com.grsu.guideapp.views.scale.MapScaleView
+import com.grsu.guideapp.ui.custom.scale.MapScaleView
 import kotlinx.coroutines.Runnable
 import java.io.File
 
