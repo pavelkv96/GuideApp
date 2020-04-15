@@ -11,15 +11,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 import com.grsu.guideapp.R
+import com.grsu.guideapp.data.local.database.vo.FavoriteVO
+import com.grsu.guideapp.data.local.database.vo.PoiFavoriteVO
+import com.grsu.guideapp.data.local.database.vo.RouteFavoriteVO
 import com.grsu.guideapp.ui.activities.SharedViewModel
 import com.grsu.guideapp.ui.adapters.FavoriteAdapter
 import com.grsu.guideapp.utils.base.Result
+import com.grsu.guideapp.utils.extensions.navigate
 
-class FavoriteFragment : Fragment(), (View, Int) -> Unit, Observer<Result<List<String>>> {
+class FavoriteFragment : Fragment(), (View, Int) -> Unit, Observer<Result<List<FavoriteVO>>> {
 
     private val model: FavoriteViewModel by viewModels()
     private val sharedModel: SharedViewModel by activityViewModels()
@@ -49,7 +52,6 @@ class FavoriteFragment : Fragment(), (View, Int) -> Unit, Observer<Result<List<S
 
             list = it.findViewById(R.id.rv_fragment_favorite_list)
             list.adapter = favoriteAdapter
-            list.layoutManager = GridLayoutManager(requireContext(), 2)
             list.setHasFixedSize(true)
         }
 
@@ -59,11 +61,17 @@ class FavoriteFragment : Fragment(), (View, Int) -> Unit, Observer<Result<List<S
 
     override fun invoke(view: View, position: Int) {
         favoriteAdapter.getItem(position)?.also {
-            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            if (it is RouteFavoriteVO) {
+                //TODO open route screen
+                Toast.makeText(requireContext(), "It is route ${it.name}", Toast.LENGTH_SHORT).show()
+            } else if (it is PoiFavoriteVO) {
+                navigate(FavoriteFragmentDirections.actionFavoriteToObjectDetails(it.id, it.name, it.photo))
+//                Toast.makeText(requireContext(), "It is poi ${it.name}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
-    override fun onChanged(it: Result<List<String>>?) {
+    override fun onChanged(it: Result<List<FavoriteVO>>?) {
         when (it) {
             is Result.Success -> {
                 message.visibility = View.GONE

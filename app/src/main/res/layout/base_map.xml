@@ -22,7 +22,7 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintVertical_bias="0"
-    app:srcCompat="@drawable/ic_fullscreen_exit"
+    app:srcCompat="@drawable/ic_fullscreen"
     tools:visibility="visible" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -81,7 +81,7 @@
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toEndOf="@id/fab_base_map_layer"
     app:layout_constraintTop_toTopOf="parent"
-    app:srcCompat="@drawable/ic_show_my_location"
+    app:srcCompat="@drawable/ic_my_location"
     tools:visibility="visible" />
 
   <com.grsu.guideapp.ui.custom.scale.MapScaleView

@@ -18,5 +18,6 @@ class Routes(
     @ColumnInfo(name = "northeast") val northeast: String,
     @ColumnInfo(name = "last_update") val last_update: Date,
     @ColumnInfo(name = "last_download") val last_download: Date,
-    @ColumnInfo(name = "status", defaultValue = "0") var status: Status
+    @ColumnInfo(name = "status", defaultValue = "0") var status: Status,
+    @ColumnInfo(name = "is_favorite", defaultValue = "0") val is_favorite: Int
 )

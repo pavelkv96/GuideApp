@@ -46,7 +46,7 @@
       android:layout_marginStart="12dp"
       android:layout_marginBottom="12dp"
       android:layout_toEndOf="@id/iv_item_route_image"
-      app:icon="@drawable/ic_menu_routes"
+      app:icon="@drawable/ic_duration"
       tools:text="100 km" />
 
     <com.google.android.material.button.MaterialButton
@@ -56,7 +56,7 @@
       android:layout_marginStart="12dp"
       android:layout_marginBottom="12dp"
       android:layout_toEndOf="@id/tv_item_route_duration"
-      app:icon="@drawable/ic_menu_objects"
+      app:icon="@drawable/ic_distance"
       tools:text="1 h 00 min" />
   </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

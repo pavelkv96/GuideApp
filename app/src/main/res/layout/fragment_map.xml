@@ -47,7 +47,7 @@
       android:layout_height="20dp"
       android:layout_gravity="center_vertical"
       android:contentDescription="@null"
-      android:src="@drawable/ic_location_disabled"
+      android:src="@drawable/ic_location_off"
       android:visibility="gone"
       tools:visibility="visible" />
 

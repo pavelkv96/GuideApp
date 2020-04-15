@@ -1,11 +1,8 @@
 package com.grsu.guideapp.data.local.database.content.dao
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room.*
 import com.grsu.guideapp.data.local.database.content.entities.Poi
-import com.grsu.guideapp.data.local.database.vo.DetailsObjectVO
-import com.grsu.guideapp.data.local.database.vo.ObjectItemVO
+import com.grsu.guideapp.data.local.database.vo.*
 
 @Dao
 interface PoiDao : BaseDao<Poi> {
@@ -33,15 +30,15 @@ interface PoiDao : BaseDao<Poi> {
     )
     fun getAllByCatalogId(catalogId: Int, locale: String): List<ObjectItemVO>
 
+    @Transaction
     @Query(
         """
-        SELECT c1.location, c2.description, c1.address, c1.phone, c1.email, c1.link
-        FROM poi AS c1
-        INNER JOIN poi_language AS c2 ON c1.id_poi = c2.id_poi
-        WHERE c1.id_poi = :poiId AND language = :locale 
+        SELECT poi.id_poi, poi.location, poi.address, poi.phone, poi.email, poi.link, poi.is_favorite
+        FROM poi
+        WHERE poi.id_poi = :poiId 
     """
     )
-    suspend fun getObjectById(poiId: Int, locale: String): DetailsObjectVO.ObjectVO
+    suspend fun getObjectById(poiId: Int): ObjectVO
 
     @Transaction
     fun insertOrUpdate(obj: Poi) {
@@ -55,4 +52,41 @@ interface PoiDao : BaseDao<Poi> {
             .filterNotNull()
             .also { if (it.isNotEmpty()) update(it) }
     }
+
+    @Transaction
+    @Query(
+        """
+        SELECT poi.id_poi, poi.id_type, poi.location, poi_language.name, poi.link_icon
+        FROM poi
+        INNER JOIN poi_language ON poi.id_poi = poi_language.id_poi
+        INNER JOIN list_poi ON poi.id_poi = list_poi.id_poi
+        WHERE poi_language.language = :locale AND list_poi.id_route = :idRoute
+    """
+    )
+    suspend fun getPoiByIdRoute(idRoute: Int, locale: String): List<PoiVO>
+
+    @Query(
+        """
+            SELECT pois.id_poi as id, pois.name as name, c2.reference as photo 
+            FROM
+            (
+                SELECT c1.id_poi, c2.name
+                FROM poi c1, poi_language c2
+                WHERE c1.id_poi = c2.id_poi AND c2.language = :locale AND c1.is_favorite = 1
+            ) as pois, references_list c1, references_table c2
+            WHERE c1.id_reference = c2.id_reference  AND pois.id_poi = c1.id_poi
+            GROUP BY pois.id_poi
+        """
+    )
+    suspend fun getFavouritePoi(locale: String): List<PoiFavoriteVO>
+
+    @Update(entity = Poi::class, onConflict = OnConflictStrategy.IGNORE)
+    suspend fun changeFavoriteState(poi: ObjectVO): Int
+
+    @Query("""
+        SELECT poi_language.id_poi, poi_language.description
+        FROM poi_language
+        WHERE poi_language.id_poi = :poiId and poi_language.language = :locale
+    """)
+    suspend fun getDescriptionById(poiId: Int, locale: String): ContentVO
 }

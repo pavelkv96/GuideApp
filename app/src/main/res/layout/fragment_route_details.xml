@@ -3,7 +3,6 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  xmlns:tools="http://schemas.android.com/tools"
   app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
   <include
@@ -11,59 +10,13 @@
     layout="@layout/base_map" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/fab_fragment_route_details_like"
     style="@style/FloatingActionButton.RouteDetails"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     app:layout_anchor="@id/bottom_sheet"
     app:srcCompat="@drawable/ic_favorite_add" />
 
-  <androidx.core.widget.NestedScrollView
-    android:id="@+id/bottom_sheet"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white"
-    app:behavior_hideable="true"
-    app:behavior_peekHeight="80dp"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-
-      <TextView
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/text1"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@android:color/white"
-        android:gravity="center"
-        android:text="bottom_sheet_peek"
-        android:textColor="@android:color/black" />
-
-      <TextView
-        app:layout_constraintTop_toBottomOf="@id/text1"
-        android:id="@+id/text3"
-        android:background="@android:color/darker_gray"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:textSize="16sp"
-        android:text="
-        GPS-навигация является стандартным элементом современных мобильных приложений для туристов, однако при разработке возни-кает проблема точности определения и отображения местоположения объекта, вызванная погрешностями измерения в разных устройствах, особенностями ландшафта и другими факторами [1]. Необходимо ре-шить несколько задач: стабилизация отображения точки на карте, ис-ключение полученных от GPS-модуля случайных результатов, опре-деление оптимального интервала опроса модуля.
-Для решения поставленных задач был проведен эксперимент с множеством замеров GPS-координат при разном интервале считыва-ния данных: в течение 10 минут на неподвижном объекте с помощью смартфона с операционной системой Android измерялись данные от GPS-модуля с периодичностью 1 с, 2 с и 5 с. Для снижения погрешности данных полученная выборка была обработана с помощью алгоритма усреднения: отображаемые пользователю координаты получены путем расчета средней арифметической величины от измеренных значений за период, определяемый потребностями приложения. Полученную выборку значений координат можно кластеризовать на группы по 2-4 координаты, с центрами групп в радиусе 10-15 метров от реального месторасположения устройства. Путем усреднения координат центров, была получена точка, которая оказалась менее чем в 5 метрах от реального месторасположения устройства, что является достаточной точностью для туристического приложения.
-В течение 10 минут было получено 362 различных записей о ко-ординатах вместо ожидаемых 600, что позволяет сделать вывод о не-целесообразности измерения координат при интервалах меньше 1 с в связи с ограничениями производительности.
-Описанный метод позволяет стабилизировать и повысить точ-ность отображения точки на карте приложения, снизив ошибку пози-ционирования с 25-35 метров до 5-10 метров.
-
-        GPS-навигация является стандартным элементом современных мобильных приложений для туристов, однако при разработке возни-кает проблема точности определения и отображения местоположения объекта, вызванная погрешностями измерения в разных устройствах, особенностями ландшафта и другими факторами [1]. Необходимо ре-шить несколько задач: стабилизация отображения точки на карте, ис-ключение полученных от GPS-модуля случайных результатов, опре-деление оптимального интервала опроса модуля.
-Для решения поставленных задач был проведен эксперимент с множеством замеров GPS-координат при разном интервале считыва-ния данных: в течение 10 минут на неподвижном объекте с помощью смартфона с операционной системой Android измерялись данные от GPS-модуля с периодичностью 1 с, 2 с и 5 с. Для снижения погрешности данных полученная выборка была обработана с помощью алгоритма усреднения: отображаемые пользователю координаты получены путем расчета средней арифметической величины от измеренных значений за период, определяемый потребностями приложения. Полученную выборку значений координат можно кластеризовать на группы по 2-4 координаты, с центрами групп в радиусе 10-15 метров от реального месторасположения устройства. Путем усреднения координат центров, была получена точка, которая оказалась менее чем в 5 метрах от реального месторасположения устройства, что является достаточной точностью для туристического приложения.
-В течение 10 минут было получено 362 различных записей о ко-ординатах вместо ожидаемых 600, что позволяет сделать вывод о не-целесообразности измерения координат при интервалах меньше 1 с в связи с ограничениями производительности.
-Описанный метод позволяет стабилизировать и повысить точ-ность отображения точки на карте приложения, снизив ошибку пози-ционирования с 25-35 метров до 5-10 метров."
-        android:textColor="@android:color/black"
-        tools:text="@tools:sample/lorem/random" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-  </androidx.core.widget.NestedScrollView>
+  <include layout="@layout/route_bottom_sheet" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

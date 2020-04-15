@@ -3,10 +3,11 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="192dp"
+  android:layout_height="200dp"
   android:layout_margin="8dp"
   app:cardCornerRadius="4dp"
-  app:cardElevation="8dp">
+  app:cardElevation="8dp"
+  app:rippleColor="@color/colorPrimary">
 
   <androidx.appcompat.widget.LinearLayoutCompat
     android:layout_width="match_parent"
@@ -17,18 +18,19 @@
       android:id="@+id/aciv_item_favorite_image"
       android:layout_width="match_parent"
       android:layout_height="160dp"
-      app:srcCompat="@drawable/album_art"
       android:scaleType="centerCrop"
-      />
+      tools:srcCompat="@drawable/album_art" />
 
     <com.google.android.material.textview.MaterialTextView
       android:id="@+id/mtv_item_favorite_name"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:layout_marginStart="4dp"
+      android:layout_marginEnd="4dp"
+      android:ellipsize="end"
       android:gravity="center"
-      android:text="@string/app_name"
+      android:maxLines="2"
       android:textColor="#2d2d2d"
-      android:textSize="14sp"
-      tools:text="Some text" />
+      tools:text="@tools:sample/lorem/random" />
   </androidx.appcompat.widget.LinearLayoutCompat>
 </com.google.android.material.card.MaterialCardView>

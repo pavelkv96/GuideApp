@@ -4,4 +4,4 @@ import androidx.room.Dao
 import com.grsu.guideapp.data.local.database.content.entities.RouteLanguage
 
 @Dao
-abstract class RouteLanguageDao : BaseDao<RouteLanguage>
+interface RouteLanguageDao : BaseDao<RouteLanguage>

@@ -22,26 +22,29 @@ class LocationUpdatesService : Service() {
     }
 
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
-    private lateinit var mLocationCallback: LocationCallback
+    private var mLocationCallback: LocationCallback = object : LocationCallback() {
+        override fun onLocationAvailability(availability: LocationAvailability?) {
+            super.onLocationAvailability(availability)
+            onNewAvailability(availability?.isLocationAvailable ?: false)
+        }
 
+        override fun onLocationResult(locationResult: LocationResult?) {
+            super.onLocationResult(locationResult)
+            locationResult?.let { onNewLocation(it.lastLocation) }
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        mLocationCallback = object : LocationCallback() {
-
-            override fun onLocationResult(locationResult: LocationResult?) {
-                super.onLocationResult(locationResult)
-                onNewLocation(locationResult?.lastLocation)
-            }
-        }
 
         val mLocationRequest = LocationRequest()
-        mLocationRequest.interval = 10000L
-        mLocationRequest.fastestInterval = 2000L
-        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-
+        mLocationRequest.run {
+            interval = 10000L
+            fastestInterval = 2000L
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name: CharSequence = getString(R.string.app_name)
             val mChannel = NotificationChannel("channel_01", name, NotificationManager.IMPORTANCE_DEFAULT)
@@ -51,21 +54,23 @@ class LocationUpdatesService : Service() {
 
         Timber.i("Requesting location updates")
         try {
-            mFusedLocationClient.requestLocationUpdates(
-                mLocationRequest,
-                mLocationCallback,
-                Looper.myLooper()
-            )
+            mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
         } catch (unlikely: SecurityException) {
             Timber.e("Lost location permission. Could not request updates. $unlikely")
         }
     }
 
-    override fun onBind(intent: Intent?): IBinder?  = null
+    override fun onBind(intent: Intent?): IBinder? = null
 
-    private fun onNewLocation(location: Location?) {
+    private fun onNewLocation(location: Location) {
         val intent = Intent(ACTION_BROADCAST)
         intent.putExtra(EXTRA_LOCATION, location)
+        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
+    }
+
+    private fun onNewAvailability(availability: Boolean) {
+        val intent = Intent(ACTION_BROADCAST)
+        intent.putExtra(EXTRA_LOCATION, availability)
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
     }
 

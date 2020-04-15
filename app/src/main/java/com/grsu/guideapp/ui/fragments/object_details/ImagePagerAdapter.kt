@@ -5,12 +5,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
 import com.grsu.guideapp.R
-import com.grsu.guideapp.data.local.database.vo.DetailsObjectVO
+import com.grsu.guideapp.data.local.database.vo.ImagesVO
 import com.grsu.guideapp.project_settings.Settings
 import com.squareup.picasso.Picasso
 
 internal class ImagePagerAdapter(
-    var images: List<DetailsObjectVO.ImagesVO>,
+    var images: List<ImagesVO>,
     val listener: ((View, Int) -> Unit),
     private val picasso: Picasso
 ) : PagerAdapter(), View.OnClickListener {
@@ -41,7 +41,7 @@ internal class ImagePagerAdapter(
         view?.let { listener.invoke(it, it.tag as Int) }
     }
 
-    fun submitList(entities: List<DetailsObjectVO.ImagesVO>) {
+    fun submitList(entities: List<ImagesVO>) {
         images = entities
         notifyDataSetChanged()
     }

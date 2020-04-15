@@ -20,7 +20,7 @@ import com.grsu.guideapp.App
 import com.grsu.guideapp.R
 import com.grsu.guideapp.ui.activities.MainActivity
 import com.grsu.guideapp.utils.base.Result
-import com.grsu.guideapp.data.local.database.vo.DetailsObjectVO
+import com.grsu.guideapp.data.local.database.vo.ImagesVO
 import com.grsu.guideapp.utils.extensions.*
 import timber.log.Timber
 
@@ -49,7 +49,7 @@ class ObjectDetailsFragment : Fragment(), ((View, Int) -> Unit) {
         pageOther = savedInstanceState?.getInt(key_page_other, 0) ?: 0
         pageImage = savedInstanceState?.getInt(key_page_image, 0) ?: 0
 
-        imageAdapter = ImagePagerAdapter(listOf(DetailsObjectVO.ImagesVO(image.toMD5(), image)), this, picasso)
+        imageAdapter = ImagePagerAdapter(listOf(ImagesVO(image.toMD5(), image)), this, picasso)
         otherAdapter = DetailsPagerAdapter(listener = this)
 
         model = ViewModelProvider(this, ModelFactory(args.objectId))[ObjectDetailsModel::class.java]
@@ -86,9 +86,9 @@ class ObjectDetailsFragment : Fragment(), ((View, Int) -> Unit) {
             model.setLike()
             Toast.makeText(requireContext(), "Like button clicked", Toast.LENGTH_SHORT).show()
         }
-        model.content().observe(this, Observer {
+        model.textLiveDate().observe(this, Observer {
             if (it is Result.Success) {
-                description.text = HtmlCompat.fromHtml(it.data.description, HtmlCompat.FROM_HTML_MODE_COMPACT)
+                description.text = HtmlCompat.fromHtml(it.data.description!!, HtmlCompat.FROM_HTML_MODE_COMPACT)
             }
         })
         model.otherContent().observe(this, Observer {

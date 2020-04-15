@@ -36,7 +36,8 @@ data class Poi(
     @ColumnInfo(name = "address") val address: String?,
     @ColumnInfo(name = "email") val email: String?,
     @ColumnInfo(name = "link") val link: String?,
-    @ColumnInfo(name = "phone") val phone: String?
+    @ColumnInfo(name = "phone") val phone: String?,
+    @ColumnInfo(name = "is_favorite", defaultValue = "0") val is_favorite: Int
 ) {
     @Ignore
     constructor(
@@ -57,6 +58,7 @@ data class Poi(
         null,
         null,
         null,
-        null
+        null,
+        0
     )
 }

@@ -78,7 +78,8 @@ object ContentConverter {
             details.address?.ru,
             details.email.getOrNull(0),
             details.href.getOrNull(0),
-            details.phone.mobile.getOrNull(0)
+            details.phone.mobile.getOrNull(0),
+            0
         )
     }
 
@@ -133,7 +134,8 @@ object ContentConverter {
             CryptoUtils.encodeP(data.limRight.latLng),
             maxOf(abstract.timestamp.updatedAt, data.date.updatedAt),
             Date(),
-            status
+            status,
+            0
         )
     }
 

@@ -4,6 +4,8 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.grsu.guideapp.data.local.database.content.entities.Routes
+import com.grsu.guideapp.data.local.database.vo.RouteDetailsVO
+import com.grsu.guideapp.data.local.database.vo.RouteFavoriteVO
 import com.grsu.guideapp.data.local.database.vo.RouteItemVO
 
 @Dao
@@ -21,6 +23,26 @@ interface RoutesDao : BaseDao<Routes> {
     )
     suspend fun getNewRoutes(language: String): List<RouteItemVO>
 
+
+    @Query(
+        """
+        SELECT routes.duration, routes.distance, routes.southwest, routes.northeast, route_language.description
+        FROM routes
+        INNER JOIN route_language ON routes.id_route = route_language.id_route
+        WHERE routes.id_route = :idRoute AND route_language.language = :locale LIMIT 1
+    """
+    )
+    suspend fun getRouteDetails(idRoute: Int, locale: String): RouteDetailsVO
+
+    @Query(
+        """
+            SELECT routes.id_route as id, route_language.name as name, routes.photo_reference as photo
+            FROM routes
+            INNER JOIN route_language ON route_language.id_route = routes.id_route
+            WHERE routes.is_favorite = 1 AND route_language.language = :locale
+        """
+    )
+    suspend fun getFavouriteRoutes(locale: String): List<RouteFavoriteVO>
 
     @Transaction
     fun insertOrUpdate(obj: Routes) {

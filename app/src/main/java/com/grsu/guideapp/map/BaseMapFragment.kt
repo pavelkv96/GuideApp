@@ -25,6 +25,7 @@ import com.grsu.guideapp.ui.activities.SharedViewModel
 import com.grsu.guideapp.data.local.PreferenceManager
 import com.grsu.guideapp.project_settings.Settings
 import com.grsu.guideapp.project_settings.RequestsCodes
+import com.grsu.guideapp.ui.custom.MyLocationLayer
 import com.grsu.guideapp.utils.CheckPermission
 import com.grsu.guideapp.utils.extensions.hide
 import com.grsu.guideapp.utils.extensions.navigate
@@ -34,11 +35,13 @@ import com.grsu.guideapp.ui.custom.scale.MapScaleView
 import kotlinx.coroutines.Runnable
 import java.io.File
 
-class BaseMapFragment : Fragment(), OnMapReadyCallback, TileProvider, OnMarkerClickListener, OnCameraIdleListener,
+abstract class BaseMapFragment : Fragment(), OnMapReadyCallback, TileProvider, OnMarkerClickListener, OnCameraIdleListener,
     Runnable, View.OnClickListener {
 
+    protected abstract var resMap:Int?
+
     protected var map: GoogleMap? = null
-    protected var myLocation: Any? = null
+    protected var myLocation: Pair<MarkerOptions, CircleOptions>? = null
     private var borders: LatLngBounds? = null
     private var overlay: TileOverlay? = null
 
@@ -46,7 +49,6 @@ class BaseMapFragment : Fragment(), OnMapReadyCallback, TileProvider, OnMarkerCl
     private lateinit var layersButton: FloatingActionButton
     private lateinit var zoomInButton: FloatingActionButton
     private lateinit var zoomOutButton: FloatingActionButton
-    private lateinit var myLocationButton: FloatingActionButton
 
     private var handler: Handler? = null
 
@@ -63,22 +65,18 @@ class BaseMapFragment : Fragment(), OnMapReadyCallback, TileProvider, OnMarkerCl
             if (!it.exists()) return@also
             val factory = ModelFactory(it, Provider.valueOf(provider))
             model = ViewModelProvider(this, factory)[MapFragmentModel::class.java]
-            sharedModel.getChoiceDialogResult().observe(this, Observer {
-                model.setChoiceDialog(it)
-            })
-
+            sharedModel.getChoiceDialogResult().observe(this, Observer { result -> model.setChoiceDialog(result) })
             model.getProvider().observe(this, Observer { overlay?.clearTileCache() })
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.base_map, container, false)
+        val view = inflater.inflate(resMap ?: R.layout.base_map, container, false)
         view?.also {
             scaleView = it.findViewById(R.id.msv_base_map_scale)
             layersButton = it.findViewById(R.id.fab_base_map_layer)
             zoomInButton = it.findViewById(R.id.fab_base_map_zoom_in)
             zoomOutButton = it.findViewById(R.id.fab_base_map_zoom_out)
-            myLocationButton = it.findViewById(R.id.fab_base_map_my_location)
 
             layersButton.setOnClickListener(this)
             zoomInButton.setOnClickListener { map?.animateCamera(CameraUpdateFactory.zoomIn()) }
@@ -140,6 +138,7 @@ class BaseMapFragment : Fragment(), OnMapReadyCallback, TileProvider, OnMarkerCl
             val tileOptions = TileOverlayOptions().tileProvider { x, y, zoom -> model.loadTile(x, y, zoom) }
             overlay = it.addTileOverlay(tileOptions)
         }
+        myLocation = MyLocationLayer.getMyLocationLayer()
     }
 
     override fun getTile(x: Int, y: Int, zoom: Int): Tile = TileProvider.NO_TILE
@@ -147,19 +146,17 @@ class BaseMapFragment : Fragment(), OnMapReadyCallback, TileProvider, OnMarkerCl
     override fun onMarkerClick(marker: Marker): Boolean = false
 
     override fun onClick(v: View?) {
-        when (v?.id) {
-            R.id.fab_base_map_layer -> {
-                val default = PreferenceManager.getProvider()
-                val titles = arrayOf(Provider.MAPSFORGE.name, Provider.OSM.name, Provider.DEFAULT.name                )
-                navigate(
-                    NavMainGraphDirections.actionToSingleChoiceDialog(
-                        RequestsCodes.MAP_STYLE_CODE,
-                        R.string.map_style,
-                        titles,
-                        default
-                    )
+        if (v?.id == R.id.fab_base_map_layer) {
+            val default = PreferenceManager.getProvider()
+            val titles = arrayOf(Provider.MAPSFORGE.name, Provider.OSM.name, Provider.DEFAULT.name)
+            navigate(
+                NavMainGraphDirections.actionToSingleChoiceDialog(
+                    RequestsCodes.MAP_STYLE_CODE,
+                    R.string.map_style,
+                    titles,
+                    default
                 )
-            }
+            )
         }
     }
 
