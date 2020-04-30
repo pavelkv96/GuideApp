@@ -35,7 +35,7 @@ import timber.log.Timber
 class RouteMapFragment : BaseMapFragment(), OnReceiverResponse {
 
     companion object {
-        private const val CODE_LOCATION_PERMISSION = 2
+        private const val CODE_LOCATION_PERMISSION = 3
         private const val key_bottom_sheet = "bottom_sheet"
     }
 
@@ -79,9 +79,6 @@ class RouteMapFragment : BaseMapFragment(), OnReceiverResponse {
             bottomSheetContainer = it.findViewById(R.id.bottom_sheet)
             bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
         }
-
-        (requireActivity() as? MainActivity)?.getAppBarLayout()?.hide()
-
         title.text = args.title
         likeButton.visibility = View.GONE
         likeButton.setOnClickListener(this)
@@ -165,6 +162,7 @@ class RouteMapFragment : BaseMapFragment(), OnReceiverResponse {
 
     override fun onStart() {
         super.onStart()
+        (requireActivity() as? MainActivity)?.getAppBarLayout()?.hide()
         if (CheckPermission.checkLocationPermission(App.getInstance())) {
             receiver = MyReceiver(this)
             receiver?.also {
@@ -179,6 +177,7 @@ class RouteMapFragment : BaseMapFragment(), OnReceiverResponse {
     }
 
     override fun onStop() {
+        (requireActivity() as? MainActivity)?.getAppBarLayout()?.show()
         requireActivity().stopService(Intent(App.getInstance(), LocationUpdatesService::class.java))
         receiver?.also { LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(it) }
         receiver = null
@@ -190,8 +189,6 @@ class RouteMapFragment : BaseMapFragment(), OnReceiverResponse {
         myPositionRadius?.remove()
         myPosition = null
         myPositionRadius = null
-
-        (requireActivity() as? MainActivity)?.getAppBarLayout()?.show()
         super.onDestroyView()
     }
 

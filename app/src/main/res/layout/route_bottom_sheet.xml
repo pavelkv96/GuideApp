@@ -52,13 +52,12 @@
       android:drawableStart="@drawable/ic_duration"
       android:drawablePadding="4dp"
       android:drawableTint="@color/colorPrimary"
-      app:layout_constraintBottom_toTopOf="@id/mtv_fragment_route_details_description"
+      app:layout_constraintBottom_toTopOf="@id/download"
       app:layout_constraintEnd_toStartOf="@id/mtv_fragment_route_details_distance"
-      app:layout_constraintHorizontal_bias="0"
-      app:layout_constraintHorizontal_chainStyle="packed"
+      app:layout_constraintHorizontal_chainStyle="spread"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@id/mtv_fragment_route_details_title"
-      tools:text="@tools:sample/full_names" />
+      tools:text="@tools:sample/first_names" />
 
     <com.google.android.material.textview.MaterialTextView
       android:id="@+id/mtv_fragment_route_details_distance"
@@ -68,10 +67,54 @@
       android:drawablePadding="4dp"
       android:drawableTint="@color/colorPrimary"
       app:layout_constraintBottom_toBottomOf="@id/mtv_fragment_route_details_duration"
-      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintEnd_toStartOf="@id/go_to_new"
       app:layout_constraintStart_toEndOf="@id/mtv_fragment_route_details_duration"
       app:layout_constraintTop_toTopOf="@id/mtv_fragment_route_details_duration"
-      tools:text="@tools:sample/full_names" />
+      tools:text="@tools:sample/first_names" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/go_to_new"
+      style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="К маршруту"
+      app:layout_constraintBottom_toTopOf="@id/mtv_fragment_route_details_distance"
+      app:layout_constraintStart_toEndOf="@id/mtv_fragment_route_details_distance"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/mtv_fragment_route_details_distance" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/go_to"
+      style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="К маршруту"
+      app:layout_constraintBottom_toTopOf="@id/mtv_fragment_route_details_description"
+      app:layout_constraintEnd_toStartOf="@id/download"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/mtv_fragment_route_details_duration" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/download"
+      style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Обновить"
+      app:layout_constraintBottom_toBottomOf="@id/go_to"
+      app:layout_constraintEnd_toStartOf="@id/delete"
+      app:layout_constraintStart_toEndOf="@id/go_to"
+      app:layout_constraintTop_toTopOf="@id/go_to" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/delete"
+      style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Удалить"
+      app:layout_constraintBottom_toBottomOf="@id/download"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@id/download"
+      app:layout_constraintTop_toTopOf="@id/download" />
 
     <com.google.android.material.textview.MaterialTextView
       android:id="@+id/mtv_fragment_route_details_description"
@@ -85,7 +128,7 @@
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/mtv_fragment_route_details_duration"
+      app:layout_constraintTop_toBottomOf="@id/download"
       tools:text="@tools:sample/lorem/random" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>

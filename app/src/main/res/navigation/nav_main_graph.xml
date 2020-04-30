@@ -124,7 +124,7 @@
       app:argType="string" />
 
     <action
-      android:id="@+id/action_routes_to_route_map"
+      android:id="@+id/action_route_details_to_route_map"
       app:destination="@id/nav_route_map">
       <argument
         android:name="route_id"
@@ -134,6 +134,10 @@
         android:name="title"
         app:argType="string" />
     </action>
+
+    <action
+      android:id="@+id/action_route_details_to_order"
+      app:destination="@id/nav_order" />
   </fragment>
 
   <fragment
