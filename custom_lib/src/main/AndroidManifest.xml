@@ -1,7 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.grsu">
 
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
   <application>
-    <service android:name=".service.MyService"/>
+    <service
+      android:name=".service.MyService"
+      android:enabled="true"
+      android:exported="true"
+      android:foregroundServiceType="location" />
   </application>
 </manifest>

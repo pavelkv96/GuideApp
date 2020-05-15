@@ -3,134 +3,72 @@ package com.grsu.service;
 import android.Manifest.permission;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-public class LocationClient implements LocationListener {
+public final class LocationClient implements OnReceiverResponse {
 
+    public static final LocationClient INSTANCE;
     private static final String TAG = LocationClient.class.getSimpleName();
-    private final Context context;
-    private final Listener listener;
 
-    private LocationClient(Context context, Listener listener) {
-        this.context = context;
-        this.listener = listener;
+    private LocationClient() {
     }
+
+    static {
+        INSTANCE = new LocationClient();
+    }
+
+    @Nullable
+    private LocationListener listener;
+
+    @Nullable
+    private MyReceiver receiver = null;
 
     @RequiresPermission("android.permission.ACCESS_FINE_LOCATION")
-    public void connect() {
-        //ContextCompat.startForegroundService(context, new Intent(context, MyService.class));
-        if (ContextCompat.checkSelfPermission(context, permission.ACCESS_FINE_LOCATION) == 0) {
-            //Location location = getLastLocation();
-            //if (location == null) {
-            context.startService(new Intent(context, MyService.class));
-            Class.getInstance.registerCallback(this);
-            /*} else {
-                listener.onChangedLocation(location);
-            }*/
-        }
-    }
-
-    @RequiresPermission("android.permission.ACCESS_FINE_LOCATION")
-    public void disconnect() {
-        Class.getInstance.unregisterCallback(this);
-        context.stopService(new Intent(context, MyService.class));
-    }
-
-    @RequiresPermission("android.permission.ACCESS_FINE_LOCATION")
-    public Location getLastLocation() {
-        LocationManager manager = ContextCompat.getSystemService(context, LocationManager.class);
-        if (manager == null) {
-            return null;
-        }
-
-        Location bestLocation = null;
-        for (String provider : manager.getProviders(true)) {
-            Location l = manager.getLastKnownLocation(provider);
-            Log.e(TAG, "getLastLocation: " + provider + "   " + l);
-            if (l == null) {
-                continue;
-            }
-            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                bestLocation = l;
-            }
-        }
-        return bestLocation;
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        listener.onChangedLocation(location);
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle bundle) {
-        try {
-            ((OnLocationListener) listener).onStatusChanged(provider, status, bundle);
-        } catch (ClassCastException ignore) {
-        }
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        try {
-            ((OnLocationListener) listener).onProviderDisabled(provider);
-        } catch (ClassCastException ignore) {
-        }
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-        try {
-            ((OnLocationListener) listener).onProviderEnabled(provider);
-        } catch (ClassCastException ignore) {
-        }
-    }
-
-    public static final class Builder {
-
-        private Context context;
-        private int interval;
-        private int distance;
-        private Listener listener;
-
-        public Builder(Context context) {
-            this.context = context;
-        }
-
-        public Builder setInterval(int interval) {
-            this.interval = interval;
-            return this;
-        }
-
-        public Builder setDistance(int distance) {
-            this.distance = distance;
-            return this;
-        }
-
-        public Builder addListener(Listener listener) {
+    public void connect(@NonNull Context applicationContext, LocationListener listener) {
+        if (ContextCompat.checkSelfPermission(applicationContext, permission.ACCESS_FINE_LOCATION) == 0) {
+            applicationContext.startService(new Intent(applicationContext, MyService.class));
+            receiver = new MyReceiver(this);
+            IntentFilter filter = new IntentFilter(MyService.ACTION_BROADCAST);
+            LocalBroadcastManager.getInstance(applicationContext).registerReceiver(receiver, filter);
             this.listener = listener;
-            return this;
         }
+    }
 
-        public LocationClient build() {
-            if (distance > 0) {
-                MyService.distance = distance;
-            }
-            if (interval > 0) {
-                MyService.interval = interval;
-            }
+    @RequiresPermission("android.permission.ACCESS_FINE_LOCATION")
+    public void disconnect(@NonNull Context applicationContext) {
+        applicationContext.stopService(new Intent(applicationContext, MyService.class));
+        listener = null;
+        if (receiver != null) {
+            LocalBroadcastManager.getInstance(applicationContext).unregisterReceiver(receiver);
+        }
+        receiver = null;
+    }
 
-            if (listener == null) {
-                throw new RuntimeException("The listener cannot be null");
+    @Override
+    public void onReceiver(@NonNull Intent intent) {
+        if (intent.getExtras() != null) {
+            Object o = intent.getExtras().get(MyService.EXTRA_LOCATION);
+            Log.e(TAG, "Get object");
+            if (o instanceof Boolean) {
+                boolean a = (boolean) o;
+                Log.e(TAG, "Get availability " + a);
+                if (listener == null) return;
+                if (a) listener.onProviderEnabled("gps");
+                else listener.onProviderDisabled("gps");
+            } else if (o instanceof Location) {
+                Location location = (Location) o;
+                if (listener == null) return;
+                listener.onLocationChanged(location);
+                Log.e(TAG, "Get location " + location.getLatitude() + " : " + location.getLongitude());
             }
-
-            return new LocationClient(context, listener);
         }
     }
 }

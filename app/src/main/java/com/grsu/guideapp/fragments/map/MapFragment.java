@@ -2,6 +2,7 @@ package com.grsu.guideapp.fragments.map;
 
 import android.content.DialogInterface;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,13 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import butterknife.BindView;
-import butterknife.OnClick;
+
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition.Builder;
 import com.google.android.gms.maps.model.LatLng;
+import com.grsu.guideapp.App;
 import com.grsu.guideapp.R;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.fragments.map.MapContract.MapViews;
@@ -25,16 +26,18 @@ import com.grsu.guideapp.fragments.map_preview.MapPreviewFragment;
 import com.grsu.guideapp.models.Point;
 import com.grsu.guideapp.project_settings.SharedPref;
 import com.grsu.guideapp.utils.CheckPermission;
-import com.grsu.guideapp.utils.DataUtils;
 import com.grsu.guideapp.utils.MapUtils;
 import com.grsu.guideapp.utils.MessageViewer.Logs;
 import com.grsu.guideapp.utils.MessageViewer.MySnackbar;
 import com.grsu.service.LocationClient;
-import com.grsu.service.OnLocationListener;
+
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.OnClick;
+
 public class MapFragment extends MapPreviewFragment<MapPresenter>
-        implements MapViews, OnLocationListener, DialogInterface.OnClickListener {
+        implements MapViews, LocationListener, DialogInterface.OnClickListener {
 
     private static final String TAG = MapFragment.class.getSimpleName();
     private boolean isMoving = false;
@@ -42,7 +45,6 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     private boolean isFirst = false;
 //    private List<LatLng> myMovement;
 
-    private LocationClient client;
     int i = 0;
     Animator animator;
 
@@ -74,11 +76,6 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
             @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        client = new LocationClient.Builder(getActivity)
-                .setInterval(2000)
-                .addListener(this)
-                .build();
-
         getActivity.setTitleToolbar(getTitle());
 
 //        myMovement = DataUtils.getList2();
@@ -87,7 +84,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
             i = savedInstanceState.getInt("int", 0);
 
             if (CheckPermission.checkLocationPermission(getActivity)) {
-                client.connect();
+                LocationClient.INSTANCE.connect(App.getInstance(), this);
                 String title = getString(R.string.device_searching);
                 String message = getString(R.string.wait_please);
                 showProgress(title, message, this);
@@ -145,7 +142,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
         btn_fragment_map_tilt.setVisibility(View.GONE);
         isMoving = false;
         if (CheckPermission.checkLocationPermission(getActivity)) {
-            client.disconnect();
+            LocationClient.INSTANCE.disconnect(App.getInstance());
         }
     }
 
@@ -156,7 +153,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
             String title = getString(R.string.device_searching);
             String message = getString(R.string.wait_please);
             showProgress(title, message, this);
-            client.connect();
+            LocationClient.INSTANCE.connect(App.getInstance(), this);
             isFirst = true;
             view.setVisibility(View.GONE);
         } else {
@@ -215,7 +212,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
             } catch (NullPointerException e) {
                 hideProgress();
                 if (CheckPermission.checkLocationPermission(getActivity)) {
-                    client.disconnect();
+                    LocationClient.INSTANCE.disconnect(App.getInstance());
                 }
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity);
                 dialog.setTitle(R.string.warning);
@@ -235,7 +232,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     }
 
     @Override
-    public void onChangedLocation(Location location) {
+    public void onLocationChanged(Location location) {
         hideProgress();
 
         if (btn_fragment_map_stop.getVisibility() == View.GONE) {
@@ -285,7 +282,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
             Boolean mode = read(SharedPref.KEY_IS_3D_MODE, Boolean.class);
             btn_fragment_map_tilt.setText(mode ? "3D" : "2D");
             if (isMoving) {
-                client.connect();
+                LocationClient.INSTANCE.connect(App.getInstance(), this);
                 String title = getString(R.string.device_searching);
                 String message = getString(R.string.wait_please);
                 showProgress(title, message, this);
@@ -304,7 +301,7 @@ public class MapFragment extends MapPreviewFragment<MapPresenter>
     @Override
     public void onStop() {
         if (CheckPermission.checkLocationPermission(getActivity)) {
-            client.disconnect();
+            LocationClient.INSTANCE.disconnect(App.getInstance());
         }
         if (animator != null) {
             isAnimated = false;

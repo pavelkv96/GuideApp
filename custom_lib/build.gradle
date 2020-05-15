@@ -12,4 +12,5 @@ dependencies {
     implementation "com.android.support:support-annotations:${versions.support}"
     api "com.android.support:support-v4:${versions.support}"
     api "com.android.support:design:${versions.support}"
+    implementation "com.google.android.gms:play-services-location:16.0.0"
 }

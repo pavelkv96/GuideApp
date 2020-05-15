@@ -50,7 +50,6 @@ public class Settings {
     //	Summary: settings names important file
     //-------------------------------------------
 
-    public static final String ZOOM_TABLE = "ZoomTables.data";
     public static final String MAP_FILE = "KA.map";
     public static final String THEME_FOLDR = "renderthemes/";
     public static final String THEME_FILE = "osmarender.xml";

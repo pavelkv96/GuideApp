@@ -175,7 +175,6 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
 
         File data = new File(StorageUtils.getDatabasePath(this), Settings.DATABASE_INFORMATION_NAME);
         mPresenter.copyFromAssets(data, Settings.DATABASE_INFORMATION_NAME);
-        File file = new File(getFilesDir(), Settings.ZOOM_TABLE);
         File map = new File(StorageUtils.getDatabasePath(this), Settings.MAP_FILE);
         App.getThread().diskIO(new Runnable() {
             @Override
@@ -191,7 +190,6 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
                 StorageUtils.copyAssetsFolder(photos, "photo", getAssets());
             }
         });
-        mPresenter.copyFromAssets(file, Settings.ZOOM_TABLE);
         mPresenter.copyFromAssets(map, Settings.MAP_FILE);
     }
 

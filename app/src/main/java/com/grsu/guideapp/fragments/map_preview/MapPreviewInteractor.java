@@ -1,12 +1,13 @@
 package com.grsu.guideapp.fragments.map_preview;
 
-import android.os.Handler;
+import com.grsu.guideapp.App;
 import com.grsu.guideapp.base.listeners.OnFinishedListener;
 import com.grsu.guideapp.base.listeners.OnSuccessListener;
 import com.grsu.guideapp.database.Test;
 import com.grsu.guideapp.models.DtoObject;
 import com.grsu.guideapp.models.Line;
 import com.grsu.guideapp.models.Poi;
+
 import java.util.List;
 
 public class MapPreviewInteractor implements MapPreviewContract.MapPreviewInteractor {
@@ -19,44 +20,73 @@ public class MapPreviewInteractor implements MapPreviewContract.MapPreviewIntera
 
     @Override
     public void getRouteById(final OnFinishedListener<List<Line>> listener, final Integer routeId) {
-        new Handler().post(new Runnable() {
+        App.getThread().diskIO(new Runnable() {
             @Override
             public void run() {
-                listener.onFinished(helper.getRouteById(routeId));
+                final List<Line> routeById = helper.getRouteById(routeId);
+                App.getThread().mainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onFinished(routeById);
+                    }
+                });
             }
         });
     }
 
     @Override
     public void getListPoi(final OnFinishedListener<List<Poi>> listener, final Integer id,
-            final String point, final int radius) {
-        new Handler().post(new Runnable() {
+                           final String point, final int radius) {
+        App.getThread().diskIO(new Runnable() {
             @Override
             public void run() {
-                listener.onFinished(helper.getListPoi(id, point, radius));
+                final List<Poi> listPoi = helper.getListPoi(id, point, radius);
+                App.getThread().mainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onFinished(listPoi);
+                    }
+                });
             }
         });
     }
 
     @Override
     public void getCountCheckedTypes(final OnFinishedListener<Integer> listener) {
-        new Handler().post(new Runnable() {
+        App.getThread().diskIO(new Runnable() {
             @Override
             public void run() {
-                listener.onFinished(helper.getCountCheckedTypes());
+                final int countCheckedTypes = helper.getCountCheckedTypes();
+                App.getThread().mainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onFinished(countCheckedTypes);
+                    }
+                });
             }
         });
     }
 
     @Override
     public void getObjectInfo(final OnSuccessListener<DtoObject> listener, final int id, final String locale) {
-        new Handler().post(new Runnable() {
+        App.getThread().diskIO(new Runnable() {
             @Override
             public void run() {
                 try {
-                    listener.onSuccess(helper.getObjectById(id, locale).get(0));
-                }catch (Exception e){
-                    listener.onFailure(e);
+                    final DtoObject task = helper.getObjectById(id, locale).get(0);
+                    App.getThread().mainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onSuccess(task);
+                        }
+                    });
+                } catch (final Exception e) {
+                    App.getThread().mainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onFailure(e);
+                        }
+                    });
                 }
             }
         });
